@@ -1,0 +1,71 @@
+spring:
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 50MB
+  application:
+    name: data-assert
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    deserialization:
+      accept_empty_string_as_null_object: true
+# Flyway实现数据库版本管理
+  flyway:
+    #是否开启flyway，默认true
+    enabled: false
+    #当迁移时发现目标schema非空，而且没有元数据的表时，（即迭代中项目）是否自动执行基准迁移，默认false.
+    #baseline-on-migrate: true
+    # 是否允许无序运行迁移, 默认false，建议开发环境开启，生成环境关闭
+    #out-of-order: false
+    #设定SQL脚本的目录,可以配置多个，比如为classpath:db/migration,filesystem:/sql-migrations,默认classpath:db/migration
+    #locations:
+      #- classpath:db/migration
+
+server:
+  port: 8000
+  servlet:
+    context-path: /backend
+system:
+  errorCode: 500
+mybatis:
+  mapper-locations: classpath*:com/hashtech/**/mapper/mysql/*.xml
+  type-handlers-package: com.hashtech
+  configuration:
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-prefix: mapper.
+    map-underscore-to-camel-case: true
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath*:com/hashtech/**/mapper/mysql/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+#  typeAliasesPackage: com.hashtech.business.modules.system.*.entity
+  global-config:
+    #数据库相关配置
+    db-config:
+      #主键类型  AUTO:"数据库ID自增", INPUT:"用户输入ID", ID_WORKER:"全局唯一ID (数字类型唯一ID)", UUID:"全局唯一ID UUID";
+      id-type: INPUT
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+    banner: false
+  #原生配置
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+
+###sequence 服务 ###
+sequence:
+  enable: true
+  type: snowflake
+  generate: random
+###sequence 服务 ###

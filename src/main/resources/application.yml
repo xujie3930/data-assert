@@ -1,0 +1,13 @@
+server:
+  tomcat:
+    basedir: ../../logs/service/
+    accesslog:
+      enabled: false
+      pattern: '%t %a "%r" %s (%D ms)'
+
+spring:
+  cloud:
+    refresh:
+      refreshable: none
+
+
