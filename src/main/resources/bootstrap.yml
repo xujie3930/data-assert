@@ -8,7 +8,7 @@ spring:
   application:
     name: data-assert
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.jdbc.Driver
   http:
     encoding:
       charset: UTF-8
@@ -62,6 +62,7 @@ mybatis-plus:
     cache-enabled: false
     call-setters-on-nulls: true
     jdbc-type-for-null: 'null'
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 ###sequence 服务 ###
 sequence:
