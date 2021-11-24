@@ -1,9 +1,13 @@
 package com.hashtech.web;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import com.hashtech.businessframework.log.Logable;
+import com.hashtech.businessframework.result.BusinessResult;
+import com.hashtech.service.ResourceTableService;
+import com.hashtech.web.request.ResourceSaveRequest;
+import com.hashtech.web.request.ThemeSaveRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -14,8 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2021-11-23
  */
 @RestController
-@RequestMapping("/resource-table-entity")
+@RequestMapping("/resource")
 public class ResourceTableController {
+
+    @Autowired
+    private ResourceTableService resourceTableService;
 
 }
 

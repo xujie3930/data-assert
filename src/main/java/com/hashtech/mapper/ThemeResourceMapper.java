@@ -1,8 +1,8 @@
 package com.hashtech.mapper;
 
-import com.hashtech.entity.ThemeResourceEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.mapstruct.Mapper;
+import com.hashtech.entity.ThemeResourceEntity;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -12,7 +12,13 @@ import org.mapstruct.Mapper;
  * @author xujie
  * @since 2021-11-23
  */
-@Mapper
 public interface ThemeResourceMapper extends BaseMapper<ThemeResourceEntity> {
 
+    Integer getMaxSort();
+
+    Integer getMaxSortByParentId(@Param("parentId") String themeId);
+
+    Boolean hasExitName(@Param("name") String name);
+
+    Boolean hasExitNameByResource(@Param("name")String name);
 }

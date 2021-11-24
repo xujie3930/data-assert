@@ -1,13 +1,12 @@
-package com.hashtech.entity;
+package com.hashtech.web.result;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.time.LocalDateTime;
-import java.io.Serializable;
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -19,8 +18,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("theme_resource")
-public class ThemeResourceEntity implements Serializable {
+public class ThemeResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,8 +49,7 @@ public class ThemeResourceEntity implements Serializable {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
+    private String createTime;
 
     /**
      * 创建人
@@ -62,8 +59,7 @@ public class ThemeResourceEntity implements Serializable {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
+    private String updateTime;
 
     /**
      * 更新人

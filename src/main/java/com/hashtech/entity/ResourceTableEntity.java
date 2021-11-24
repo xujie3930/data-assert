@@ -3,6 +3,9 @@ package com.hashtech.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,6 +25,10 @@ public class ResourceTableEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 主键id
+     */
+    private String id;
+    /**
      * 关联theme_resource表的id
      */
     private String resourceId;
@@ -35,6 +42,11 @@ public class ResourceTableEntity implements Serializable {
      * 资源分类名称
      */
     private String name;
+
+    /**
+     * 表的访问url
+     */
+    private String requestUrl;
 
     /**
      * 当前表数据来源
@@ -69,7 +81,8 @@ public class ResourceTableEntity implements Serializable {
     /**
      * 创建时间
      */
-    private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
 
     /**
      * 创建人
@@ -79,12 +92,16 @@ public class ResourceTableEntity implements Serializable {
     /**
      * 更新时间
      */
-    private LocalDateTime updateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 
     /**
      * 更新人
      */
     private String updateBy;
 
-
+    /**
+     * 删除标识
+     */
+    private String delFlag = "N";
 }

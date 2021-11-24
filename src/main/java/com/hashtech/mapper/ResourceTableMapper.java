@@ -2,6 +2,7 @@ package com.hashtech.mapper;
 
 import com.hashtech.entity.ResourceTableEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.mapstruct.Mapper;
 
 /**
@@ -12,7 +13,7 @@ import org.mapstruct.Mapper;
  * @author xujie
  * @since 2021-11-23
  */
-@Mapper
 public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
 
+    int deleteByResourceId(@Param("id") String id);
 }
