@@ -4,22 +4,28 @@ import com.hashtech.businessframework.exception.interval.AppException;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.businessframework.result.util.BeanCopyUtils;
 import com.hashtech.businessframework.sequence.api.SequenceService;
+import com.hashtech.businessframework.utils.CollectionUtils;
 import com.hashtech.common.ResourceCodeBean;
+import com.hashtech.common.StatusEnum;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.ThemeResourceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hashtech.utils.DoubleUtils;
 import com.hashtech.web.request.*;
+import com.hashtech.web.result.ResourceResult;
 import com.hashtech.web.result.ThemeResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -113,8 +119,17 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     }
 
     @Override
-    public BusinessResult<Boolean> getResourceInfo(String id) {
-        return BusinessResult.success(true);
+    public BusinessResult<ResourceResult> getResourceInfo(String id) {
+        ResourceResult result = new ResourceResult();
+        ThemeResourceEntity resourceEntity = getById(id);
+        result.setName(resourceEntity.getName());
+        result.setDescriptor(resourceEntity.getDescriptor());
+        List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
+        long openCount = resourceTableList.stream().filter(entity ->  StatusEnum.ENABLE.getCode().equals(entity.getState())).count();
+        result.setOpenRate(DoubleUtils.formatDouble(openCount / (double)resourceTableList.size()));
+        result.setColumnsCount(resourceTableList.parallelStream().mapToInt(ResourceTableEntity::getColumnsCount).sum());
+        result.setTableCount(resourceTableList.size());
+        return BusinessResult.success(result);
     }
 
     @Override
@@ -140,8 +155,31 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         return BusinessResult.success(updateById(entity));
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BusinessResult<Boolean> rearrangement(String userId, Map<String , String[]> request) {
+        if (CollectionUtils.isEmpty(request)){
+            return BusinessResult.success(true);
+        }
+        int size = request.entrySet().size();
+        for (Map.Entry<String, String[]> m : request.entrySet()) {
+
+            String themeId = m.getKey();
+            String[] resourceIds = m.getValue();
+            //调换不同主题之间的排序
+            themeResourceMapper.updateSort(size, themeId);
+            size -= 1;
+            if (resourceIds.length <= 0){
+                continue;
+            }
+            //更新资源所属主题
+            themeResourceMapper.updateParentId(themeId, resourceIds);
+        }
+        return BusinessResult.success(true);
+    }
+
     private ThemeResourceEntity getResourceEntity(String userId, ResourceSaveRequest request) {
-        ThemeResourceEntity entity = new ThemeResourceEntity();
+        ThemeResourceEntity entity = BeanCopyUtils.copyProperties(request, new ThemeResourceEntity());
         Date date = new Date();
         entity.setCreateBy(userId);
         entity.setUpdateBy(userId);

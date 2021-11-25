@@ -2,6 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hashtech.mapper.ResourceTableMapper">
 
+    <sql id="Base_Column_List">
+      id               	as  id,
+      resource_id       as  resourceId,
+      state             as  state,
+      name              as  name,
+      request_url       as  requestUrl,
+      source            as  source,
+      columns_info      as  columnsInfo,
+      columns_count     as  columnsCount,
+      matters           as  matters,
+      descriptor        as  descriptor,
+      sort              as  sort,
+      create_time       as  createTime,
+      create_by         as  createBy,
+      update_time       as  updateTime,
+      update_by         as  updateBy,
+      del_flag          as  delFlag
+    </sql>
     <update id="deleteByResourceId">
         update resource_table
         <set>
@@ -11,4 +29,16 @@
             resource_id=#{id}
         </where>
     </update>
+
+    <select id="getListByResourceId" resultType="com.hashtech.entity.ResourceTableEntity">
+        select
+        <include refid="Base_Column_List" />
+        from resource_table
+        <where>
+            <if test="resourceId !=null and resourceId != '' ">
+                and resource_id=#{resourceId}
+            </if>
+            and del_flag='N'
+        </where>
+    </select>
 </mapper>

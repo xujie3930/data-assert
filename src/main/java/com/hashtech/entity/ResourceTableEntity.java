@@ -61,7 +61,7 @@ public class ResourceTableEntity implements Serializable {
     /**
      * 当前表的字段数
      */
-    private Integer columnsCount;
+    private Integer columnsCount = 0;
 
     /**
      * 注意事项

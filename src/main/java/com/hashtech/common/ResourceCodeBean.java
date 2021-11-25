@@ -18,6 +18,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000001("60000001", "描述不能多于200字"),
         RESOURCE_CODE_60000002("60000002", "主题名称不能重复"),
         RESOURCE_CODE_60000003("60000003", "资源名称不能重复"),
+        RESOURCE_CODE_60000004("60000004", "主题名称不能为空"),
+        RESOURCE_CODE_60000005("60000005", "资源名称不能为空"),
         ;
 
         public final String code;

@@ -5,9 +5,12 @@ import com.hashtech.businessframework.log.Logable;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.service.ThemeResourceService;
 import com.hashtech.web.request.*;
+import com.hashtech.web.result.ResourceResult;
 import com.hashtech.web.result.ThemeResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -26,7 +29,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/save")
-    BusinessResult<Boolean> saveTheme(@RequestHeader("x-userid") String userId, @RequestBody ThemeSaveRequest request) {
+    BusinessResult<Boolean> saveTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeSaveRequest request) {
         return themeResourceService.saveTheme(userId, request);
     }
 
@@ -38,37 +41,43 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/update")
-    BusinessResult<Boolean> updateTheme(@RequestHeader("x-userid") String userId, @RequestBody ThemeUpdateRequest request) {
+    BusinessResult<Boolean> updateTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeUpdateRequest request) {
         return themeResourceService.updateTheme(userId, request);
     }
 
     @Logable
     @PostMapping("/delete")
-    BusinessResult<Boolean> deleteTheme(@RequestHeader("x-userid") String userId, @RequestBody ThemeDeleteRequest request) {
+    BusinessResult<Boolean> deleteTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeDeleteRequest request) {
         return themeResourceService.deleteTheme(userId, request);
     }
 
     @Logable
+    @PostMapping("/rearrangement")
+    BusinessResult<Boolean> rearrangement(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody Map<String , String[]> request) {
+        return themeResourceService.rearrangement(userId, request);
+    }
+
+    @Logable
     @PostMapping("/resource/save")
-    BusinessResult<Boolean> saveResource(@RequestHeader("x-userid") String userId, @RequestBody ResourceSaveRequest request) {
+    BusinessResult<Boolean> saveResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceSaveRequest request) {
         return themeResourceService.saveResource(userId, request);
     }
 
     @Logable
     @GetMapping("/resource/info/{id}")
-    BusinessResult<Boolean> getResourceInfo(@PathVariable("id") String id) {
+    BusinessResult<ResourceResult> getResourceInfo(@PathVariable("id") String id) {
         return themeResourceService.getResourceInfo(id);
     }
 
     @Logable
     @PostMapping("/resource/update")
-    BusinessResult<Boolean> updateResource(@RequestHeader("x-userid") String userId, @RequestBody ResourceUpdateRequest request) {
+    BusinessResult<Boolean> updateResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceUpdateRequest request) {
         return themeResourceService.updateResource(userId, request);
     }
 
     @Logable
     @PostMapping("/resource/delete")
-    BusinessResult<Boolean> deleteResource(@RequestHeader("x-userid") String userId, @RequestBody ResourceDeleteRequest request) {
+    BusinessResult<Boolean> deleteResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceDeleteRequest request) {
         return themeResourceService.deleteResource(userId, request);
     }
 }

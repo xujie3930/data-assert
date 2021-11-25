@@ -1,9 +1,10 @@
 package com.hashtech.mapper;
 
-import com.hashtech.entity.ResourceTableEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.hashtech.entity.ResourceTableEntity;
 import org.apache.ibatis.annotations.Param;
-import org.mapstruct.Mapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +17,6 @@ import org.mapstruct.Mapper;
 public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
 
     int deleteByResourceId(@Param("id") String id);
+
+    List<ResourceTableEntity> getListByResourceId(@Param("resourceId") String id);
 }

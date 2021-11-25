@@ -8,13 +8,17 @@ import lombok.Data;
  * @create 2021-11-24 15:04
  **/
 @Data
-public class ResourceInfo {
+public class ResourceResult {
     /**
      * 资源分类名称
      */
     private String name;
     /**
-     * 表数量
+     * 新增资源分类时填写的信息回显
+     */
+    private String descriptor;
+    /**
+     * 该资源分类下所包含的表数量
      */
     private Integer tableCount;
     /**
@@ -26,12 +30,7 @@ public class ResourceInfo {
      */
     private Long dataSize;
     /**
-     * 该资源分类下所包含的表处于开放状态的表所占总表数的百分比
+     * 该资源分类下所包含的表，处于开放状态的表所占总表数的百分比
      */
     private Double openRate;
-    /**
-     * 新增资源分类时填写的信息回显
-     */
-    private String descriptor;
-
 }

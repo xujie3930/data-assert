@@ -1,6 +1,9 @@
 package com.hashtech.web.request;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author xujie
@@ -10,5 +13,7 @@ import lombok.Data;
 @Data
 public class ThemeSaveRequest {
 
+    @NotBlank(message = "60000004")
+    @Length(max = 50, message = "60000000")
     private String name;
 }

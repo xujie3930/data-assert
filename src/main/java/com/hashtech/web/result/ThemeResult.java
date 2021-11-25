@@ -26,10 +26,6 @@ public class ThemeResult implements Serializable {
      * 主键id
      */
     private String id;
-    /**
-     * 上级目录id，没有则为0
-     */
-    private String parentId ;
 
     /**
      * 主题或者资源分类名称
@@ -37,19 +33,10 @@ public class ThemeResult implements Serializable {
     private String name;
 
     /**
-     * 主题或者资源分类描述
-     */
-    private String descriptor;
-
-    /**
-     * 用于目录树排序
-     */
-    private Integer sort;
-
-    /**
      * 创建时间
      */
-    private String createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
 
     /**
      * 创建人
@@ -59,15 +46,11 @@ public class ThemeResult implements Serializable {
     /**
      * 更新时间
      */
-    private String updateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 
     /**
      * 更新人
      */
     private String updateBy;
-
-    /**
-     * 删除标识
-     */
-    private String delFlag = "N";
 }

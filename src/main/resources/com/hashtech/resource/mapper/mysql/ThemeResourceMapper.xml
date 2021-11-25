@@ -40,4 +40,27 @@
         </where>
         limit 1
     </select>
+
+    <update id="updateSort">
+        update theme_resource
+        <set>
+            sort=#{sort}
+        </set>
+        <where>
+            id=#{id}
+        </where>
+    </update>
+
+    <update id="updateParentId">
+        update theme_resource
+        <set>
+            parent_id=#{parentId}
+        </set>
+        <if test="ids != null and ids != ''">
+            where id in
+            <foreach collection="ids" item="i" open="(" close=")" separator=",">
+                #{i}
+            </foreach>
+        </if>
+    </update>
 </mapper>

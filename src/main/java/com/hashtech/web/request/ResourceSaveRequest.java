@@ -3,6 +3,8 @@ package com.hashtech.web.request;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author xujie
  * @description 添加资源分类请求参数
@@ -17,6 +19,7 @@ public class ResourceSaveRequest {
     /**
      * 资源分类名称
      */
+    @NotBlank(message = "60000005")
     @Length(max = 50, message = "60000000")
     private String name;
     /**

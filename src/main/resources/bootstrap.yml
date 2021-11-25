@@ -6,7 +6,7 @@ spring:
       max-file-size: 30MB
       max-request-size: 50MB
   application:
-    name: data-assert
+    name: assert
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
   http:
