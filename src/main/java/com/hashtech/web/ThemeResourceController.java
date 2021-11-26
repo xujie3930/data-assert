@@ -28,6 +28,12 @@ public class ThemeResourceController {
     private ThemeResourceService themeResourceService;
 
     @Logable
+    @PostMapping("/hasExist")
+    public BusinessResult<Boolean> info(@RequestBody ThemeSaveRequest request) {
+        return themeResourceService.hasExitTheme(request);
+    }
+
+    @Logable
     @PostMapping("/save")
     BusinessResult<Boolean> saveTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeSaveRequest request) {
         return themeResourceService.saveTheme(userId, request);
@@ -53,7 +59,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/rearrangement")
-    BusinessResult<Boolean> rearrangement(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody Map<String , String[]> request) {
+    BusinessResult<Boolean> rearrangement(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody Map<String, String[]> request) {
         return themeResourceService.rearrangement(userId, request);
     }
 

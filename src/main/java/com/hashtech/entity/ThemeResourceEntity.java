@@ -1,6 +1,7 @@
 package com.hashtech.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
 import java.util.Date;
@@ -31,7 +32,7 @@ public class ThemeResourceEntity implements Serializable {
     /**
      * 上级目录id，没有则为0
      */
-    private String parentId ;
+    private String parentId;
 
     /**
      * 主题或者资源分类名称

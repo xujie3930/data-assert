@@ -22,7 +22,7 @@ public interface ThemeResourceMapper extends BaseMapper<ThemeResourceEntity> {
 
     Boolean hasExitName(@Param("name") String name);
 
-    Boolean hasExitNameByResource(@Param("name")String name);
+    Boolean hasExitNameByResource(@Param("name") String name);
 
     int updateSort(@Param("sort") int sort, @Param("id") String themeId);
 

@@ -1,19 +1,19 @@
 package com.hashtech.web.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 /**
  * @author xujie
- * @description 添加资源表请求参数
+ * @description 编辑资源表请求参数
  * @create 2021-11-24 10:01
  **/
 @Data
-public class ResourceTableSaveRequest {
+public class ResourceTableUpdateRequest {
     /**
-     * 所属资源id
+     * 主键id
      */
     private String id;
     /**
@@ -45,7 +45,12 @@ public class ResourceTableSaveRequest {
      */
     private String matters;
     /**
-     * 排序按照数据库中的排列
+     * 创建人
      */
-    private Integer sort;
+    private String createBy;
+    /**
+     * 创建时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
 }

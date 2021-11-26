@@ -1,7 +1,9 @@
 package com.hashtech.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hashtech.entity.ResourceTableEntity;
+import com.hashtech.web.request.ResourceTablePageListRequest;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,4 +21,6 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     int deleteByResourceId(@Param("id") String id);
 
     List<ResourceTableEntity> getListByResourceId(@Param("resourceId") String id);
+
+    List<ResourceTableEntity> queryPage(Page<ResourceTableEntity> page, @Param(value = "request")ResourceTablePageListRequest request);
 }

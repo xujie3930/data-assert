@@ -1,14 +1,11 @@
-package com.hashtech.entity;
-
-import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
-import java.util.Date;
+package com.hashtech.web.result;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -20,8 +17,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("resource_table")
-public class ResourceTableEntity implements Serializable {
+public class ResourceTableInfoResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,6 +49,11 @@ public class ResourceTableEntity implements Serializable {
      * 当前表数据来源
      */
     private String source;
+
+    /**
+     * 表结构，存储于hdfs中
+     */
+    private String columnsInfo;
 
     /**
      * 当前表的字段数
@@ -95,9 +96,4 @@ public class ResourceTableEntity implements Serializable {
      * 更新人
      */
     private String updateBy;
-
-    /**
-     * 删除标识
-     */
-    private String delFlag = "N";
 }

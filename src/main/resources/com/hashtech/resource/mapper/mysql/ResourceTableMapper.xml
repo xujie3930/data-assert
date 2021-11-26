@@ -41,4 +41,28 @@
             and del_flag='N'
         </where>
     </select>
+
+    <select id="queryPage" resultType="com.hashtech.entity.ResourceTableEntity">
+        select
+        <include refid="Base_Column_List" />
+        from resource_table
+        <where>
+            <if test="request.state !=null ">
+                and state=#{request.state}
+            </if>
+            <if test="request.name !=null and request.name != '' ">
+                and name like concat ('%', #{request.name}, '%')
+            </if>
+            <if test="request.createBy !=null and request.createBy != '' ">
+                and create_by=#{request.createBy}
+            </if>
+            and del_flag='N'
+        </where>
+        <if test='request.ascOrDesc =="asc"'>
+            order by create_time asc
+        </if>
+        <if test='request.ascOrDesc =="desc"'>
+            order by create_time desc
+        </if>
+    </select>
 </mapper>
