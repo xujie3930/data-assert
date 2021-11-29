@@ -28,5 +28,5 @@ public class ResourceTablePageListRequest extends BusinessBasePageForm {
     /**
      * 排序
      */
-    private String ascOrDesc;
+    private String ascOrDesc = "desc";
 }

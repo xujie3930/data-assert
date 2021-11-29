@@ -32,8 +32,8 @@ spring:
 
 server:
   port: 8000
-  servlet:
-    context-path: /assert
+#  servlet:
+#    context-path: /assert
 system:
   errorCode: 500
 #mybatis-plus

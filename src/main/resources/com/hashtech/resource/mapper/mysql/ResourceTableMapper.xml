@@ -9,7 +9,6 @@
       name              as  name,
       request_url       as  requestUrl,
       source            as  source,
-      columns_info      as  columnsInfo,
       columns_count     as  columnsCount,
       matters           as  matters,
       descriptor        as  descriptor,

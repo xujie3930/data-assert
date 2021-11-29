@@ -1,7 +1,10 @@
 package com.hashtech.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hashtech.entity.ThemeResourceEntity;
+import com.hashtech.web.request.ThemeResourcePageListRequest;
+import com.hashtech.web.result.ThemeResult;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -27,4 +30,8 @@ public interface ThemeResourceMapper extends BaseMapper<ThemeResourceEntity> {
     int updateSort(@Param("sort") int sort, @Param("id") String themeId);
 
     void updateParentId(@Param("parentId") String themeId, @Param("ids") String[] resourceIds);
+
+    List<ThemeResult> queryPage();
+
+    List<ThemeResourceEntity> getResourceByParentId(@Param("parentId") String id);
 }

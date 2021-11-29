@@ -60,6 +60,9 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     public BusinessResult<ThemeResult> getThemeInfo(String id) {
         ThemeResourceEntity entity = getById(id);
         ThemeResult result = BeanCopyUtils.copyProperties(entity, new ThemeResult());
+        //该主题下的资源分类信息
+        List<ThemeResourceEntity> resourceList = themeResourceMapper.getResourceByParentId(id);
+        result.setResourceList(resourceList);
         return BusinessResult.success(result);
     }
 
@@ -132,7 +135,11 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         result.setDescriptor(resourceEntity.getDescriptor());
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
         long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getState())).count();
-        result.setOpenRate(DoubleUtils.formatDouble(openCount / (double) resourceTableList.size()));
+        if (resourceTableList.size() == 0){
+            result.setOpenRate(1.00);
+        }else {
+            result.setOpenRate(DoubleUtils.formatDouble(openCount / (double) resourceTableList.size()));
+        }
         result.setColumnsCount(resourceTableList.parallelStream().mapToInt(ResourceTableEntity::getColumnsCount).sum());
         result.setTableCount(resourceTableList.size());
         return BusinessResult.success(result);
@@ -190,8 +197,20 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     public BusinessResult<Boolean> hasExitTheme(ThemeSaveRequest request) {
+        boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitName(request.getName()));
+        return BusinessResult.success(hasExit);
+    }
+
+    @Override
+    public BusinessResult<Boolean> hasExitResource(ResourceSaveRequest request) {
         boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitNameByResource(request.getName()));
         return BusinessResult.success(hasExit);
+    }
+
+    @Override
+    public BusinessResult<List<ThemeResult>> getList() {
+        List<ThemeResult> list = themeResourceMapper.queryPage();
+        return BusinessResult.success(list);
     }
 
     private ThemeResourceEntity getResourceEntity(String userId, ResourceSaveRequest request) {

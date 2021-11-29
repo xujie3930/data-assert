@@ -2,11 +2,14 @@ package com.hashtech.web.result;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hashtech.entity.ThemeResourceEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * <p>
@@ -33,6 +36,11 @@ public class ThemeResult implements Serializable {
     private String name;
 
     /**
+     * 用于目录树排序
+     */
+    private Integer sort;
+
+    /**
      * 创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -53,4 +61,9 @@ public class ThemeResult implements Serializable {
      * 更新人
      */
     private String updateBy;
+
+    /**
+     * 该主题下的资源列表
+     */
+    private List<ThemeResourceEntity> resourceList = new LinkedList<>();
 }

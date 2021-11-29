@@ -7,6 +7,7 @@ import com.hashtech.web.request.*;
 import com.hashtech.web.result.ResourceResult;
 import com.hashtech.web.result.ThemeResult;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,4 +39,8 @@ public interface ThemeResourceService extends IService<ThemeResourceEntity> {
     BusinessResult<Boolean> rearrangement(String userId, Map<String, String[]> request);
 
     BusinessResult<Boolean> hasExitTheme(ThemeSaveRequest request);
+
+    BusinessResult<Boolean> hasExitResource(ResourceSaveRequest request);
+
+    BusinessResult<List<ThemeResult>> getList();
 }

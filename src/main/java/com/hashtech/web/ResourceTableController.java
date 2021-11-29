@@ -6,14 +6,14 @@ import com.hashtech.businessframework.result.BusinessPageResult;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.service.ResourceTableService;
-import com.hashtech.web.request.ResourceDeleteRequest;
-import com.hashtech.web.request.ResourceTablePageListRequest;
-import com.hashtech.web.request.ResourceTableSaveRequest;
-import com.hashtech.web.request.ResourceTableUpdateRequest;
+import com.hashtech.web.request.*;
 import com.hashtech.web.result.ResourceTableInfoResult;
+import com.hashtech.web.result.ResourceTablePreposeResult;
 import com.hashtech.web.result.ThemeResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -29,6 +29,18 @@ public class ResourceTableController {
 
     @Autowired
     private ResourceTableService resourceTableService;
+
+    @Logable
+    @PostMapping("/prepose/getTablaList")
+    BusinessResult<List<String>> getTablaList() {
+        return resourceTableService.getTablaList();
+    }
+
+    @Logable
+    @PostMapping("/prepose/getTablaInfo")
+    BusinessResult<ResourceTablePreposeResult> getTablaInfo(@RequestBody ResourceTablePreposeRequest request) {
+        return resourceTableService.getTablaInfo(request);
+    }
 
     @Logable
     @PostMapping("/save")
