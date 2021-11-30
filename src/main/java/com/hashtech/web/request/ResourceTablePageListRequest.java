@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hashtech.businessframework.result.base.BusinessBasePageForm;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
@@ -13,6 +14,11 @@ import java.util.Date;
  **/
 @Data
 public class ResourceTablePageListRequest extends BusinessBasePageForm {
+    @NotBlank(message = "60000007")
+    /**
+     * 所属资源id
+     */
+    private String id;
     /**
      * 是否开放：0-开放，1-不开放
      */

@@ -50,7 +50,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveTheme(String userId, ThemeSaveRequest request) {
-        checkRepetitionName(request.getName());
+        checkRepetitionName(request.getName(), null);
         ThemeResourceEntity entity = getThemeResourceEntitySave(userId, request);
         return BusinessResult.success(save(entity));
     }
@@ -66,8 +66,14 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         return BusinessResult.success(result);
     }
 
-    private void checkRepetitionName(String name) {
-        boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitName(name));
+    /**
+     * save的情况下id传null，update时候则传主键id
+     *
+     * @param name
+     * @param id
+     */
+    private void checkRepetitionName(String name, String id) {
+        boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitName(name, id));
         if (hasExit) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000002.getCode());
         }
@@ -93,7 +99,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> updateTheme(String userId, ThemeUpdateRequest request) {
-        checkRepetitionName(request.getName());
+        checkRepetitionName(request.getName(), request.getThemeId());
         ThemeResourceEntity entity = new ThemeResourceEntity();
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(userId);
@@ -114,13 +120,19 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveResource(String userId, ResourceSaveRequest request) {
-        checkRepetitionNameByResource(request.getName());
+        checkRepetitionNameByResource(request.getName(), null);
         ThemeResourceEntity entity = getResourceEntity(userId, request);
         return BusinessResult.success(save(entity));
     }
 
-    private void checkRepetitionNameByResource(String name) {
-        boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitNameByResource(name));
+    /**
+     * save的情况则id传null
+     *
+     * @param name
+     * @param id
+     */
+    private void checkRepetitionNameByResource(String name, String id) {
+        boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitNameByResource(name, id));
         if (hasExit) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000003.getCode());
         }
@@ -135,9 +147,9 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         result.setDescriptor(resourceEntity.getDescriptor());
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
         long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getState())).count();
-        if (resourceTableList.size() == 0){
+        if (resourceTableList.size() == 0) {
             result.setOpenRate(1.00);
-        }else {
+        } else {
             result.setOpenRate(DoubleUtils.formatDouble(openCount / (double) resourceTableList.size()));
         }
         result.setColumnsCount(resourceTableList.parallelStream().mapToInt(ResourceTableEntity::getColumnsCount).sum());
@@ -149,7 +161,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> updateResource(String userId, ResourceUpdateRequest request) {
-        checkRepetitionNameByResource(request.getName());
+        checkRepetitionNameByResource(request.getName(), request.getId());
         ThemeResourceEntity entity = new ThemeResourceEntity();
         BeanCopyUtils.copyProperties(request, entity);
         entity.setUpdateTime(new Date());
@@ -197,13 +209,13 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     public BusinessResult<Boolean> hasExitTheme(ThemeSaveRequest request) {
-        boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitName(request.getName()));
+        boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitName(request.getName(), null));
         return BusinessResult.success(hasExit);
     }
 
     @Override
     public BusinessResult<Boolean> hasExitResource(ResourceSaveRequest request) {
-        boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitNameByResource(request.getName()));
+        boolean hasExit = BooleanUtils.isTrue(themeResourceMapper.hasExitNameByResource(request.getName(), null));
         return BusinessResult.success(hasExit);
     }
 

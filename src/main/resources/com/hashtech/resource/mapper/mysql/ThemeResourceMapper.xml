@@ -21,7 +21,8 @@
     <select id="getMaxSortByParentId"
             resultType="java.lang.Integer">
         select ifnull(Max(sort), 0)
-        from theme_resource where parent_id = #{parentId}
+        from theme_resource
+        where parent_id = #{parentId}
     </select>
 
     <select id="hasExitName"
@@ -31,6 +32,9 @@
         <where>
             <if test="name != null and name != '' ">
                 AND name = #{name}
+            </if>
+            <if test="id != null and id != '' ">
+                AND id != #{id}
             </if>
             AND del_flag = 'N'
             AND parent_id = '0'
@@ -45,6 +49,9 @@
         <where>
             <if test="name != null and name != '' ">
                 AND name = #{name}
+            </if>
+            <if test="id != null and id != '' ">
+                AND id != #{id}
             </if>
             AND del_flag = 'N'
             AND parent_id != '0'
@@ -77,8 +84,8 @@
 
     <select id="queryPage" resultType="com.hashtech.web.result.ThemeResult">
         select
-        <include refid="Base_Column_List" />
-        from theme_resource where del_flag = 'N' order by sort desc
+        <include refid="Base_Column_List"/>
+        from theme_resource where del_flag = 'N' and parent_id = '0'order by sort desc
     </select>
     <select id="getResourceByParentId" resultType="com.hashtech.entity.ThemeResourceEntity">
         select

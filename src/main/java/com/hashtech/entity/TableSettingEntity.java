@@ -1,7 +1,9 @@
 package com.hashtech.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -21,6 +23,11 @@ public class TableSettingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 主键id
+     */
+    private String id;
+
+    /**
      * 关联resource_table表的id
      */
     private String resourceTableId;
@@ -33,12 +40,12 @@ public class TableSettingEntity implements Serializable {
     /**
      * 支持格式：0-JSON
      */
-    private Integer  formats;
+    private Integer formats = 0;
 
     /**
      * 请求方式：0-POST,1-GET
      */
-    private Integer requestWay;
+    private Integer requestWay = 0;
 
     /**
      * 请求实例说明

@@ -60,6 +60,11 @@ public class ResourceTableEntity implements Serializable {
     private Integer columnsCount = 0;
 
     /**
+     * 表数据量
+     */
+    private Integer dataSize;
+
+    /**
      * 注意事项
      */
     private String matters;

@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface TableSettingService extends IService<TableSettingEntity> {
 
+    TableSettingEntity getByResourceTableId(String id);
 }

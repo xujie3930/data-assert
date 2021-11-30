@@ -3,13 +3,14 @@
 <mapper namespace="com.hashtech.mapper.ResourceTableMapper">
 
     <sql id="Base_Column_List">
-      id               	as  id,
+        id               	as  id,
       resource_id       as  resourceId,
       state             as  state,
       name              as  name,
       request_url       as  requestUrl,
       source            as  source,
       columns_count     as  columnsCount,
+      data_size     as  dataSize,
       matters           as  matters,
       descriptor        as  descriptor,
       sort              as  sort,
@@ -31,7 +32,7 @@
 
     <select id="getListByResourceId" resultType="com.hashtech.entity.ResourceTableEntity">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from resource_table
         <where>
             <if test="resourceId !=null and resourceId != '' ">
@@ -43,9 +44,12 @@
 
     <select id="queryPage" resultType="com.hashtech.entity.ResourceTableEntity">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from resource_table
         <where>
+            <if test="request.id !=null ">
+                and resource_id=#{id}
+            </if>
             <if test="request.state !=null ">
                 and state=#{request.state}
             </if>
@@ -58,10 +62,10 @@
             and del_flag='N'
         </where>
         <if test='request.ascOrDesc =="asc"'>
-            order by create_time asc
+            order by update_time asc
         </if>
         <if test='request.ascOrDesc =="desc"'>
-            order by create_time desc
+            order by update_time desc
         </if>
     </select>
 </mapper>

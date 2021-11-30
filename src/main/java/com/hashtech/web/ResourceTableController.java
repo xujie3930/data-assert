@@ -55,9 +55,9 @@ public class ResourceTableController {
     }
 
     @Logable
-    @GetMapping("/info/{id}")
-    BusinessResult<ResourceTableInfoResult> getResourceTableInfo(@PathVariable("id") String id) {
-        return resourceTableService.getResourceTableInfo(id);
+    @PostMapping("/info")
+    BusinessResult<ResourceTableInfoResult> getResourceTableInfo(@RequestBody ResourceTableInfoRequest request) {
+        return resourceTableService.getResourceTableInfo(request);
     }
 
     @Logable

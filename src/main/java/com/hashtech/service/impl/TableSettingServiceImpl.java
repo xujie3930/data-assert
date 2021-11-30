@@ -1,9 +1,10 @@
 package com.hashtech.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.TableSettingService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,4 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, TableSettingEntity> implements TableSettingService {
 
+    @Autowired
+    private TableSettingMapper tableSettingMapper;
+
+    @Override
+    public TableSettingEntity getByResourceTableId(String id) {
+        return tableSettingMapper.getByResourceTableId(id);
+    }
 }

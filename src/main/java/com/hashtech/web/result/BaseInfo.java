@@ -20,7 +20,7 @@ public class BaseInfo {
     /**
      * 数据总条数，自动识别
      */
-    private Long dataSize;
+    private Integer dataSize;
     /**
      * 数据来源
      */

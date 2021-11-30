@@ -3,6 +3,7 @@ package com.hashtech.web.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
@@ -12,6 +13,7 @@ import java.util.Date;
  **/
 @Data
 public class ResourceTableUpdateRequest {
+    @NotBlank(message = "60000007")
     /**
      * 主键id
      */
@@ -20,18 +22,6 @@ public class ResourceTableUpdateRequest {
      * 是否开放：0-开放，1-不开放
      */
     private Integer state = 0;
-    /**
-     * 表名称
-     */
-    private String name;
-    /**
-     * 数据项
-     */
-    private Integer columnsCount;
-    /**
-     * 数据量
-     */
-    private Long dataSize;
     /**
      * 数据来源
      */
@@ -44,13 +34,4 @@ public class ResourceTableUpdateRequest {
      * 注意事项
      */
     private String matters;
-    /**
-     * 创建人
-     */
-    private String createBy;
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
 }

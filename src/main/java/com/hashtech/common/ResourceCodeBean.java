@@ -14,12 +14,16 @@ public class ResourceCodeBean {
         RESOURCE_CODE_10000001("10000001", "请求参数错误"),
         RESOURCE_CODE_10000002("10000002", "接口返回异常"),
 
-        RESOURCE_CODE_60000000("60000000", "名称不能多于50字"),
+        RESOURCE_CODE_60000000("60000000", "名称不能多于20字"),
         RESOURCE_CODE_60000001("60000001", "描述不能多于200字"),
         RESOURCE_CODE_60000002("60000002", "主题名称不能重复"),
         RESOURCE_CODE_60000003("60000003", "资源名称不能重复"),
         RESOURCE_CODE_60000004("60000004", "主题名称不能为空"),
         RESOURCE_CODE_60000005("60000005", "资源名称不能为空"),
+
+        RESOURCE_CODE_60000006("60000006", "没有该资源表"),
+        RESOURCE_CODE_60000007("60000007", "资源不明确"),
+        RESOURCE_CODE_60000008("60000008", "资源表不明确"),
         ;
 
         public final String code;

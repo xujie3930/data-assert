@@ -1,5 +1,6 @@
 package com.hashtech.web.request;
 
+import com.hashtech.businessframework.result.base.BusinessBasePageForm;
 import lombok.Data;
 
 /**
@@ -8,8 +9,13 @@ import lombok.Data;
  * @create 2021-11-29 17:40
  **/
 @Data
-public class ResourceTablePreposeRequest {
+public class ResourceTablePreposeRequest extends BusinessBasePageForm {
     private String tableName;
-    private Integer pageNum = 1;
-    private Integer pageSize = 10;
+
+    public ResourceTablePreposeRequest() {
+    }
+
+    public ResourceTablePreposeRequest(String tableName) {
+        this.tableName = tableName;
+    }
 }

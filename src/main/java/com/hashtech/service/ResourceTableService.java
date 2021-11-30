@@ -4,6 +4,7 @@ import com.hashtech.businessframework.result.BusinessPageResult;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.entity.ResourceTableEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.web.ResourceTableInfoRequest;
 import com.hashtech.web.request.ResourceTablePageListRequest;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.request.ResourceTableSaveRequest;
@@ -27,7 +28,7 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
 
     BusinessResult<Boolean> updateResourceTable(String userId, ResourceTableUpdateRequest request);
 
-    BusinessResult<ResourceTableInfoResult> getResourceTableInfo(String id);
+    BusinessResult<ResourceTableInfoResult> getResourceTableInfo(ResourceTableInfoRequest request);
 
     BusinessResult<Boolean> deleteResourceTable(String userId, String[] ids);
 

@@ -23,9 +23,9 @@ public interface ThemeResourceMapper extends BaseMapper<ThemeResourceEntity> {
 
     Integer getMaxSortByParentId(@Param("parentId") String themeId);
 
-    Boolean hasExitName(@Param("name") String name);
+    Boolean hasExitName(@Param("name") String name, @Param("id") String id);
 
-    Boolean hasExitNameByResource(@Param("name") String name);
+    Boolean hasExitNameByResource(@Param("name") String name, @Param("id") String id);
 
     int updateSort(@Param("sort") int sort, @Param("id") String themeId);
 

@@ -1,7 +1,6 @@
 package com.hashtech.web.result;
 
 import lombok.Data;
-import org.apache.poi.ss.formula.functions.T;
 
 import java.util.List;
 
@@ -13,7 +12,10 @@ import java.util.List;
 @Data
 public class ResourceTablePreposeResult {
 
+    //基础信息
     public BaseInfo baseInfo;
+    //表结构
     public List<Structure> structureList;
-    public List<T>  sampleList;
+    //采样数据
+    public List<Object> sampleList;
 }

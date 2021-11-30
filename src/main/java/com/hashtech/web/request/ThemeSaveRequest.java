@@ -14,6 +14,6 @@ import javax.validation.constraints.NotBlank;
 public class ThemeSaveRequest {
 
     @NotBlank(message = "60000004")
-    @Length(max = 50, message = "60000000")
+    @Length(max = 20, message = "60000000")
     private String name;
 }

@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ public class ResourceTableInfoResult implements Serializable {
     private Integer state;
 
     /**
-     * 资源分类名称
+     * 表明
      */
     private String name;
 
@@ -51,14 +52,14 @@ public class ResourceTableInfoResult implements Serializable {
     private String source;
 
     /**
-     * 表结构，存储于hdfs中
-     */
-    private String columnsInfo;
-
-    /**
      * 当前表的字段数
      */
     private Integer columnsCount = 0;
+
+    /**
+     * 数据量
+     */
+    private Integer dataSize;
 
     /**
      * 注意事项
@@ -96,4 +97,17 @@ public class ResourceTableInfoResult implements Serializable {
      * 更新人
      */
     private String updateBy;
+
+    /**
+     * 基础信息
+     */
+    public BaseInfo baseInfo;
+    /**
+     * 表结构
+     */
+    public List<Structure> structureList;
+    /**
+     * 采样数据
+     */
+    public List<Object> sampleList;
 }
