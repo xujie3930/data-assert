@@ -1,24 +1,30 @@
 package com.hashtech.service.impl;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.businessframework.exception.interval.AppException;
 import com.hashtech.businessframework.result.BusinessPageResult;
 import com.hashtech.businessframework.result.BusinessResult;
+import com.hashtech.businessframework.result.Query;
 import com.hashtech.businessframework.result.util.BeanCopyUtils;
 import com.hashtech.businessframework.sequence.api.SequenceService;
-import com.hashtech.businessframework.utils.CollectionUtils;
+import com.hashtech.businessframework.utils.StringUtils;
 import com.hashtech.businessframework.validate.BusinessParamsValidate;
 import com.hashtech.common.ResourceCodeBean;
+import com.hashtech.common.SortEnum;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
+import com.hashtech.service.DataSourceService;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.utils.DatabaseProperty;
+import com.hashtech.utils.RandomUtils;
 import com.hashtech.utils.ResultSetToListUtils;
-import com.hashtech.web.ResourceTableInfoRequest;
+import com.hashtech.web.request.ResourceTableInfoRequest;
 import com.hashtech.web.request.ResourceTablePageListRequest;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.request.ResourceTableSaveRequest;
@@ -27,15 +33,14 @@ import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.ResourceTableInfoResult;
 import com.hashtech.web.result.ResourceTablePreposeResult;
 import com.hashtech.web.result.Structure;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * <p>
@@ -56,6 +61,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private ResourceTableMapper resourceTableMapper;
     @Autowired
     private TableSettingService tableSettingService;
+    @Autowired
+    private DataSourceMapper dataSourceMapper;
 
     @Override
     @BusinessParamsValidate
@@ -135,10 +142,32 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     @BusinessParamsValidate
-    public BusinessPageResult pageList(ResourceTablePageListRequest request) {
-        Page<ResourceTableEntity> page = new Page<>(request.getPageNum(), request.getPageSize());
-        List<ResourceTableEntity> list = resourceTableMapper.queryPage(page, request);
-        return BusinessPageResult.build(page.setRecords(list), request);
+    public BusinessResult<BusinessPageResult> pageList(ResourceTablePageListRequest request) {
+        QueryWrapper<ResourceTableEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq(ResourceTableEntity.RESOURCE_ID, request.getId());
+        if (null != request.getState()) {
+            wrapper.eq(ResourceTableEntity.STATE, request.getState());
+        }
+        if (!StringUtils.isBlank(request.getName())) {
+            wrapper.like(ResourceTableEntity.NAME, request.getName());
+        }
+        if (!StringUtils.isBlank(request.getCreateBy())) {
+            wrapper.like(ResourceTableEntity.CREATE_BY, request.getCreateBy());
+        }
+        if (BooleanUtils.isTrue(request.getStateGroup())) {
+            wrapper.orderByAsc(ResourceTableEntity.STATE);
+        }
+        if (SortEnum.DESC.getDesc().equals(request.getAscOrDesc())) {
+            wrapper.orderByDesc(ResourceTableEntity.UPDATE_TIME);
+        }
+        if (SortEnum.ASC.getDesc().equals(request.getAscOrDesc())) {
+            wrapper.orderByAsc(ResourceTableEntity.UPDATE_TIME);
+        }
+        IPage<ResourceTableEntity> page = this.page(
+                new Query<ResourceTableEntity>().getPage(request),
+                wrapper
+        );
+        return BusinessResult.success(BusinessPageResult.build(page, request));
     }
 
     @Override
@@ -228,6 +257,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             e.printStackTrace();
         } finally {
             try {
+                //释放conn资源同时Statement也会释放
                 conn.close();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
@@ -237,6 +267,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         result.setBaseInfo(baseInfo);
         result.setStructureList(structureList);
         return BusinessResult.success(result);
+    }
+
+    @Override
+    public BusinessResult<List<Map<Integer, String>>> getDataSource() {
+        return BusinessResult.success(dataSourceMapper.getList());
     }
 
     private ResourceTableEntity getResourceTableEntitySave(String userId, ResourceTableSaveRequest request, ResourceTablePreposeResult result) {
@@ -251,8 +286,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setResourceId(request.getId());
         entity.setColumnsCount(baseInfo.getColumnsCount());
         entity.setDataSize(baseInfo.getDataSize());
-        //TODO:生成与表唯一对应的url
-        entity.setRequestUrl("");
+        entity.setRequestUrl(RandomUtils.getRandomExcludeNumber(16));
         return entity;
     }
 }

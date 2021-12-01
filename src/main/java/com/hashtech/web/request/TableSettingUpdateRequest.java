@@ -1,11 +1,9 @@
 package com.hashtech.web.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hashtech.businessframework.result.base.BusinessBasePageForm;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author xujie
@@ -13,24 +11,26 @@ import java.util.List;
  * @create 2021-11-24 10:01
  **/
 @Data
-public class ResourceTableUpdateRequest {
+public class TableSettingUpdateRequest {
     @NotBlank(message = "60000008")
     /**
      * 主键id
      */
     private String id;
     /**
-     * 请求方式：0-POST,1-GET
+     * 是否开放：0-开放，1-不开放
      */
-    private Integer requestWay = 0;
-
+    private Integer state = 0;
     /**
-     * 请求实例说明
+     * 数据来源
      */
-    private String explainInfo;
-
+    private String source;
     /**
-     * 参数信息
+     * 描述
      */
-    private List<String> paramInfo;
+    private String descriptor;
+    /**
+     * 注意事项
+     */
+    private String matters;
 }

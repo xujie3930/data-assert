@@ -1,4 +1,4 @@
-package com.hashtech.web;
+package com.hashtech.web.request;
 
 import com.hashtech.businessframework.result.base.BusinessBasePageForm;
 import lombok.Data;

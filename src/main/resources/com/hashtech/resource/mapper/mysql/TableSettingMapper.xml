@@ -5,7 +5,7 @@
     <select id="getByResourceTableId" resultType="com.hashtech.entity.TableSettingEntity">
         select
         *
-        from resource_table
+        from table_setting
         <where>
             <if test="resourceTableId !=null and resourceTableId != '' ">
                 and resource_table_id=#{resourceTableId}

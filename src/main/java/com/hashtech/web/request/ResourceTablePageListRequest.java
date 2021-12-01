@@ -22,7 +22,7 @@ public class ResourceTablePageListRequest extends BusinessBasePageForm {
     /**
      * 是否开放：0-开放，1-不开放
      */
-    private Integer state = 0;
+    private Integer state;
     /**
      * 表名称
      */
@@ -35,4 +35,8 @@ public class ResourceTablePageListRequest extends BusinessBasePageForm {
      * 排序
      */
     private String ascOrDesc = "desc";
+    /**
+     * 根据状态分组：开启分组后，0-开放在前，1-不开放在后
+     */
+    private Boolean stateGroup;
 }

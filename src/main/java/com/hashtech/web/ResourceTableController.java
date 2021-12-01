@@ -4,16 +4,15 @@ package com.hashtech.web;
 import com.hashtech.businessframework.log.Logable;
 import com.hashtech.businessframework.result.BusinessPageResult;
 import com.hashtech.businessframework.result.BusinessResult;
-import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.ResourceTableInfoResult;
 import com.hashtech.web.result.ResourceTablePreposeResult;
-import com.hashtech.web.result.ThemeResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -29,6 +28,12 @@ public class ResourceTableController {
 
     @Autowired
     private ResourceTableService resourceTableService;
+
+    @Logable
+    @GetMapping("/getDataSource")
+    public BusinessResult<List<Map<Integer, String>>> hasExitTheme() {
+        return resourceTableService.getDataSource();
+    }
 
     @Logable
     @PostMapping("/prepose/getTablaList")
@@ -68,7 +73,7 @@ public class ResourceTableController {
 
     @Logable
     @PostMapping("/pageList")
-    BusinessPageResult pageList(@RequestBody ResourceTablePageListRequest request) {
+    BusinessResult<BusinessPageResult> pageList(@RequestBody ResourceTablePageListRequest request) {
         return resourceTableService.pageList(request);
     }
 }

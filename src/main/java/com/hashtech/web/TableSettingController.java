@@ -1,10 +1,13 @@
 package com.hashtech.web;
 
 
+import com.hashtech.businessframework.log.Logable;
+import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.service.TableSettingService;
+import com.hashtech.web.request.ResourceTableUpdateRequest;
+import com.hashtech.web.result.TableSettingResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -20,5 +23,17 @@ public class TableSettingController {
 
     @Autowired
     private TableSettingService tableSettingService;
+
+    @Logable
+    @GetMapping("/info/{id}")
+    BusinessResult<TableSettingResult> getTableSetting(@PathVariable("id") String id) {
+        return tableSettingService.getTableSetting(id);
+    }
+
+    @Logable
+    @PostMapping("/update")
+    BusinessResult<Boolean> updateTableSetting(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTableUpdateRequest request) {
+        return tableSettingService.updateTableSetting(userId, request);
+    }
 }
 

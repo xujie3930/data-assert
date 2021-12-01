@@ -33,11 +33,6 @@ public class TableSettingEntity implements Serializable {
     private String resourceTableId;
 
     /**
-     * 访问表的URL
-     */
-    private String requestUrl;
-
-    /**
      * 支持格式：0-JSON
      */
     private Integer formats = 0;

@@ -1,7 +1,10 @@
 package com.hashtech.service;
 
-import com.hashtech.entity.TableSettingEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.businessframework.result.BusinessResult;
+import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.web.request.ResourceTableUpdateRequest;
+import com.hashtech.web.result.TableSettingResult;
 
 /**
  * <p>
@@ -13,5 +16,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface TableSettingService extends IService<TableSettingEntity> {
 
-    TableSettingEntity getByResourceTableId(String id);
+    BusinessResult<TableSettingResult> getTableSetting(String id);
+
+    BusinessResult<Boolean> updateTableSetting(String userId, ResourceTableUpdateRequest request);
 }

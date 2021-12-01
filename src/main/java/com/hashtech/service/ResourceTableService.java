@@ -4,7 +4,7 @@ import com.hashtech.businessframework.result.BusinessPageResult;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.entity.ResourceTableEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.hashtech.web.ResourceTableInfoRequest;
+import com.hashtech.web.request.ResourceTableInfoRequest;
 import com.hashtech.web.request.ResourceTablePageListRequest;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.request.ResourceTableSaveRequest;
@@ -13,6 +13,7 @@ import com.hashtech.web.result.ResourceTableInfoResult;
 import com.hashtech.web.result.ResourceTablePreposeResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -32,9 +33,11 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
 
     BusinessResult<Boolean> deleteResourceTable(String userId, String[] ids);
 
-    BusinessPageResult pageList(ResourceTablePageListRequest request);
+    BusinessResult<BusinessPageResult> pageList(ResourceTablePageListRequest request);
 
     BusinessResult<List<String>> getTablaList();
 
     BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request);
+
+    BusinessResult<List<Map<Integer, String>>> getDataSource();
 }
