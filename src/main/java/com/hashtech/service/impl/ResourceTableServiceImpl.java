@@ -195,7 +195,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(
                     instance.getUrl(), instance.getUsername(), instance.getPassword());
-            baseInfo.setSource(instance.getUrl());
             DatabaseMetaData metaData = conn.getMetaData();
             ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
