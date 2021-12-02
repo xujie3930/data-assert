@@ -14,9 +14,9 @@ spring:
           username: 'daas'
           password: 'daas@1122'
         remote:
-          url: "jdbc:mysql://localhost:3306/workspace?useUnicode=true&characterEncoding=UTF-8&useSSL=false"
-          username: 'root'
-          password: 'root'
+          url: "jdbc:mysql://192.168.0.23:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
+          username: 'daas'
+          password: 'daas@1122'
 
   redis:
     host: 192.168.0.125

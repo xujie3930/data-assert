@@ -177,10 +177,14 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     @DS("remote")
-    public BusinessResult<List<Map<String, Object>>> getTablaList() {
-        String tableNameListSql = String.format("SELECT table_name FROM information_schema.tables WHERE table_schema='%s'", "workspace");
+    public BusinessResult<List<String>> getTablaList() {
+        String tableNameListSql = String.format("SELECT table_name FROM information_schema.tables WHERE table_schema='%s'", "daas");
         List<Map<String, Object>> maps = jdbcTemplate.queryForList(tableNameListSql);
-        return BusinessResult.success(maps);
+        List<String> list = new LinkedList<>();
+        for (Map<String, Object> m : maps) {
+            list.add((String) m.get("table_name"));
+        }
+        return BusinessResult.success(list);
     }
 
     @Override
