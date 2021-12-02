@@ -18,20 +18,20 @@ spring:
     time-zone: GMT+8
     deserialization:
       accept_empty_string_as_null_object: true
-# Flyway实现数据库版本管理
+  # Flyway实现数据库版本管理
   flyway:
     #是否开启flyway，默认true
     enabled: false
-    #当迁移时发现目标schema非空，而且没有元数据的表时，（即迭代中项目）是否自动执行基准迁移，默认false.
-    #baseline-on-migrate: true
-    # 是否允许无序运行迁移, 默认false，建议开发环境开启，生成环境关闭
-    #out-of-order: false
-    #设定SQL脚本的目录,可以配置多个，比如为classpath:db/migration,filesystem:/sql-migrations,默认classpath:db/migration
+      #当迁移时发现目标schema非空，而且没有元数据的表时，（即迭代中项目）是否自动执行基准迁移，默认false.
+      #baseline-on-migrate: true
+      # 是否允许无序运行迁移, 默认false，建议开发环境开启，生成环境关闭
+      #out-of-order: false
+      #设定SQL脚本的目录,可以配置多个，比如为classpath:db/migration,filesystem:/sql-migrations,默认classpath:db/migration
     #locations:
-      #- classpath:db/migration
+    #- classpath:db/migration
 
 server:
-  port: 8000
+  port: 9080
 #  servlet:
 #    context-path: /assert
 system:
@@ -40,7 +40,7 @@ system:
 mybatis-plus:
   mapper-locations: classpath*:com/hashtech/**/mapper/mysql/*.xml
   #实体扫描，多个package用逗号或者分号分隔
-#  typeAliasesPackage: com.hashtech.business.modules.system.*.entity
+  #  typeAliasesPackage: com.hashtech.business.modules.system.*.entity
   global-config:
     #数据库相关配置
     db-config:
