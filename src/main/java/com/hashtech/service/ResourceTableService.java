@@ -35,7 +35,7 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
 
     BusinessResult<BusinessPageResult> pageList(ResourceTablePageListRequest request);
 
-    BusinessResult<List<String>> getTablaList();
+    BusinessResult<List<Map<String, Object>>> getTablaList();
 
     BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request);
 

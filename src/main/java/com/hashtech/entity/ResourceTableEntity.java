@@ -47,6 +47,11 @@ public class ResourceTableEntity implements Serializable {
     private Integer state;
 
     /**
+     * 是否在开放平台开放：0-开放，1-不开放，默认1
+     */
+    private Integer externalState = 1;
+
+    /**
      * 资源分类名称
      */
     private String name;

@@ -1,10 +1,9 @@
 package com.hashtech.web.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,12 +24,12 @@ public class ResourceTableUpdateRequest {
     private Integer requestWay = 0;
 
     /**
-     * 请求实例说明
+     * 请求示例说明
      */
     private String explainInfo;
 
     /**
      * 参数信息
      */
-    private List<String> paramInfo;
+    private List<String> paramInfo = new LinkedList<>();
 }

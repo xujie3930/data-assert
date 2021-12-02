@@ -4,7 +4,9 @@ package com.hashtech.web;
 import com.hashtech.businessframework.log.Logable;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.service.TableSettingService;
+import com.hashtech.web.request.ResourceTablePreviewRequest;
 import com.hashtech.web.request.ResourceTableUpdateRequest;
+import com.hashtech.web.result.TablePreviewResult;
 import com.hashtech.web.result.TableSettingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,12 @@ public class TableSettingController {
     @PostMapping("/update")
     BusinessResult<Boolean> updateTableSetting(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTableUpdateRequest request) {
         return tableSettingService.updateTableSetting(userId, request);
+    }
+
+    @Logable
+    @PostMapping("/preview")
+    BusinessResult<TablePreviewResult> previewTableSetting(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTablePreviewRequest request) {
+        return tableSettingService.previewTableSetting(userId, request);
     }
 }
 

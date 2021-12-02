@@ -37,7 +37,7 @@ public class ResourceTableController {
 
     @Logable
     @PostMapping("/prepose/getTablaList")
-    BusinessResult<List<String>> getTablaList() {
+    BusinessResult<List<Map<String, Object>>> getTablaList() {
         return resourceTableService.getTablaList();
     }
 

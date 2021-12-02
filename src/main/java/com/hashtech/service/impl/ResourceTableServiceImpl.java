@@ -1,5 +1,6 @@
 package com.hashtech.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,6 +36,7 @@ import com.hashtech.web.result.ResourceTablePreposeResult;
 import com.hashtech.web.result.Structure;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +65,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private TableSettingService tableSettingService;
     @Autowired
     private DataSourceMapper dataSourceMapper;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     @BusinessParamsValidate
@@ -172,33 +176,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
-    public BusinessResult<List<String>> getTablaList() {
-        List<String> list = new LinkedList<>();
-        Connection conn = null;
-        DatabaseProperty instance = DatabaseProperty.getInstance();
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                    instance.getUrl(), instance.getUsername(), instance.getPassword());
-            DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet tableResultSet = metaData.getTables(null, null, null,
-                    new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
-            while (tableResultSet.next()) {
-                String tableName = tableResultSet.getString("TABLE_NAME");
-                list.add(tableName);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
-        return BusinessResult.success(list);
+    @DS("remote")
+    public BusinessResult<List<Map<String, Object>>> getTablaList() {
+        String tableNameListSql = String.format("SELECT table_name FROM information_schema.tables WHERE table_schema='%s'", "workspace");
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList(tableNameListSql);
+        return BusinessResult.success(maps);
     }
 
     @Override

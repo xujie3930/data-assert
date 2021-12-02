@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.businessframework.exception.interval.AppException;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.businessframework.result.util.BeanCopyUtils;
+import com.hashtech.businessframework.utils.CollectionUtils;
 import com.hashtech.businessframework.utils.StringUtils;
 import com.hashtech.businessframework.validate.BusinessParamsValidate;
 import com.hashtech.common.ResourceCodeBean;
@@ -12,7 +13,9 @@ import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
+import com.hashtech.web.request.ResourceTablePreviewRequest;
 import com.hashtech.web.request.ResourceTableUpdateRequest;
+import com.hashtech.web.result.TablePreviewResult;
 import com.hashtech.web.result.TableSettingResult;
 import com.hashtech.web.result.ThemeResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,5 +72,20 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         entity.setExplainInfo(request.getExplainInfo());
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
         return BusinessResult.success(true);
+    }
+
+    @Override
+    public BusinessResult<TablePreviewResult> previewTableSetting(String userId, ResourceTablePreviewRequest request) {
+        ResourceTableEntity resourceTableEntity = resourceTableService.getById(request.getId());
+        String explainInfo = resourceTableEntity.getRequestUrl() + "?";
+        if (!CollectionUtils.isEmpty(request.getParamInfo())) {
+            for (String param : request.getParamInfo()) {
+                explainInfo += param + "=?&";
+            }
+        }
+        explainInfo = explainInfo.substring(0, explainInfo.length() - 1);
+        TablePreviewResult result = new TablePreviewResult();
+        result.setExplainInfo(explainInfo);
+        return BusinessResult.success(result);
     }
 }
