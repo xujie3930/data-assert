@@ -1,9 +1,9 @@
 spring:
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 192.168.110.118:8848
-        namespace: dd8ede24-19c7-4547-8956-a566f800a823
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 192.168.110.118:8848
+#        namespace: dd8ede24-19c7-4547-8956-a566f800a823
   datasource:
     url: "jdbc:mysql://localhost:3306/data_assert?useSSL=false&useUnicode=true&characterEncoding=utf8"
     username: 'root'
