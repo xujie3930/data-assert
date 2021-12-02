@@ -1,5 +1,6 @@
 package com.hashtech.web.result;
 
+import com.hashtech.businessframework.result.BusinessPageResult;
 import lombok.Data;
 
 import java.util.List;
@@ -17,5 +18,5 @@ public class ResourceTablePreposeResult {
     //表结构
     public List<Structure> structureList;
     //采样数据
-    public List<Object> sampleList;
+    public BusinessPageResult<Object> sampleList;
 }

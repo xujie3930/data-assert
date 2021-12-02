@@ -10,9 +10,17 @@ import lombok.Data;
 @Data
 public class BaseInfo {
     /**
+     * 主键id
+     */
+    private String id;
+    /**
      * 资源分类名称,自动识别
      */
     private String name;
+    /**
+     * 是否开放：0-开放，1-不开放
+     */
+    private Integer state;
     /**
      * 资源分类列表展示的列表的总字段，自动识别
      */

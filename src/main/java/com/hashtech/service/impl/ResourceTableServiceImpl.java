@@ -3,6 +3,7 @@ package com.hashtech.service.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.businessframework.exception.interval.AppException;
 import com.hashtech.businessframework.result.BusinessPageResult;
@@ -35,6 +36,7 @@ import com.hashtech.web.result.ResourceTableInfoResult;
 import com.hashtech.web.result.ResourceTablePreposeResult;
 import com.hashtech.web.result.Structure;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -106,13 +108,13 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     public BusinessResult<ResourceTableInfoResult> getResourceTableInfo(ResourceTableInfoRequest request) {
+        ResourceTableInfoResult result = new ResourceTableInfoResult();
         ResourceTableEntity entity = getById(request.getId());
-        ResourceTableInfoResult result = BeanCopyUtils.copyProperties(entity, new ResourceTableInfoResult());
+        BaseInfo baseInfo = BeanCopyUtils.copyProperties(entity, new BaseInfo());
         ResourceTablePreposeRequest preposeRequest = BeanCopyUtils.copyProperties(request, new ResourceTablePreposeRequest());
         preposeRequest.setTableName(entity.getName());
         BusinessResult<ResourceTablePreposeResult> tablaInfo = getTablaInfo(preposeRequest);
         if (tablaInfo.isSuccess() && tablaInfo.getData() != null) {
-            BaseInfo baseInfo = tablaInfo.getData().getBaseInfo();
             Integer dataSize = baseInfo.getDataSize();
             result.setBaseInfo(baseInfo);
             result.setStructureList(tablaInfo.getData().getStructureList());
@@ -120,7 +122,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             //更新表数据量
             entity.setDataSize(dataSize);
             updateById(entity);
-            result.setDataSize(dataSize);
         }
         return BusinessResult.success(result);
     }
@@ -178,7 +179,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Override
     @DS("remote")
     public BusinessResult<List<String>> getTablaList() {
-        String tableNameListSql = String.format("SELECT table_name FROM information_schema.tables WHERE table_schema='%s'", "daas");
+        String tableNameListSql = String.format("SELECT table_name FROM information_schema.tables WHERE table_schema='%s'", "workspace");
         List<Map<String, Object>> maps = jdbcTemplate.queryForList(tableNameListSql);
         List<String> list = new LinkedList<>();
         for (Map<String, Object> m : maps) {
@@ -188,17 +189,14 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
+    @DS("remote")
     public BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request) {
         ResourceTablePreposeResult result = new ResourceTablePreposeResult();
         BaseInfo baseInfo = new BaseInfo();
         List<Structure> structureList = new LinkedList<>();
         Integer columnsCount = 0;
-        Connection conn = null;
-        DatabaseProperty instance = DatabaseProperty.getInstance();
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                    instance.getUrl(), instance.getUsername(), instance.getPassword());
+            Connection conn = jdbcTemplate.getDataSource().getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
             ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
@@ -237,17 +235,12 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             ResultSet pagingRs = stmt.executeQuery(pagingData);
             if (pagingRs.next()) {
                 List list = ResultSetToListUtils.convertList(pagingRs);
-                result.setSampleList(list);
+                Page<Object> page = new Page<>(request.getPageNum(), request.getPageSize());
+                page.setTotal(baseInfo.getDataSize().longValue());
+                result.setSampleList(BusinessPageResult.build(page.setRecords(list), request));
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                //释放conn资源同时Statement也会释放
-                conn.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
         }
         baseInfo.setColumnsCount(columnsCount);
         result.setBaseInfo(baseInfo);

@@ -49,7 +49,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         result.setRequestUrl(resourceTableEntity.getRequestUrl());
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(id);
         BeanCopyUtils.copyProperties(tableSettingEntity, result);
-        result.setParamInfo(Arrays.asList(tableSettingEntity.getParamInfo().split(",")));
+        if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())){
+            result.setParamInfo(Arrays.asList(tableSettingEntity.getParamInfo().split(",")));
+        }
         return BusinessResult.success(result);
     }
 
