@@ -2,12 +2,12 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.110.118:8848
+        server-addr: 192.168.0.30:8848
         namespace: dd8ede24-19c7-4547-8956-a566f800a823
   datasource:
-    url: "jdbc:mysql://localhost:3306/data_assert?useSSL=false&useUnicode=true&characterEncoding=utf8"
-    username: 'root'
-    password: 'root'
+    url: "jdbc:mysql://192.168.0.17:3306/icdstuiframe?useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: 'icdstu'
+    password: 'icdstu@0902'
     dbcp2:
       min-idle: 10
       max-idle: 10
