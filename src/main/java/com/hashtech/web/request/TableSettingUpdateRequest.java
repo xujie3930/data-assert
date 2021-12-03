@@ -1,9 +1,10 @@
 package com.hashtech.web.request;
 
-import com.hashtech.businessframework.result.base.BusinessBasePageForm;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author xujie
@@ -18,19 +19,15 @@ public class TableSettingUpdateRequest {
      */
     private String id;
     /**
-     * 是否开放：0-开放，1-不开放
+     * 请求方式：0-POST,1-GET
      */
-    private Integer state = 0;
+    private Integer requestWay = 0;
     /**
-     * 数据来源
+     * 请求示例说明
      */
-    private String source;
+    private String explainInfo;
     /**
-     * 描述
+     * 参数信息
      */
-    private String descriptor;
-    /**
-     * 注意事项
-     */
-    private String matters;
+    private List<String> paramInfo = new LinkedList<>();
 }

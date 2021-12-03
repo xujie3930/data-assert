@@ -17,6 +17,7 @@ public class ResultSetToListUtils {
         ResultSetMetaData md = rs.getMetaData();
         //获取行的数量
         int columnCount = md.getColumnCount();
+        rs.beforeFirst();
         while (rs.next()) {
             Map rowData = new LinkedHashMap();
             for (int i = 1; i <= columnCount; i++) {

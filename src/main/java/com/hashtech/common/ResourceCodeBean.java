@@ -24,6 +24,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000006("60000006", "没有该资源表"),
         RESOURCE_CODE_60000007("60000007", "资源不明确"),
         RESOURCE_CODE_60000008("60000008", "资源表不明确"),
+        RESOURCE_CODE_60000009("60000008", "连接资源库失败"),
         ;
 
         public final String code;

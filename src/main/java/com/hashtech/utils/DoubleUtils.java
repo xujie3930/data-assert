@@ -11,7 +11,7 @@ import java.math.RoundingMode;
 public class DoubleUtils {
     public static double formatDouble(double d) {
         // 如果不需要四舍五入，可以使用RoundingMode.DOWN
-        BigDecimal bg = new BigDecimal(d).setScale(2, RoundingMode.UP);
-        return bg.doubleValue();
+        BigDecimal bg = new BigDecimal(d).setScale(4, RoundingMode.UP);
+        return bg.doubleValue() * 100;
     }
 }

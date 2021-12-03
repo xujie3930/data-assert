@@ -14,13 +14,13 @@ public class BaseInfo {
      */
     private String id;
     /**
-     * 资源分类名称,自动识别
+     * 表名称,自动识别
      */
     private String name;
     /**
      * 是否开放：0-开放，1-不开放
      */
-    private Integer state;
+    private Integer state = 0;
     /**
      * 资源分类列表展示的列表的总字段，自动识别
      */

@@ -1,9 +1,9 @@
 package com.hashtech.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.businessframework.exception.interval.AppException;
 import com.hashtech.businessframework.result.BusinessPageResult;
@@ -20,12 +20,9 @@ import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
-import com.hashtech.service.DataSourceService;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
-import com.hashtech.utils.DatabaseProperty;
 import com.hashtech.utils.RandomUtils;
-import com.hashtech.utils.ResultSetToListUtils;
 import com.hashtech.web.request.ResourceTableInfoRequest;
 import com.hashtech.web.request.ResourceTablePageListRequest;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
@@ -36,13 +33,10 @@ import com.hashtech.web.result.ResourceTableInfoResult;
 import com.hashtech.web.result.ResourceTablePreposeResult;
 import com.hashtech.web.result.Structure;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
@@ -67,14 +61,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private TableSettingService tableSettingService;
     @Autowired
     private DataSourceMapper dataSourceMapper;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Override
-    @BusinessParamsValidate
-    @Transactional(rollbackFor = Exception.class)
+    @DS("master")
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
-        BusinessResult<ResourceTablePreposeResult> result = getTablaInfo(new ResourceTablePreposeRequest(request.getName()));
+        BusinessResult<ResourceTablePreposeResult> result = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(request.getName()));
         if (result == null || result.getData() == null) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
@@ -91,7 +82,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         tableSettingEntity.setId(sequenceService.nextValueString());
         tableSettingEntity.setResourceTableId(resourceTableId);
         List<Structure> structureList = result.getData().getStructureList();
-        tableSettingEntity.setColumnsInfo(structureList.toString());
+        tableSettingEntity.setColumnsInfo(JSON.toJSON(structureList).toString());
         //TODO:表结构信息未存储于hdfs中
         return tableSettingEntity;
     }
@@ -100,6 +91,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> updateResourceTable(String userId, ResourceTableUpdateRequest request) {
+        ResourceTableEntity resourceTableEntity = getById(request.getId());
+        if (Objects.isNull(resourceTableEntity)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
+        }
         ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
         entity.setUpdateBy(userId);
         entity.setUpdateTime(new Date());
@@ -107,21 +102,33 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
+    @DS("master")
+    /**
+     * TODO:这里添加外部表的前置接口和接口详情接口为一个接口，可能会有问题
+     */
     public BusinessResult<ResourceTableInfoResult> getResourceTableInfo(ResourceTableInfoRequest request) {
         ResourceTableInfoResult result = new ResourceTableInfoResult();
-        ResourceTableEntity entity = getById(request.getId());
-        BaseInfo baseInfo = BeanCopyUtils.copyProperties(entity, new BaseInfo());
+        BaseInfo baseInfo = null;
         ResourceTablePreposeRequest preposeRequest = BeanCopyUtils.copyProperties(request, new ResourceTablePreposeRequest());
-        preposeRequest.setTableName(entity.getName());
-        BusinessResult<ResourceTablePreposeResult> tablaInfo = getTablaInfo(preposeRequest);
+        if (!StringUtils.isBlank(request.getId())){
+            ResourceTableEntity entity = getById(request.getId());
+            baseInfo = BeanCopyUtils.copyProperties(entity, new BaseInfo());
+            preposeRequest.setTableName(entity.getName());
+        }else {
+            preposeRequest.setTableName(request.getTableName());
+        }
+        BusinessResult<ResourceTablePreposeResult> tablaInfo = tableSettingService.getTablaInfo(preposeRequest);
         if (tablaInfo.isSuccess() && tablaInfo.getData() != null) {
-            Integer dataSize = baseInfo.getDataSize();
-            result.setBaseInfo(baseInfo);
+            result.setBaseInfo(tablaInfo.getData().getBaseInfo());
             result.setStructureList(tablaInfo.getData().getStructureList());
             result.setSampleList(tablaInfo.getData().getSampleList());
-            //更新表数据量
-            entity.setDataSize(dataSize);
-            updateById(entity);
+        }
+        //若是详情接口：1，更新表数据量2，返回详情信息
+        if (!StringUtils.isBlank(request.getId())){
+            ResourceTableEntity oldEntity = getById(request.getId());
+            oldEntity.setDataSize(tablaInfo.getData().getBaseInfo().getDataSize());
+            updateById(oldEntity);
+            result.setBaseInfo(baseInfo);
         }
         return BusinessResult.success(result);
     }
@@ -174,78 +181,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
                 wrapper
         );
         return BusinessResult.success(BusinessPageResult.build(page, request));
-    }
-
-    @Override
-    @DS("remote")
-    public BusinessResult<List<String>> getTablaList() {
-        String tableNameListSql = String.format("SELECT table_name FROM information_schema.tables WHERE table_schema='%s'", "workspace");
-        List<Map<String, Object>> maps = jdbcTemplate.queryForList(tableNameListSql);
-        List<String> list = new LinkedList<>();
-        for (Map<String, Object> m : maps) {
-            list.add((String) m.get("table_name"));
-        }
-        return BusinessResult.success(list);
-    }
-
-    @Override
-    @DS("remote")
-    public BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request) {
-        ResourceTablePreposeResult result = new ResourceTablePreposeResult();
-        BaseInfo baseInfo = new BaseInfo();
-        List<Structure> structureList = new LinkedList<>();
-        Integer columnsCount = 0;
-        try {
-            Connection conn = jdbcTemplate.getDataSource().getConnection();
-            DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
-                    new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
-            while (tableResultSet.next()) {
-                String tableEnglishName = request.getTableName();
-                String tableChineseName = tableResultSet.getString("TABLE_CAT");
-                baseInfo.setName(tableEnglishName);
-                ResultSet columnResultSet = metaData.getColumns(null, "%", tableEnglishName, "%");
-                while (columnResultSet.next()) {
-                    Structure structure = new Structure();
-                    // 字段名称
-                    String columnName = columnResultSet.getString("COLUMN_NAME");
-                    structure.setFieldEnglishName(columnName);
-                    // 数据类型
-                    String columnType = columnResultSet.getString("TYPE_NAME");
-                    structure.setType(columnType);
-                    // 描述
-                    String remarks = columnResultSet.getString("REMARKS");
-                    structure.setFieldChineseName(remarks);
-                    structure.setTableEnglishName(tableEnglishName);
-                    structure.setTableChineseName(tableChineseName);
-                    structureList.add(structure);
-                    columnsCount++;
-                }
-            }
-            String getCountSql = "select count(*) from " + request.getTableName();
-            Statement stmt = conn.createStatement();
-            ResultSet countRs = stmt.executeQuery(getCountSql);
-            if (countRs.next()) {
-                //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
-                baseInfo.setDataSize(countRs.getInt(1));
-            }
-            Integer index = (request.getPageNum() - 1) * request.getPageSize();
-            Integer end = index + request.getPageSize();
-            String pagingData = "select * from " + request.getTableName() + " limit " + index + " , " + end;
-            ResultSet pagingRs = stmt.executeQuery(pagingData);
-            if (pagingRs.next()) {
-                List list = ResultSetToListUtils.convertList(pagingRs);
-                Page<Object> page = new Page<>(request.getPageNum(), request.getPageSize());
-                page.setTotal(baseInfo.getDataSize().longValue());
-                result.setSampleList(BusinessPageResult.build(page.setRecords(list), request));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        baseInfo.setColumnsCount(columnsCount);
-        result.setBaseInfo(baseInfo);
-        result.setStructureList(structureList);
-        return BusinessResult.success(result);
     }
 
     @Override

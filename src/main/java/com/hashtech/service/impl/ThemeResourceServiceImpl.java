@@ -148,7 +148,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
         long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getState())).count();
         if (resourceTableList.size() == 0) {
-            result.setOpenRate(1.00);
+            result.setOpenRate(100.00);
         } else {
             result.setOpenRate(DoubleUtils.formatDouble(openCount / (double) resourceTableList.size()));
         }

@@ -7,14 +7,20 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * @author xujie
- * @description 编辑资源表请求参数
+ * @description
+ * id不为空，为详情接口
+ * tableName不为空，为添加表的前置接口
  * @create 2021-11-24 10:01
  **/
 @Data
 public class ResourceTableInfoRequest extends BusinessBasePageForm {
-    @NotBlank(message = "60000008")
     /**
-     * 主键id
+     * 资源表id
      */
     private String id;
+
+    /**
+     * 表名,添加接口时候用表名
+     */
+    private String tableName;
 }

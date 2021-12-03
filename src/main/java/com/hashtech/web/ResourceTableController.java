@@ -5,9 +5,9 @@ import com.hashtech.businessframework.log.Logable;
 import com.hashtech.businessframework.result.BusinessPageResult;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.service.ResourceTableService;
+import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.ResourceTableInfoResult;
-import com.hashtech.web.result.ResourceTablePreposeResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,23 +28,19 @@ public class ResourceTableController {
 
     @Autowired
     private ResourceTableService resourceTableService;
+    @Autowired
+    private TableSettingService tableSettingService;
 
     @Logable
     @GetMapping("/getDataSource")
-    public BusinessResult<List<Map<Integer, String>>> hasExitTheme() {
+    public BusinessResult<List<Map<Integer, String>>> getDataSource() {
         return resourceTableService.getDataSource();
     }
 
     @Logable
     @PostMapping("/prepose/getTablaList")
-    BusinessResult<List<String>> getTablaList() {
-        return resourceTableService.getTablaList();
-    }
-
-    @Logable
-    @PostMapping("/prepose/getTablaInfo")
-    BusinessResult<ResourceTablePreposeResult> getTablaInfo(@RequestBody ResourceTablePreposeRequest request) {
-        return resourceTableService.getTablaInfo(request);
+    BusinessResult<List<Map<String, Object>>> getTablaList() {
+        return tableSettingService.getTablaList();
     }
 
     @Logable
@@ -55,7 +51,7 @@ public class ResourceTableController {
 
     @Logable
     @PostMapping("/update")
-    BusinessResult<Boolean> saveResourceTable(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTableUpdateRequest request) {
+    BusinessResult<Boolean> updateResourceTable(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTableUpdateRequest request) {
         return resourceTableService.updateResourceTable(userId, request);
     }
 
