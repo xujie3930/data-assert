@@ -18,6 +18,10 @@ public class ResourceTableUpdateRequest {
      */
     private String id;
     /**
+     *表名
+     */
+    private String name;
+    /**
      * 是否开放：0-开放，1-不开放
      */
     private Integer state = 0;

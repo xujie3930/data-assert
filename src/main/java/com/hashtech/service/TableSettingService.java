@@ -32,5 +32,5 @@ public interface TableSettingService extends IService<TableSettingEntity> {
 
     BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request);
 
-    BusinessResult<List<Map<String, Object>>> getTablaList();
+    BusinessResult<List<Map<String, String>>> getTablaList();
 }

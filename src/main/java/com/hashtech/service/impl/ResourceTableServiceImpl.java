@@ -90,6 +90,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
+    //TODO:支持修改表
     public BusinessResult<Boolean> updateResourceTable(String userId, ResourceTableUpdateRequest request) {
         ResourceTableEntity resourceTableEntity = getById(request.getId());
         if (Objects.isNull(resourceTableEntity)){

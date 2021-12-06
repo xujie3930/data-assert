@@ -117,7 +117,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
             while (tableResultSet.next()) {
                 String tableEnglishName = request.getTableName();
-                String tableChineseName = tableResultSet.getString("TABLE_COMMENT");
+                String tableChineseName = tableResultSet.getString("REMARKS");
                 baseInfo.setName(tableEnglishName);
                 ResultSet columnResultSet = metaData.getColumns(null, "%", tableEnglishName, "%");
                 while (columnResultSet.next()) {
@@ -173,15 +173,22 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     @Override
     @DS("remote")
-    public BusinessResult<List<Map<String, Object>>> getTablaList() {
-        String schemaName = "";
+    public BusinessResult<List<Map<String, String>>> getTablaList() {
+        List<Map<String, String>> maps = new LinkedList<>();
+        List<Map<String, Object>> tableMaps;
         try {
-            schemaName = jdbcTemplate.getDataSource().getConnection().getSchema();
+            String schemaName = jdbcTemplate.getDataSource().getConnection().getCatalog();
+            String tableNameListSql = String.format("select table_name,table_comment from information_schema.tables where table_schema='%s'", schemaName);
+            tableMaps = jdbcTemplate.queryForList(tableNameListSql);
         } catch (SQLException throwables) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         }
-        String tableNameListSql = String.format("select table_name,table_comment from information_schema.tables where table_schema='%s'", schemaName);
-        List<Map<String, Object>> maps = jdbcTemplate.queryForList(tableNameListSql);
+        for (Map<String, Object> m : tableMaps) {
+            Map<String, String> map = new LinkedHashMap<>();
+            map.put("tableName", (String) m.get("table_name"));
+            map.put("comment", (String) m.get("table_comment"));
+            maps.add(map);
+        }
         return BusinessResult.success(maps);
     }
 }
