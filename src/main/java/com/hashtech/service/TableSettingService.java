@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.web.request.ResourceDataRequest;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.request.ResourceTablePreviewRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
@@ -34,5 +35,5 @@ public interface TableSettingService extends IService<TableSettingEntity> {
 
     BusinessResult<List<Map<String, String>>> getTablaList();
 
-    List<Object> getResourceData(String requestUrl, ResourceTableEntity entity);
+    List<Object> getResourceData(ResourceDataRequest requestUrl, ResourceTableEntity entity);
 }

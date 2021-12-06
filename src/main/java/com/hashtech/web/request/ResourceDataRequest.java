@@ -1,5 +1,6 @@
 package com.hashtech.web.request;
 
+import com.hashtech.businessframework.result.base.BusinessBasePageForm;
 import lombok.Data;
 
 /**
@@ -8,6 +9,6 @@ import lombok.Data;
  * @create 2021-12-06 15:32
  **/
 @Data
-public class ResourceDataRequest {
+public class ResourceDataRequest extends BusinessBasePageForm {
     private String requestUrl;
 }

@@ -12,7 +12,7 @@ import java.util.Map;
  **/
 public class URLProcessUtils {
     public static final  String SEPARATOR = "?";
-    public static final  String JOINT_MARK = "&";
+    public static final  String JOINT_MARK = "&amp;";
     public static final  String CONDITION_MARK = "=";
 
 

@@ -20,6 +20,7 @@ import com.hashtech.service.TableSettingService;
 import com.hashtech.utils.JdbcUtils;
 import com.hashtech.utils.ResultSetToListUtils;
 import com.hashtech.utils.URLProcessUtils;
+import com.hashtech.web.request.ResourceDataRequest;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.request.ResourceTablePreviewRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
@@ -122,6 +123,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             while (tableResultSet.next()) {
                 String tableEnglishName = request.getTableName();
                 String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
+                baseInfo.setDescriptor(tableChineseName);
                 baseInfo.setName(tableEnglishName);
                 ResultSet columnResultSet = metaData.getColumns(null, "%", tableEnglishName, "%");
                 while (columnResultSet.next()) {
@@ -202,7 +204,41 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     @Override
     @DS("remote")
-    public List<Object> getResourceData(String requestUrl, ResourceTableEntity entity) {
+    public List<Object> getResourceData(ResourceDataRequest request, ResourceTableEntity entity) {
+        Connection conn = null;
+        List<Map<String, Object>> paramList = URLProcessUtils.getParamList(request.getRequestUrl());
+        StringBuilder builder = new StringBuilder("select * from " + entity.getName() + " where ");
+        for (Map<String, Object> map : paramList) {
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                builder.append(entry.getKey() + " = ");
+                builder.append(entry.getValue() + " and ");
+            }
+        }
+        String tempSql = builder.toString();
+        tempSql = tempSql.substring(0, tempSql.lastIndexOf("and"));
+        Integer index = (request.getPageNum() - 1) * request.getPageSize();
+        Integer end = index + request.getPageSize();
+        String querySql = tempSql +" limit " + index + " , " + end;
+        try {
+            conn = jdbcTemplate.getDataSource().getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet pagingRs = stmt.executeQuery(querySql);
+            if (pagingRs.next()) {
+                List list = ResultSetToListUtils.convertList(pagingRs);
+                return list;
+            }
+        } catch (SQLException throwables) {
+            log.error("/resource/table/getResourceData接口异常:{}", throwables.getMessage());
+            throwables.printStackTrace();
+        } finally {
+            if (null != conn) {
+                try {
+                    conn.close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        }
         return null;
     }
 }
