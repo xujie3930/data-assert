@@ -68,4 +68,16 @@
             order by update_time desc
         </if>
     </select>
+
+    <select id="getByRequestUrl" resultType="com.hashtech.entity.ResourceTableEntity">
+        select
+        <include refid="Base_Column_List"/>
+        from resource_table
+        <where>
+            <if test="requestUrl !=null and requestUrl != '' ">
+                and request_url=#{requestUrl}
+            </if>
+            and del_flag='N'
+        </where>
+    </select>
 </mapper>

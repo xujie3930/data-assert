@@ -18,7 +18,7 @@ public class ResourceTableUpdateRequest {
      */
     private String id;
     /**
-     *表名
+     * 表名
      */
     private String name;
     /**

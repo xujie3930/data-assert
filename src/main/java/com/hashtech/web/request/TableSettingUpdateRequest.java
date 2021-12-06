@@ -29,5 +29,5 @@ public class TableSettingUpdateRequest {
     /**
      * 参数信息
      */
-    private List<String> paramInfo = new LinkedList<>();
+    private String[] paramInfo;
 }

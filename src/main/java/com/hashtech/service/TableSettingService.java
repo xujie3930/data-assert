@@ -2,10 +2,10 @@ package com.hashtech.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.businessframework.result.BusinessResult;
+import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.request.ResourceTablePreviewRequest;
-import com.hashtech.web.request.ResourceTableUpdateRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
 import com.hashtech.web.result.ResourceTablePreposeResult;
 import com.hashtech.web.result.TablePreviewResult;
@@ -33,4 +33,6 @@ public interface TableSettingService extends IService<TableSettingEntity> {
     BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request);
 
     BusinessResult<List<Map<String, String>>> getTablaList();
+
+    List<Object> getResourceData(String requestUrl, ResourceTableEntity entity);
 }

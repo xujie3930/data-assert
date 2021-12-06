@@ -21,10 +21,12 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000004("60000004", "主题名称不能为空"),
         RESOURCE_CODE_60000005("60000005", "资源名称不能为空"),
 
-        RESOURCE_CODE_60000006("60000006", "没有该资源表"),
+        RESOURCE_CODE_60000006("60000006", "资源表不存在"),
         RESOURCE_CODE_60000007("60000007", "资源不明确"),
         RESOURCE_CODE_60000008("60000008", "资源表不明确"),
-        RESOURCE_CODE_60000009("60000008", "连接资源库失败"),
+        RESOURCE_CODE_60000009("60000009", "连接资源库失败"),
+        RESOURCE_CODE_60000010("60000010", "该资源库下没有表，请更换资源库"),
+        RESOURCE_CODE_60000011("60000011", "该url没有匹配到具体的资源表，请重新确认"),
         ;
 
         public final String code;

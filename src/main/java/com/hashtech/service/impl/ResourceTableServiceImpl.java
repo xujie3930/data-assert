@@ -19,19 +19,14 @@ import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
+import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.utils.RandomUtils;
-import com.hashtech.web.request.ResourceTableInfoRequest;
-import com.hashtech.web.request.ResourceTablePageListRequest;
-import com.hashtech.web.request.ResourceTablePreposeRequest;
-import com.hashtech.web.request.ResourceTableSaveRequest;
-import com.hashtech.web.request.ResourceTableUpdateRequest;
-import com.hashtech.web.result.BaseInfo;
-import com.hashtech.web.result.ResourceTableInfoResult;
-import com.hashtech.web.result.ResourceTablePreposeResult;
-import com.hashtech.web.result.Structure;
+import com.hashtech.utils.URLProcessUtils;
+import com.hashtech.web.request.*;
+import com.hashtech.web.result.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,6 +52,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private ThemeResourceMapper themeResourceMapper;
     @Autowired
     private ResourceTableMapper resourceTableMapper;
+    @Autowired
+    private TableSettingMapper tableSettingMapper;
     @Autowired
     private TableSettingService tableSettingService;
     @Autowired
@@ -90,16 +87,32 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    //TODO:支持修改表
     public BusinessResult<Boolean> updateResourceTable(String userId, ResourceTableUpdateRequest request) {
         ResourceTableEntity resourceTableEntity = getById(request.getId());
-        if (Objects.isNull(resourceTableEntity)){
+        if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
-        ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
-        entity.setUpdateBy(userId);
-        entity.setUpdateTime(new Date());
-        return BusinessResult.success(updateById(entity));
+        //不更换表，只更新表信息
+        if (resourceTableEntity.getName().equals(request.getName())){
+            ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
+            entity.setUpdateBy(userId);
+            entity.setUpdateTime(new Date());
+            return BusinessResult.success(updateById(entity));
+        }
+        //更换表，更新表信息和表设置
+        BusinessResult<ResourceTablePreposeResult> result = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(request.getName()));
+        ResourceTableEntity entityUpdate = getResourceTableEntityUpdate(userId, resourceTableEntity, result.getData());
+        updateById(entityUpdate);
+        TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(result, entityUpdate);
+        return BusinessResult.success(tableSettingService.updateById(tableSettingUpdateEntity));
+    }
+
+    private TableSettingEntity getTableSettingUpdateEntity(BusinessResult<ResourceTablePreposeResult> result, ResourceTableEntity entity) {
+        String resourceTableId = entity.getId();
+        TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableId);
+        tableSettingEntity.setParamInfo(null);
+        tableSettingEntity.setColumnsInfo(null);
+        return tableSettingEntity;
     }
 
     @Override
@@ -111,11 +124,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         ResourceTableInfoResult result = new ResourceTableInfoResult();
         BaseInfo baseInfo = null;
         ResourceTablePreposeRequest preposeRequest = BeanCopyUtils.copyProperties(request, new ResourceTablePreposeRequest());
-        if (!StringUtils.isBlank(request.getId())){
+        if (!StringUtils.isBlank(request.getId())) {
             ResourceTableEntity entity = getById(request.getId());
             baseInfo = BeanCopyUtils.copyProperties(entity, new BaseInfo());
             preposeRequest.setTableName(entity.getName());
-        }else {
+        } else {
             preposeRequest.setTableName(request.getTableName());
         }
         BusinessResult<ResourceTablePreposeResult> tablaInfo = tableSettingService.getTablaInfo(preposeRequest);
@@ -125,7 +138,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             result.setSampleList(tablaInfo.getData().getSampleList());
         }
         //若是详情接口：1，更新表数据量2，返回详情信息
-        if (!StringUtils.isBlank(request.getId())){
+        if (!StringUtils.isBlank(request.getId())) {
             ResourceTableEntity oldEntity = getById(request.getId());
             oldEntity.setDataSize(tablaInfo.getData().getBaseInfo().getDataSize());
             updateById(oldEntity);
@@ -189,6 +202,21 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         return BusinessResult.success(dataSourceMapper.getList());
     }
 
+    @Override
+    public BusinessResult<List<Object>> getResourceData(ResourceDataRequest request) {
+        String requestUrl = URLProcessUtils.getRequestUrl(request.getRequestUrl());
+        ResourceTableEntity resourceTableEntity = getByRequestUrl(requestUrl);
+        if (Objects.isNull(resourceTableEntity)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000011.getCode());
+        }
+        List<Object> list = tableSettingService.getResourceData(request.getRequestUrl(), resourceTableEntity);
+        return BusinessResult.success(list);
+    }
+
+    private ResourceTableEntity getByRequestUrl(String requestUrl) {
+        return resourceTableMapper.getByRequestUrl(requestUrl);
+    }
+
     private ResourceTableEntity getResourceTableEntitySave(String userId, ResourceTableSaveRequest request, ResourceTablePreposeResult result) {
         ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
         Date date = new Date();
@@ -202,6 +230,16 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setColumnsCount(baseInfo.getColumnsCount());
         entity.setDataSize(baseInfo.getDataSize());
         entity.setRequestUrl(RandomUtils.getRandomExcludeNumber(16));
+        return entity;
+    }
+
+    private ResourceTableEntity getResourceTableEntityUpdate(String userId, ResourceTableEntity entity, ResourceTablePreposeResult result) {
+        Date date = new Date();
+        BaseInfo baseInfo = result.getBaseInfo();
+        entity.setUpdateTime(date);
+        entity.setUpdateBy(userId);
+        entity.setColumnsCount(baseInfo.getColumnsCount());
+        entity.setDataSize(baseInfo.getDataSize());
         return entity;
     }
 }

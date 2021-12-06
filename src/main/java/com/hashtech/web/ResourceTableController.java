@@ -72,5 +72,11 @@ public class ResourceTableController {
     BusinessResult<BusinessPageResult> pageList(@RequestBody ResourceTablePageListRequest request) {
         return resourceTableService.pageList(request);
     }
+
+    @Logable
+    @PostMapping("/getResourceData")
+    BusinessResult<List<Object>> getResourceData(@RequestBody ResourceDataRequest request) {
+        return resourceTableService.getResourceData(request);
+    }
 }
 

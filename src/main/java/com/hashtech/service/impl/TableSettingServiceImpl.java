@@ -17,11 +17,14 @@ import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
+import com.hashtech.utils.JdbcUtils;
 import com.hashtech.utils.ResultSetToListUtils;
+import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.request.ResourceTablePreviewRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
 import com.hashtech.web.result.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,7 @@ import java.util.*;
  * @author xujie
  * @since 2021-11-29
  */
+@Slf4j
 @Service
 public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, TableSettingEntity> implements TableSettingService {
 
@@ -56,10 +60,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         result.setRequestUrl(resourceTableEntity.getRequestUrl());
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(id);
         BeanCopyUtils.copyProperties(tableSettingEntity, result);
-        if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())){
+        if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
             result.setParamInfo(Arrays.asList(tableSettingEntity.getParamInfo().split(",")));
         }
-        if (!StringUtils.isBlank(tableSettingEntity.getColumnsInfo())){
+        if (!StringUtils.isBlank(tableSettingEntity.getColumnsInfo())) {
             List<Structure> structureList = JSONObject.parseArray(tableSettingEntity.getColumnsInfo(), Structure.class);
             result.setStructureList(structureList);
         }
@@ -84,7 +88,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         entity.setRequestWay(request.getRequestWay());
         entity.setExplainInfo(request.getExplainInfo());
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
-        return BusinessResult.success(true);
+        return BusinessResult.success(tableSettingMapper.updateById(entity) == 1);
     }
 
     @Override
@@ -117,7 +121,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
             while (tableResultSet.next()) {
                 String tableEnglishName = request.getTableName();
-                String tableChineseName = tableResultSet.getString("REMARKS");
+                String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
                 baseInfo.setName(tableEnglishName);
                 ResultSet columnResultSet = metaData.getColumns(null, "%", tableEnglishName, "%");
                 while (columnResultSet.next()) {
@@ -156,8 +160,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if (null != conn){
+        } finally {
+            if (null != conn) {
                 try {
                     conn.close();
                 } catch (SQLException throwables) {
@@ -181,7 +185,11 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             String tableNameListSql = String.format("select table_name,table_comment from information_schema.tables where table_schema='%s'", schemaName);
             tableMaps = jdbcTemplate.queryForList(tableNameListSql);
         } catch (SQLException throwables) {
+            log.error("resource/table/prepose/getTablaList接口异常:{}", throwables.getMessage());
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
+        }
+        if (CollectionUtils.isEmpty(tableMaps)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000010.getCode());
         }
         for (Map<String, Object> m : tableMaps) {
             Map<String, String> map = new LinkedHashMap<>();
@@ -190,5 +198,11 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             maps.add(map);
         }
         return BusinessResult.success(maps);
+    }
+
+    @Override
+    @DS("remote")
+    public List<Object> getResourceData(String requestUrl, ResourceTableEntity entity) {
+        return null;
     }
 }
