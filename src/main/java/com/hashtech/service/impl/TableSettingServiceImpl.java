@@ -28,9 +28,11 @@ import com.hashtech.web.result.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SmartDataSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Date;
 import java.util.*;
@@ -182,13 +184,23 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     public BusinessResult<List<Map<String, String>>> getTablaList() {
         List<Map<String, String>> maps = new LinkedList<>();
         List<Map<String, Object>> tableMaps;
+        Connection conn = null;
         try {
-            String schemaName = jdbcTemplate.getDataSource().getConnection().getCatalog();
+            conn = jdbcTemplate.getDataSource().getConnection();
+            String schemaName = conn.getCatalog();
             String tableNameListSql = String.format("select table_name,table_comment from information_schema.tables where table_schema='%s'", schemaName);
             tableMaps = jdbcTemplate.queryForList(tableNameListSql);
         } catch (SQLException throwables) {
             log.error("resource/table/prepose/getTablaList接口异常:{}", throwables.getMessage());
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
+        }finally {
+            if (null != conn){
+                try {
+                    conn.close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
         }
         if (CollectionUtils.isEmpty(tableMaps)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000010.getCode());
