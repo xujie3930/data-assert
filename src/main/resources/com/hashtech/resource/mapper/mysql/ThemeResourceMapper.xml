@@ -82,14 +82,9 @@
         </if>
     </update>
 
-    <select id="queryPage" resultType="com.hashtech.web.result.ThemeResult">
+    <select id="getResourceByParentId" resultType="com.hashtech.web.result.ThemeResult">
         select
         <include refid="Base_Column_List"/>
-        from theme_resource where del_flag = 'N' and parent_id = '0'order by sort desc
-    </select>
-    <select id="getResourceByParentId" resultType="com.hashtech.entity.ThemeResourceEntity">
-        select
-        *
         from theme_resource
         <where>
             <if test="parentId != null and parentId != '' ">

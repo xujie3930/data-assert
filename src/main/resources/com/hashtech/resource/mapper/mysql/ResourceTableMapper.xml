@@ -80,4 +80,32 @@
             and del_flag='N'
         </where>
     </select>
+
+    <select id="getCountDataSizeResourceId" resultType="java.lang.Long">
+        select
+        ifnull(SUM(data_size), 0)
+        from resource_table
+        <where>
+            <if test="resourceId !=null and resourceId != '' ">
+                and resource_id=#{resourceId}
+            </if>
+            and del_flag='N'
+        </where>
+    </select>
+
+    <select id="hasExitExternalState"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="resourceId !=null and resourceId != '' ">
+                and resource_id=#{resourceId}
+            </if>
+            <if test="externalState !=null">
+                and external_state=#{externalState}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
 </mapper>

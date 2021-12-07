@@ -14,4 +14,11 @@ public class ResourceDeleteRequest {
      * 资源分类id
      */
     private String id;
+
+    public ResourceDeleteRequest() {
+    }
+
+    public ResourceDeleteRequest(String id) {
+        this.id = id;
+    }
 }

@@ -28,6 +28,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000010("60000010", "该资源库下没有表，请更换资源库"),
         RESOURCE_CODE_60000011("60000011", "该url没有匹配到具体的资源表，请重新确认"),
         RESOURCE_CODE_60000012("60000012", "资源名称最多为20字"),
+        RESOURCE_CODE_60000013("60000013", "删除的资源分类中包含已在开放平台中开放的资源表，暂不能删除"),
         ;
 
         public final String code;

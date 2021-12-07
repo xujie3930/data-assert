@@ -73,6 +73,7 @@ public class ResourceTableController {
         return resourceTableService.pageList(request);
     }
 
+    //服务消费者实现实现FeignClient接口比较直观些
     @Logable
     @PostMapping("/getResourceData")
     BusinessResult<List<Object>> getResourceData(@RequestBody ResourceDataRequest request) {

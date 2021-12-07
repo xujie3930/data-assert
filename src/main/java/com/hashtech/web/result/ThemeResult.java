@@ -65,5 +65,5 @@ public class ThemeResult implements Serializable {
     /**
      * 该主题下的资源列表
      */
-    private List<ThemeResourceEntity> resourceList = new LinkedList<>();
+    private List<ThemeResult> resourceList = new LinkedList<>();
 }

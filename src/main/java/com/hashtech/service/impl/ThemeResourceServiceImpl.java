@@ -62,7 +62,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         ThemeResourceEntity entity = getById(id);
         ThemeResult result = BeanCopyUtils.copyProperties(entity, new ThemeResult());
         //该主题下的资源分类信息
-        List<ThemeResourceEntity> resourceList = themeResourceMapper.getResourceByParentId(id);
+        List<ThemeResult> resourceList = themeResourceMapper.getResourceByParentId(id);
         result.setResourceList(resourceList);
         return BusinessResult.success(result);
     }
@@ -113,6 +113,14 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteTheme(String userId, ThemeDeleteRequest request) {
+        //删除主题下的资源
+        List<ThemeResult> resourceList = themeResourceMapper.getResourceByParentId(request.getId());
+        if (CollectionUtils.isEmpty(resourceList)) {
+            return BusinessResult.success(true);
+        }
+        for (ThemeResult themeResult : resourceList) {
+            deleteResource(userId, new ResourceDeleteRequest(themeResult.getId()));
+        }
         ThemeResourceEntity entity = getThemeResourceEntityDel(userId, request);
         return BusinessResult.success(updateById(entity));
     }
@@ -154,6 +162,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         }
         result.setColumnsCount(resourceTableList.parallelStream().mapToInt(ResourceTableEntity::getColumnsCount).sum());
         result.setTableCount(resourceTableList.size());
+        Long dataSizeCount = resourceTableMapper.getCountDataSizeResourceId(id);
+        result.setDataSize(dataSizeCount);
         return BusinessResult.success(result);
     }
 
@@ -173,6 +183,10 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteResource(String userId, ResourceDeleteRequest request) {
+        //如果删除的资源分类包含有已开放的表,不能删除
+        if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalState(request.getId(), StatusEnum.ENABLE.getCode()))) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.getCode());
+        }
         resourceTableMapper.deleteByResourceId(request.getId());
         ThemeResourceEntity entity = new ThemeResourceEntity();
         entity.setId(request.getId());
@@ -221,7 +235,14 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
 
     @Override
     public BusinessResult<List<ThemeResult>> getList() {
-        List<ThemeResult> list = themeResourceMapper.queryPage();
+        List<ThemeResult> list = themeResourceMapper.getResourceByParentId(THEME_PARENT_ID);
+        if (CollectionUtils.isEmpty(list)) {
+            return BusinessResult.success(list);
+        }
+        for (ThemeResult themeResult : list) {
+            List<ThemeResult> resourceByParentId = themeResourceMapper.getResourceByParentId(themeResult.getId());
+            themeResult.setResourceList(resourceByParentId);
+        }
         return BusinessResult.success(list);
     }
 
