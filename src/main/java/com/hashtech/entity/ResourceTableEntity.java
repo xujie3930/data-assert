@@ -28,7 +28,7 @@ public class ResourceTableEntity implements Serializable {
     public static final String STATE = "STATE";
     public static final String NAME = "NAME";
     public static final String RESOURCE_ID = "RESOURCE_ID";
-    public static final String CREATE_BY = "RESOURCE_ID";
+    public static final String CREATE_BY = "CREATE_BY";
     public static final String DEL_FLAG = "DEL_FLAG";
     public static final String UPDATE_TIME = "UPDATE_TIME";
 
