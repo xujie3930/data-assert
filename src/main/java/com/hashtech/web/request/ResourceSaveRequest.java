@@ -20,7 +20,7 @@ public class ResourceSaveRequest {
      * 资源分类名称
      */
     @NotBlank(message = "60000005")
-    @Length(max = 20, message = "60000000")
+    @Length(max = 20, message = "60000012")
     private String name;
     /**
      * 资源分类描述

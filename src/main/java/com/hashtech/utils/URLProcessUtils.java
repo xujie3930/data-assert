@@ -11,29 +11,28 @@ import java.util.Map;
  * @create 2021-12-06 16:02
  **/
 public class URLProcessUtils {
-    public static final  String SEPARATOR = "?";
-    public static final  String JOINT_MARK = "&amp;";
-    public static final  String CONDITION_MARK = "=";
+    public static final String SEPARATOR = "?";
+    public static final String JOINT_MARK = "&amp;";
+    public static final String CONDITION_MARK = "=";
 
 
     /**
      * @param requestUrl：示例：http://192.168.110.118:9080/jyEVosUfSAlRJmGU?id&status
      * @return：jyEVosUfSAlRJmGU
      */
-    public static String getRequestUrl(String requestUrl){
+    public static String getRequestUrl(String requestUrl) {
         int endIndex = requestUrl.indexOf(SEPARATOR);
         String tempStr = requestUrl.substring(0, endIndex);
         return tempStr.substring(tempStr.lastIndexOf("/") + 1);
     }
 
-    public static String getRequestUrl(String requestUrl, String separator){
+    public static String getRequestUrl(String requestUrl, String separator) {
         int endIndex = requestUrl.indexOf(separator);
         String tempStr = requestUrl.substring(0, endIndex);
         return tempStr.substring(tempStr.lastIndexOf("/") + 1);
     }
 
     /**
-     *
      * @param requestUrl:示例：http://192.168.110.118:9080/jyEVosUfSAlRJmGU?id=xxx&status=xxx
      * @return
      */

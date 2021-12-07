@@ -81,8 +81,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     }
 
     private ThemeResourceEntity getThemeResourceEntitySave(String userId, ThemeSaveRequest request) {
-        ThemeResourceEntity entity = new ThemeResourceEntity();
-        BeanCopyUtils.copyProperties(request, entity);
+        ThemeResourceEntity entity = BeanCopyUtils.copyProperties(request, new ThemeResourceEntity());
         Date date = new Date();
         entity.setCreateBy(userId);
         entity.setCreateTime(date);
@@ -163,8 +162,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> updateResource(String userId, ResourceUpdateRequest request) {
         checkRepetitionNameByResource(request.getName(), request.getId());
-        ThemeResourceEntity entity = new ThemeResourceEntity();
-        BeanCopyUtils.copyProperties(request, entity);
+        ThemeResourceEntity entity = BeanCopyUtils.copyProperties(request, new ThemeResourceEntity());
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(userId);
         updateById(entity);

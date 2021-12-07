@@ -23,7 +23,6 @@ import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
-import com.hashtech.utils.RandomUtils;
 import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.*;
@@ -63,8 +62,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @DS("master")
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
         BusinessResult<ResourceTablePreposeResult> result = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(request.getName()));
-        if (result == null || result.getData() == null) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
+        if (!result.isSuccess()) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         }
         ResourceTableEntity entity = getResourceTableEntitySave(userId, request, result.getData());
         save(entity);
@@ -93,25 +92,28 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
         //不更换表，只更新表信息
-        if (resourceTableEntity.getName().equals(request.getName())){
+        if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
             entity.setUpdateBy(userId);
             entity.setUpdateTime(new Date());
             return BusinessResult.success(updateById(entity));
         }
-        //更换表，更新表信息和表设置
+        //更换表，则同时更新更新表信息和表设置
         BusinessResult<ResourceTablePreposeResult> result = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(request.getName()));
-        ResourceTableEntity entityUpdate = getResourceTableEntityUpdate(userId, resourceTableEntity, result.getData());
+        if (!result.isSuccess()) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
+        }
+        ResourceTableEntity entityUpdate = getResourceTableEntityUpdate(userId, request, result.getData());
         updateById(entityUpdate);
-        TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(result, entityUpdate);
+        TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(result.getData(), entityUpdate);
         return BusinessResult.success(tableSettingService.updateById(tableSettingUpdateEntity));
     }
 
-    private TableSettingEntity getTableSettingUpdateEntity(BusinessResult<ResourceTablePreposeResult> result, ResourceTableEntity entity) {
+    private TableSettingEntity getTableSettingUpdateEntity(ResourceTablePreposeResult result, ResourceTableEntity entity) {
         String resourceTableId = entity.getId();
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableId);
         tableSettingEntity.setParamInfo(null);
-        tableSettingEntity.setColumnsInfo(null);
+        tableSettingEntity.setColumnsInfo(JSON.toJSON(result.getStructureList()).toString());
         return tableSettingEntity;
     }
 
@@ -124,15 +126,17 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         ResourceTableInfoResult result = new ResourceTableInfoResult();
         BaseInfo baseInfo = null;
         ResourceTablePreposeRequest preposeRequest = BeanCopyUtils.copyProperties(request, new ResourceTablePreposeRequest());
+        //接口详情
         if (!StringUtils.isBlank(request.getId())) {
             ResourceTableEntity entity = getById(request.getId());
             baseInfo = BeanCopyUtils.copyProperties(entity, new BaseInfo());
             preposeRequest.setTableName(entity.getName());
         } else {
+            //添加外部表的前置接口
             preposeRequest.setTableName(request.getTableName());
         }
         BusinessResult<ResourceTablePreposeResult> tablaInfo = tableSettingService.getTablaInfo(preposeRequest);
-        if (tablaInfo.isSuccess() && tablaInfo.getData() != null) {
+        if (tablaInfo.isSuccess()) {
             result.setBaseInfo(tablaInfo.getData().getBaseInfo());
             result.setStructureList(tablaInfo.getData().getStructureList());
             result.setSampleList(tablaInfo.getData().getSampleList());
@@ -206,7 +210,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     public BusinessResult<List<Object>> getResourceData(ResourceDataRequest request) {
         String requestUrl = URLProcessUtils.getRequestUrl(request.getRequestUrl());
         ResourceTableEntity resourceTableEntity = getByRequestUrl(requestUrl);
-        if (Objects.isNull(resourceTableEntity)){
+        if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000011.getCode());
         }
         List<Object> list = tableSettingService.getResourceData(request, resourceTableEntity);
@@ -229,13 +233,13 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setResourceId(request.getId());
         entity.setColumnsCount(baseInfo.getColumnsCount());
         entity.setDataSize(baseInfo.getDataSize());
-        entity.setRequestUrl(RandomUtils.getRandomExcludeNumber(16));
         return entity;
     }
 
-    private ResourceTableEntity getResourceTableEntityUpdate(String userId, ResourceTableEntity entity, ResourceTablePreposeResult result) {
+    private ResourceTableEntity getResourceTableEntityUpdate(String userId, ResourceTableUpdateRequest request, ResourceTablePreposeResult result) {
         Date date = new Date();
         BaseInfo baseInfo = result.getBaseInfo();
+        ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
         entity.setUpdateTime(date);
         entity.setUpdateBy(userId);
         entity.setColumnsCount(baseInfo.getColumnsCount());

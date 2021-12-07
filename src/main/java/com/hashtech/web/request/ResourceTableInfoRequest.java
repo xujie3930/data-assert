@@ -3,12 +3,9 @@ package com.hashtech.web.request;
 import com.hashtech.businessframework.result.base.BusinessBasePageForm;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-
 /**
  * @author xujie
- * @description
- * id不为空，为详情接口
+ * @description id不为空，为详情接口
  * tableName不为空，为添加表的前置接口
  * @create 2021-11-24 10:01
  **/

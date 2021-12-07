@@ -38,11 +38,5 @@ public class TableSettingController {
     BusinessResult<Boolean> updateTableSetting(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody TableSettingUpdateRequest request) {
         return tableSettingService.updateTableSetting(userId, request);
     }
-
-    @Logable
-    @PostMapping("/preview")
-    BusinessResult<TablePreviewResult> previewTableSetting(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTablePreviewRequest request) {
-        return tableSettingService.previewTableSetting(userId, request);
-    }
 }
 

@@ -17,7 +17,7 @@ public class ResourceUpdateRequest {
     /**
      * 资源分类名称
      */
-    @Length(max = 50, message = "60000000")
+    @Length(max = 20, message = "60000012")
     private String name;
     /**
      * 资源分类描述

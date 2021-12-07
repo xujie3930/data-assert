@@ -24,5 +24,5 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
 
     List<ResourceTableEntity> queryPage(Page<ResourceTableEntity> page, @Param(value = "request") ResourceTablePageListRequest request);
 
-    ResourceTableEntity getByRequestUrl(@Param("requestUrl")String requestUrl);
+    ResourceTableEntity getByRequestUrl(@Param("requestUrl") String requestUrl);
 }

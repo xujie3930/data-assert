@@ -14,8 +14,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_10000001("10000001", "请求参数错误"),
         RESOURCE_CODE_10000002("10000002", "接口返回异常"),
 
-        RESOURCE_CODE_60000000("60000000", "名称不能多于20字"),
-        RESOURCE_CODE_60000001("60000001", "描述不能多于200字"),
+        RESOURCE_CODE_60000000("60000000", "主题名称最多为12字"),
+        RESOURCE_CODE_60000001("60000001", "描述最多为200字"),
         RESOURCE_CODE_60000002("60000002", "主题名称不能重复"),
         RESOURCE_CODE_60000003("60000003", "资源名称不能重复"),
         RESOURCE_CODE_60000004("60000004", "主题名称不能为空"),
@@ -27,6 +27,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000009("60000009", "连接资源库失败"),
         RESOURCE_CODE_60000010("60000010", "该资源库下没有表，请更换资源库"),
         RESOURCE_CODE_60000011("60000011", "该url没有匹配到具体的资源表，请重新确认"),
+        RESOURCE_CODE_60000012("60000012", "资源名称最多为20字"),
         ;
 
         public final String code;

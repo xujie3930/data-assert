@@ -18,6 +18,7 @@ import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.utils.JdbcUtils;
+import com.hashtech.utils.RandomUtils;
 import com.hashtech.utils.ResultSetToListUtils;
 import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.ResourceDataRequest;
@@ -60,6 +61,13 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
         TableSettingResult result = new TableSettingResult();
         ResourceTableEntity resourceTableEntity = resourceTableService.getById(id);
+        //如果url为空，则生成url并入库
+        if (StringUtils.isBlank(resourceTableEntity.getRequestUrl())) {
+            String requestUrl = RandomUtils.getRandomExcludeNumber(16);
+            result.setRequestUrl(requestUrl);
+            resourceTableEntity.setRequestUrl(requestUrl);
+            resourceTableService.updateById(resourceTableEntity);
+        }
         result.setRequestUrl(resourceTableEntity.getRequestUrl());
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(id);
         BeanCopyUtils.copyProperties(tableSettingEntity, result);
@@ -95,22 +103,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     }
 
     @Override
-    public BusinessResult<TablePreviewResult> previewTableSetting(String userId, ResourceTablePreviewRequest request) {
-        ResourceTableEntity resourceTableEntity = resourceTableService.getById(request.getId());
-        String explainInfo = resourceTableEntity.getRequestUrl() + "?";
-        if (!CollectionUtils.isEmpty(request.getParamInfo())) {
-            for (String param : request.getParamInfo()) {
-                explainInfo += param + "=?&";
-            }
-        }
-        explainInfo = explainInfo.substring(0, explainInfo.length() - 1);
-        TablePreviewResult result = new TablePreviewResult();
-        result.setExplainInfo(explainInfo);
-        return BusinessResult.success(result);
-    }
-
-    @Override
     @DS("remote")
+    /**
+     * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
+     */
     public BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request) {
         ResourceTablePreposeResult result = new ResourceTablePreposeResult();
         BaseInfo baseInfo = new BaseInfo();
@@ -163,7 +159,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 result.setSampleList(BusinessPageResult.build(page.setRecords(list), request));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("获取表信息失败:{}", e.getMessage());
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode(), e.getMessage());
         } finally {
             if (null != conn) {
                 try {
@@ -193,8 +190,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         } catch (SQLException throwables) {
             log.error("resource/table/prepose/getTablaList接口异常:{}", throwables.getMessage());
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        }finally {
-            if (null != conn){
+        } finally {
+            if (null != conn) {
                 try {
                     conn.close();
                 } catch (SQLException throwables) {
@@ -202,7 +199,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 }
             }
         }
-        if (CollectionUtils.isEmpty(tableMaps)){
+        if (CollectionUtils.isEmpty(tableMaps)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000010.getCode());
         }
         for (Map<String, Object> m : tableMaps) {
@@ -230,7 +227,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         tempSql = tempSql.substring(0, tempSql.lastIndexOf("and"));
         Integer index = (request.getPageNum() - 1) * request.getPageSize();
         Integer end = index + request.getPageSize();
-        String querySql = tempSql +" limit " + index + " , " + end;
+        String querySql = tempSql + " limit " + index + " , " + end;
         try {
             conn = jdbcTemplate.getDataSource().getConnection();
             Statement stmt = conn.createStatement();

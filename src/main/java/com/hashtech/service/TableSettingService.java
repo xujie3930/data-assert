@@ -29,8 +29,6 @@ public interface TableSettingService extends IService<TableSettingEntity> {
 
     BusinessResult<Boolean> updateTableSetting(String userId, TableSettingUpdateRequest request);
 
-    BusinessResult<TablePreviewResult> previewTableSetting(String userId, ResourceTablePreviewRequest request);
-
     BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request);
 
     BusinessResult<List<Map<String, String>>> getTablaList();
