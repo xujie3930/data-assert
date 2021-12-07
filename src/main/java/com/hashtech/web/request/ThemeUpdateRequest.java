@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @author xujie
- * @description 添加主题请求参数
+ * @description 编辑主题请求参数
  * @create 2021-11-24 10:01
  **/
 @Data

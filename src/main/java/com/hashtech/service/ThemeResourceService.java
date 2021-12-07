@@ -20,19 +20,19 @@ import java.util.Map;
  */
 public interface ThemeResourceService extends IService<ThemeResourceEntity> {
 
-    BusinessResult<Boolean> saveTheme(String userId, ThemeSaveRequest request);
+    BusinessResult<String> saveTheme(String userId, ThemeSaveRequest request);
 
     BusinessResult<ThemeResult> getThemeInfo(String id);
 
-    BusinessResult<Boolean> updateTheme(String userId, ThemeUpdateRequest request);
+    BusinessResult<String> updateTheme(String userId, ThemeUpdateRequest request);
 
     BusinessResult<Boolean> deleteTheme(String userId, ThemeDeleteRequest request);
 
-    BusinessResult<Boolean> saveResource(String userId, ResourceSaveRequest request);
+    BusinessResult<String> saveResource(String userId, ResourceSaveRequest request);
 
     BusinessResult<ResourceResult> getResourceInfo(String id);
 
-    BusinessResult<Boolean> updateResource(String userId, ResourceUpdateRequest request);
+    BusinessResult<String> updateResource(String userId, ResourceUpdateRequest request);
 
     BusinessResult<Boolean> deleteResource(String userId, ResourceDeleteRequest request);
 

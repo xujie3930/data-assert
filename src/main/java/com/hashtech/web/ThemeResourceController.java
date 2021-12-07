@@ -36,7 +36,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/save")
-    BusinessResult<Boolean> saveTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeSaveRequest request) {
+    BusinessResult<String> saveTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeSaveRequest request) {
         return themeResourceService.saveTheme(userId, request);
     }
 
@@ -48,7 +48,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/update")
-    BusinessResult<Boolean> updateTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeUpdateRequest request) {
+    BusinessResult<String> updateTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeUpdateRequest request) {
         return themeResourceService.updateTheme(userId, request);
     }
 
@@ -78,7 +78,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/resource/save")
-    BusinessResult<Boolean> saveResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceSaveRequest request) {
+    BusinessResult<String> saveResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceSaveRequest request) {
         return themeResourceService.saveResource(userId, request);
     }
 
@@ -90,7 +90,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/resource/update")
-    BusinessResult<Boolean> updateResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceUpdateRequest request) {
+    BusinessResult<String> updateResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceUpdateRequest request) {
         return themeResourceService.updateResource(userId, request);
     }
 

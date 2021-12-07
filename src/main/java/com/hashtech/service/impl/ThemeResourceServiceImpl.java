@@ -49,10 +49,11 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> saveTheme(String userId, ThemeSaveRequest request) {
+    public BusinessResult<String> saveTheme(String userId, ThemeSaveRequest request) {
         checkRepetitionName(request.getName(), null);
         ThemeResourceEntity entity = getThemeResourceEntitySave(userId, request);
-        return BusinessResult.success(save(entity));
+        save(entity);
+        return BusinessResult.success(entity.getId());
     }
 
     @Override
@@ -98,14 +99,15 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> updateTheme(String userId, ThemeUpdateRequest request) {
+    public BusinessResult<String> updateTheme(String userId, ThemeUpdateRequest request) {
         checkRepetitionName(request.getName(), request.getThemeId());
         ThemeResourceEntity entity = new ThemeResourceEntity();
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(userId);
         entity.setName(request.getName());
         entity.setId(request.getThemeId());
-        return BusinessResult.success(updateById(entity));
+        updateById(entity);
+        return BusinessResult.success(entity.getId());
     }
 
     @Override
@@ -119,10 +121,11 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> saveResource(String userId, ResourceSaveRequest request) {
+    public BusinessResult<String> saveResource(String userId, ResourceSaveRequest request) {
         checkRepetitionNameByResource(request.getName(), null);
         ThemeResourceEntity entity = getResourceEntity(userId, request);
-        return BusinessResult.success(save(entity));
+        save(entity);
+        return BusinessResult.success(entity.getId());
     }
 
     /**
@@ -147,9 +150,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         result.setDescriptor(resourceEntity.getDescriptor());
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
         long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getState())).count();
-        if (resourceTableList.size() == 0) {
-            result.setOpenRate(100.00);
-        } else {
+        if (!CollectionUtils.isEmpty(resourceTableList)) {
             result.setOpenRate(DoubleUtils.formatDouble(openCount / (double) resourceTableList.size()));
         }
         result.setColumnsCount(resourceTableList.parallelStream().mapToInt(ResourceTableEntity::getColumnsCount).sum());
@@ -160,13 +161,14 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> updateResource(String userId, ResourceUpdateRequest request) {
+    public BusinessResult<String> updateResource(String userId, ResourceUpdateRequest request) {
         checkRepetitionNameByResource(request.getName(), request.getId());
         ThemeResourceEntity entity = new ThemeResourceEntity();
         BeanCopyUtils.copyProperties(request, entity);
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(userId);
-        return BusinessResult.success(updateById(entity));
+        updateById(entity);
+        return BusinessResult.success(entity.getId());
     }
 
     @Override

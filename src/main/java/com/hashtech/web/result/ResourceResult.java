@@ -31,6 +31,7 @@ public class ResourceResult {
     private Long dataSize;
     /**
      * 该资源分类下所包含的表，处于开放状态的表所占总表数的百分比
+     * 初始状态为0
      */
-    private Double openRate;
+    private Double openRate = 0.00;
 }
