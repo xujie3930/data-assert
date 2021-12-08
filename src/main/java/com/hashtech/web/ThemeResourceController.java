@@ -96,7 +96,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/resource/delete")
-    BusinessResult<Boolean> deleteResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceDeleteRequest request) {
+    BusinessResult<String> deleteResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceDeleteRequest request) {
         return themeResourceService.deleteResource(userId, request);
     }
 }

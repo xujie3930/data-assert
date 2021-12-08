@@ -93,7 +93,7 @@
         </where>
     </select>
 
-    <select id="hasExitExternalState"
+    <select id="hasExitExternalStateByResourceId"
             resultType="java.lang.Boolean">
         select 1
         from resource_table
@@ -103,6 +103,25 @@
             </if>
             <if test="externalState !=null">
                 and external_state=#{externalState}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
+
+    <select id="hasExitExternalStateByIds"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="externalState !=null">
+                AND external_state=#{externalState}
+            </if>
+            <if test="ids != null and ids != ''">
+                AND id in
+                <foreach collection="ids" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
             </if>
             AND del_flag = 'N'
         </where>

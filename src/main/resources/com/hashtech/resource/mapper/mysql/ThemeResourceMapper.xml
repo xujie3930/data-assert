@@ -94,4 +94,22 @@
             order by sort desc
         </where>
     </select>
+
+    <select id="hasExitErrorLevel"
+            resultType="java.lang.Boolean">
+        select 1
+        from theme_resource
+        <where>
+            <if test="parentId != null and parentId != '' ">
+                AND parent_id = #{parentId}
+            </if>
+            <if test="ids != null and ids != ''">
+                AND id in
+                <foreach collection="ids" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+        </where>
+        limit 1
+    </select>
 </mapper>

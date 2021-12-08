@@ -15,6 +15,7 @@ import com.hashtech.businessframework.utils.StringUtils;
 import com.hashtech.businessframework.validate.BusinessParamsValidate;
 import com.hashtech.common.ResourceCodeBean;
 import com.hashtech.common.SortEnum;
+import com.hashtech.common.StatusEnum;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.mapper.DataSourceMapper;
@@ -157,6 +158,13 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     public BusinessResult<Boolean> deleteResourceTable(String userId, String[] ids) {
         if (ids.length <= 0) {
             return BusinessResult.success(true);
+        }
+        //开放平台中开放的表不能删除
+        if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByIds(ids, StatusEnum.ENABLE.getCode()))) {
+            if (ids.length == 1) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000017.getCode());
+            }
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000018.getCode());
         }
         List<ResourceTableEntity> list = new ArrayList<>();
         for (String id : ids) {

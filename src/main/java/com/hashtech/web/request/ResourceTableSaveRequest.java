@@ -39,10 +39,12 @@ public class ResourceTableSaveRequest {
     /**
      * 描述
      */
+    @Length(max = 200, message = "描述不能多于200字")
     private String descriptor;
     /**
      * 注意事项
      */
+    @Length(max = 200, message = "注意事项不能多于200字")
     private String matters;
     /**
      * 排序按照数据库中的排列

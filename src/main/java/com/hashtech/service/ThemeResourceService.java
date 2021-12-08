@@ -1,6 +1,7 @@
 package com.hashtech.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.businessframework.exception.interval.AppException;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.web.request.*;
@@ -34,7 +35,7 @@ public interface ThemeResourceService extends IService<ThemeResourceEntity> {
 
     BusinessResult<String> updateResource(String userId, ResourceUpdateRequest request);
 
-    BusinessResult<Boolean> deleteResource(String userId, ResourceDeleteRequest request);
+    BusinessResult<String> deleteResource(String userId, ResourceDeleteRequest request) throws AppException;
 
     BusinessResult<Boolean> rearrangement(String userId, Map<String, String[]> request);
 

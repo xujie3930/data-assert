@@ -39,6 +39,8 @@ import java.sql.*;
 import java.util.Date;
 import java.util.*;
 
+import static com.hashtech.utils.ResultSetToListUtils.*;
+
 /**
  * <p>
  * 资源信息设置表 服务实现类
@@ -115,7 +117,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         Integer columnsCount = 0;
         Connection conn = null;
         try {
-            conn = jdbcTemplate.getDataSource().getConnection();
+            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
             ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
@@ -142,21 +144,22 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     columnsCount++;
                 }
             }
-            String getCountSql = "select count(*) from " + request.getTableName();
+            String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
             Statement stmt = conn.createStatement();
             ResultSet countRs = stmt.executeQuery(getCountSql);
             if (countRs.next()) {
                 //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
-                baseInfo.setDataSize(countRs.getInt(1));
+                baseInfo.setDataSize(countRs.getLong(1));
             }
-            Integer index = (request.getPageNum() - 1) * request.getPageSize();
-            Integer end = index + request.getPageSize();
-            String pagingData = "select * from " + request.getTableName() + " limit " + index + " , " + end;
+            int index = (request.getPageNum() - 1) * request.getPageSize();
+            int end = index + request.getPageSize();
+            String pagingData = new StringBuilder("select * from ").append(request.getTableName())
+                    .append(" limit ").append(index).append(" , ").append(end).toString();
             ResultSet pagingRs = stmt.executeQuery(pagingData);
             if (pagingRs.next()) {
                 List list = ResultSetToListUtils.convertList(pagingRs);
                 Page<Object> page = new Page<>(request.getPageNum(), request.getPageSize());
-                page.setTotal(baseInfo.getDataSize().longValue());
+                page.setTotal(baseInfo.getDataSize());
                 result.setSampleList(BusinessPageResult.build(page.setRecords(list), request));
             }
         } catch (Exception e) {
@@ -184,7 +187,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         List<Map<String, Object>> tableMaps;
         Connection conn = null;
         try {
-            conn = jdbcTemplate.getDataSource().getConnection();
+            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             String schemaName = conn.getCatalog();
             String tableNameListSql = String.format("select table_name,table_comment from information_schema.tables where table_schema='%s'", schemaName);
             tableMaps = jdbcTemplate.queryForList(tableNameListSql);
@@ -220,19 +223,21 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         StringBuilder builder = new StringBuilder("select * from " + entity.getName() + " where ");
         for (Map<String, Object> map : paramList) {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                builder.append(entry.getKey() + " = ");
-                builder.append(entry.getValue() + " and ");
+                builder.append(entry.getKey()).append(" = ");
+                builder.append(entry.getValue()).append(" and ");
             }
         }
         String tempSql = builder.toString();
         tempSql = tempSql.substring(0, tempSql.lastIndexOf("and"));
-        Integer index = (request.getPageNum() - 1) * request.getPageSize();
-        Integer end = index + request.getPageSize();
-        String querySql = tempSql + " limit " + index + " , " + end;
+        int index = (request.getPageNum() - 1) * request.getPageSize();
+        int end = index + request.getPageSize();
+        String querySql = new StringBuilder(tempSql).append(" limit ").append(index).append(" , ").append(end).toString();
         try {
-            conn = jdbcTemplate.getDataSource().getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet pagingRs = stmt.executeQuery(querySql);
+            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
+            ResultSet pagingRs;
+            try (Statement stmt = conn.createStatement()) {
+                pagingRs = stmt.executeQuery(querySql);
+            }
             if (pagingRs.next()) {
                 List list = ResultSetToListUtils.convertList(pagingRs);
                 return list;

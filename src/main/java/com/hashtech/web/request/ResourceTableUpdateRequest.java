@@ -2,6 +2,7 @@ package com.hashtech.web.request;
 
 import com.hashtech.businessframework.result.base.BusinessBasePageForm;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 
@@ -32,9 +33,11 @@ public class ResourceTableUpdateRequest {
     /**
      * 描述
      */
+    @Length(max = 200, message = "描述不能多于200字")
     private String descriptor;
     /**
      * 注意事项
      */
+    @Length(max = 200, message = "注意事项不能多于200字")
     private String matters;
 }

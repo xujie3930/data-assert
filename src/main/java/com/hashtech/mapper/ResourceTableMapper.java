@@ -28,5 +28,7 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
 
     Long getCountDataSizeResourceId(@Param("resourceId") String id);
 
-    Boolean hasExitExternalState(@Param("resourceId") String id, @Param("externalState") Integer externalState);
+    Boolean hasExitExternalStateByResourceId(@Param("resourceId") String id, @Param("externalState") Integer externalState);
+
+    Boolean hasExitExternalStateByIds(@Param("ids") String[] ids, @Param("externalState") Integer externalState);
 }

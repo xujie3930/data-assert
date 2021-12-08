@@ -119,7 +119,11 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             return BusinessResult.success(true);
         }
         for (ThemeResult themeResult : resourceList) {
-            deleteResource(userId, new ResourceDeleteRequest(themeResult.getId()));
+            try {
+                deleteResource(userId, new ResourceDeleteRequest(themeResult.getId()));
+            } catch (AppException e) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.getCode());
+            }
         }
         ThemeResourceEntity entity = getThemeResourceEntityDel(userId, request);
         return BusinessResult.success(updateById(entity));
@@ -182,18 +186,20 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> deleteResource(String userId, ResourceDeleteRequest request) {
+    public BusinessResult<String> deleteResource(String userId, ResourceDeleteRequest request) throws AppException {
         //如果删除的资源分类包含有已开放的表,不能删除
-        if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalState(request.getId(), StatusEnum.ENABLE.getCode()))) {
+        if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceId(request.getId(), StatusEnum.ENABLE.getCode()))) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.getCode());
         }
         resourceTableMapper.deleteByResourceId(request.getId());
-        ThemeResourceEntity entity = new ThemeResourceEntity();
-        entity.setId(request.getId());
+
+        //软删除资源分类信息，返回其主题id（前端高亮用）
+        ThemeResourceEntity entity = getById(request.getId());
         entity.setUpdateBy(userId);
         entity.setUpdateTime(new Date());
         entity.setDelFlag("Y");
-        return BusinessResult.success(updateById(entity));
+        updateById(entity);
+        return BusinessResult.success(entity.getParentId());
     }
 
     @Override
@@ -209,12 +215,20 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             String themeId = m.getKey();
             String[] resourceIds = m.getValue();
             //调换不同主题之间的排序
+            ThemeResourceEntity themeEntity = getById(themeId);
+            //二级目录拖到一级目录,需要报错
+            if (!THEME_PARENT_ID.equals(themeEntity.getParentId())) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000015.getCode());
+            }
             themeResourceMapper.updateSort(size, themeId);
             size -= 1;
             if (resourceIds.length <= 0) {
                 continue;
             }
             //更新资源所属主题
+            if (BooleanUtils.isTrue(themeResourceMapper.hasExitErrorLevel(resourceIds, THEME_PARENT_ID))) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.getCode());
+            }
             themeResourceMapper.updateParentId(themeId, resourceIds);
         }
         return BusinessResult.success(true);

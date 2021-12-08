@@ -74,7 +74,7 @@ public class ResourceTableEntity implements Serializable {
     /**
      * 表数据量
      */
-    private Integer dataSize;
+    private Long dataSize;
 
     /**
      * 注意事项
