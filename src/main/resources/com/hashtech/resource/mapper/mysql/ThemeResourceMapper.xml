@@ -5,6 +5,7 @@
     <sql id="Base_Column_List">
         id               	as  id,
       name              as  name,
+      descriptor        as  descriptor,
       sort              as  sort,
       create_time       as  createTime,
       create_by         as  createBy,
@@ -91,7 +92,7 @@
                 AND parent_id = #{parentId}
             </if>
             AND del_flag = 'N'
-            order by sort desc
+            order by sort desc,update_time desc
         </where>
     </select>
 

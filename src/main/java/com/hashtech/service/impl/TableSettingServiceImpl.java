@@ -219,25 +219,37 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     @DS("remote")
     public List<Object> getResourceData(ResourceDataRequest request, ResourceTableEntity entity) {
         Connection conn = null;
-        List<Map<String, Object>> paramList = URLProcessUtils.getParamList(request.getRequestUrl());
+        //拼接查询sql
         StringBuilder builder = new StringBuilder("select * from " + entity.getName() + " where ");
-        for (Map<String, Object> map : paramList) {
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
+        //解析请求参数
+        if (!CollectionUtils.isEmpty(request.getParams())) {
+            for (Map.Entry<String, Object> entry : request.getParams().entrySet()) {
                 builder.append(entry.getKey()).append(" = ");
                 builder.append(entry.getValue()).append(" and ");
             }
         }
         String tempSql = builder.toString();
+        //可能URL中也会携带有参数信息
+        List<Map<String, Object>> paramList = URLProcessUtils.getParamList(request.getRequestUrl());
+        if (!CollectionUtils.isEmpty(paramList)) {
+            StringBuilder newBuilder = new StringBuilder(tempSql);
+            for (Map<String, Object> map : paramList) {
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
+                    newBuilder.append(entry.getKey()).append(" = ");
+                    newBuilder.append(entry.getValue()).append(" and ");
+                }
+            }
+            tempSql = newBuilder.toString();
+        }
+
         tempSql = tempSql.substring(0, tempSql.lastIndexOf("and"));
         int index = (request.getPageNum() - 1) * request.getPageSize();
         int end = index + request.getPageSize();
-        String querySql = new StringBuilder(tempSql).append(" limit ").append(index).append(" , ").append(end).toString();
+        String querySql = tempSql + " limit " + index + " , " + end;
         try {
             conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
-            ResultSet pagingRs;
-            try (Statement stmt = conn.createStatement()) {
-                pagingRs = stmt.executeQuery(querySql);
-            }
+            Statement stmt = conn.createStatement();
+            ResultSet pagingRs = stmt.executeQuery(querySql);
             if (pagingRs.next()) {
                 List list = ResultSetToListUtils.convertList(pagingRs);
                 return list;
@@ -254,6 +266,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 }
             }
         }
-        return null;
+        return Collections.emptyList();
     }
 }

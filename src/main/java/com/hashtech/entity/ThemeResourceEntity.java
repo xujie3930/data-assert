@@ -47,7 +47,7 @@ public class ThemeResourceEntity implements Serializable {
     /**
      * 用于目录树排序
      */
-    private Integer sort;
+    private Integer sort = 0;
 
     /**
      * 创建时间

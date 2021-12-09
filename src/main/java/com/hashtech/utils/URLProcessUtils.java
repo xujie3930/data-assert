@@ -1,9 +1,8 @@
 package com.hashtech.utils;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import com.hashtech.businessframework.utils.StringUtils;
+
+import java.util.*;
 
 /**
  * @author xujie
@@ -39,6 +38,9 @@ public class URLProcessUtils {
     public static List<Map<String, Object>> getParamList(String requestUrl) {
         List<Map<String, Object>> maps = new LinkedList<>();
         String tempStr = requestUrl.substring(requestUrl.lastIndexOf(SEPARATOR) + 1);
+        if (StringUtils.isBlank(tempStr)) {
+            return Collections.emptyList();
+        }
         String[] split = tempStr.split(JOINT_MARK);
         for (String s : split) {
             LinkedHashMap<String, Object> map = new LinkedHashMap<>();

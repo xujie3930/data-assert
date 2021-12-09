@@ -73,10 +73,27 @@ public class ResourceTableController {
         return resourceTableService.pageList(request);
     }
 
-    //服务消费者实现实现FeignClient接口比较直观些
+    /**
+     * 给开放平台提供查询的接口,Post方式
+     *
+     * @param request
+     * @return
+     */
     @Logable
     @PostMapping("/getResourceData")
-    BusinessResult<List<Object>> getResourceData(@RequestBody ResourceDataRequest request) {
+    BusinessResult<List<Object>> getResourceDataByPost(@RequestBody ResourceDataRequest request) {
+        return resourceTableService.getResourceData(request);
+    }
+
+    /**
+     * 给开放平台提供查询的接口,Get方式
+     *
+     * @param request
+     * @return
+     */
+    @Logable
+    @GetMapping("/getResourceData")
+    BusinessResult<List<Object>> getResourceDataByGet(@RequestBody ResourceDataRequest request) {
         return resourceTableService.getResourceData(request);
     }
 }

@@ -225,11 +225,18 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             if (resourceIds.length <= 0) {
                 continue;
             }
-            //更新资源所属主题
+            //更新资源表排序，并更新资源所属主题
             if (BooleanUtils.isTrue(themeResourceMapper.hasExitErrorLevel(resourceIds, THEME_PARENT_ID))) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.getCode());
             }
-            themeResourceMapper.updateParentId(themeId, resourceIds);
+            int resourceSize = resourceIds.length;
+            for (String resourceId : resourceIds) {
+                ThemeResourceEntity resourceEntity = getById(resourceId);
+                resourceEntity.setSort(resourceSize);
+                resourceEntity.setParentId(themeId);
+                updateById(resourceEntity);
+                resourceSize -= 1;
+            }
         }
         return BusinessResult.success(true);
     }

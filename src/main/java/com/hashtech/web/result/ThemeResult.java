@@ -36,6 +36,11 @@ public class ThemeResult implements Serializable {
     private String name;
 
     /**
+     * 主题或者资源分类描述
+     */
+    private String descriptor;
+
+    /**
      * 用于目录树排序
      */
     private Integer sort;
