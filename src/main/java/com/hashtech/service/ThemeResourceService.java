@@ -8,6 +8,7 @@ import com.hashtech.web.request.*;
 import com.hashtech.web.result.ResourceResult;
 import com.hashtech.web.result.ThemeResult;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public interface ThemeResourceService extends IService<ThemeResourceEntity> {
 
     BusinessResult<String> updateTheme(String userId, ThemeUpdateRequest request);
 
-    BusinessResult<Boolean> deleteTheme(String userId, ThemeDeleteRequest request);
+    BusinessResult<String> deleteTheme(String userId, ThemeDeleteRequest request);
 
     BusinessResult<String> saveResource(String userId, ResourceSaveRequest request);
 
@@ -35,7 +36,7 @@ public interface ThemeResourceService extends IService<ThemeResourceEntity> {
 
     BusinessResult<String> updateResource(String userId, ResourceUpdateRequest request);
 
-    BusinessResult<String> deleteResource(String userId, ResourceDeleteRequest request) throws AppException;
+    BusinessResult<Map<String, String>> deleteResource(String userId, ResourceDeleteRequest request) throws AppException;
 
     BusinessResult<Boolean> rearrangement(String userId, Map<String, String[]> request);
 

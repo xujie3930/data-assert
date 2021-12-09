@@ -31,6 +31,7 @@ public class ResourceTableEntity implements Serializable {
     public static final String CREATE_BY = "CREATE_BY";
     public static final String DEL_FLAG = "DEL_FLAG";
     public static final String UPDATE_TIME = "UPDATE_TIME";
+    public static final String CREATE_TIME = "CREATE_TIME";
 
     /**
      * 主键id
@@ -52,7 +53,7 @@ public class ResourceTableEntity implements Serializable {
     private Integer externalState = 1;
 
     /**
-     * 资源分类名称
+     * 资源表名称
      */
     private String name;
 

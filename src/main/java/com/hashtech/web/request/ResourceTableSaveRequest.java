@@ -25,6 +25,10 @@ public class ResourceTableSaveRequest {
      */
     private String name;
     /**
+     * 表的访问url
+     */
+    private String requestUrl;
+    /**
      * 数据项
      */
     private Integer columnsCount;

@@ -7,6 +7,7 @@ import com.hashtech.businessframework.result.util.BeanCopyUtils;
 import com.hashtech.businessframework.sequence.api.SequenceService;
 import com.hashtech.businessframework.utils.CollectionUtils;
 import com.hashtech.businessframework.validate.BusinessParamsValidate;
+import com.hashtech.common.DelFalgEnum;
 import com.hashtech.common.ResourceCodeBean;
 import com.hashtech.common.StatusEnum;
 import com.hashtech.entity.ResourceTableEntity;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +49,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private static final String THEME_PARENT_ID = "0";
 
     @Override
-    @BusinessParamsValidate
+    @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> saveTheme(String userId, ThemeSaveRequest request) {
         checkRepetitionName(request.getName(), null);
@@ -96,7 +98,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     }
 
     @Override
-    @BusinessParamsValidate
+    @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> updateTheme(String userId, ThemeUpdateRequest request) {
         checkRepetitionName(request.getName(), request.getThemeId());
@@ -112,25 +114,26 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> deleteTheme(String userId, ThemeDeleteRequest request) {
+    public BusinessResult<String> deleteTheme(String userId, ThemeDeleteRequest request) {
         //删除主题下的资源
         List<ThemeResult> resourceList = themeResourceMapper.getResourceByParentId(request.getId());
-        if (CollectionUtils.isEmpty(resourceList)) {
-            return BusinessResult.success(true);
-        }
-        for (ThemeResult themeResult : resourceList) {
-            try {
-                deleteResource(userId, new ResourceDeleteRequest(themeResult.getId()));
-            } catch (AppException e) {
-                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.getCode());
+        if (!CollectionUtils.isEmpty(resourceList)) {
+            for (ThemeResult themeResult : resourceList) {
+                try {
+                    deleteResource(userId, new ResourceDeleteRequest(themeResult.getId()));
+                } catch (AppException e) {
+                    throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.getCode());
+                }
             }
         }
+        //删除主题，返回主题id
         ThemeResourceEntity entity = getThemeResourceEntityDel(userId, request);
-        return BusinessResult.success(updateById(entity));
+        updateById(entity);
+        return BusinessResult.success(entity.getId());
     }
 
     @Override
-    @BusinessParamsValidate
+    @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> saveResource(String userId, ResourceSaveRequest request) {
         checkRepetitionNameByResource(request.getName(), null);
@@ -172,7 +175,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     }
 
     @Override
-    @BusinessParamsValidate
+    @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> updateResource(String userId, ResourceUpdateRequest request) {
         checkRepetitionNameByResource(request.getName(), request.getId());
@@ -186,7 +189,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<String> deleteResource(String userId, ResourceDeleteRequest request) throws AppException {
+    public BusinessResult<Map<String, String>> deleteResource(String userId, ResourceDeleteRequest request) throws AppException {
         //如果删除的资源分类包含有已开放的表,不能删除
         if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceId(request.getId(), StatusEnum.ENABLE.getCode()))) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.getCode());
@@ -199,7 +202,11 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         entity.setUpdateTime(new Date());
         entity.setDelFlag("Y");
         updateById(entity);
-        return BusinessResult.success(entity.getParentId());
+        //返回资源id和主题id（前端高亮用）
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        map.put("themeId", entity.getParentId());
+        map.put("resourceId", entity.getId());
+        return BusinessResult.success(map);
     }
 
     @Override
@@ -268,6 +275,10 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     }
 
     private ThemeResourceEntity getResourceEntity(String userId, ResourceSaveRequest request) {
+        ThemeResourceEntity themeEntity = getById(request.getId());
+        if (DelFalgEnum.HAS_DELETE.getDesc().equals(themeEntity.getDelFlag())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000019.getCode());
+        }
         ThemeResourceEntity entity = BeanCopyUtils.copyProperties(request, new ThemeResourceEntity());
         Date date = new Date();
         entity.setCreateBy(userId);
@@ -283,8 +294,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     }
 
     private ThemeResourceEntity getThemeResourceEntityDel(String userId, ThemeDeleteRequest request) {
-        ThemeResourceEntity entity = new ThemeResourceEntity();
-        entity.setId(request.getId());
+        ThemeResourceEntity entity = getById(request.getId());
         entity.setUpdateBy(userId);
         entity.setUpdateTime(new Date());
         entity.setDelFlag("Y");

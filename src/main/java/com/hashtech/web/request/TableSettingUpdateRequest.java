@@ -19,6 +19,10 @@ public class TableSettingUpdateRequest {
      */
     private String id;
     /**
+     * 表的访问url
+     */
+    private String requestUrl;
+    /**
      * 请求方式：0-POST,1-GET
      */
     private Integer requestWay = 0;

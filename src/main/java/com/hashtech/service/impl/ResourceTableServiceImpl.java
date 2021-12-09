@@ -61,6 +61,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     @DS("master")
+    @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
         BusinessResult<ResourceTablePreposeResult> result = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(request.getName()));
         if (!result.isSuccess()) {
@@ -85,7 +86,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
-    @BusinessParamsValidate
+    @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> updateResourceTable(String userId, ResourceTableUpdateRequest request) {
         ResourceTableEntity resourceTableEntity = getById(request.getId());
@@ -197,10 +198,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             wrapper.orderByAsc(ResourceTableEntity.STATE);
         }
         if (SortEnum.DESC.getDesc().equals(request.getAscOrDesc())) {
-            wrapper.orderByDesc(ResourceTableEntity.UPDATE_TIME);
+            wrapper.orderByDesc(ResourceTableEntity.CREATE_TIME);
         }
         if (SortEnum.ASC.getDesc().equals(request.getAscOrDesc())) {
-            wrapper.orderByAsc(ResourceTableEntity.UPDATE_TIME);
+            wrapper.orderByAsc(ResourceTableEntity.CREATE_TIME);
         }
         IPage<ResourceTableEntity> page = this.page(
                 new Query<ResourceTableEntity>().getPage(request),

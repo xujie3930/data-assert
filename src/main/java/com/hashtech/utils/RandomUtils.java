@@ -10,6 +10,23 @@ import java.util.Random;
  **/
 public class RandomUtils {
 
+    private static final int DEFAULTLENGTH = 16;
+
+    public static String getRandomExcludeNumber() {
+        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random();
+
+        StringBuffer sb = new StringBuffer();
+
+        for (int i = 0; i < DEFAULTLENGTH; i++) {
+
+            int number = random.nextInt(str.length());
+
+            sb.append(str.charAt(number));
+        }
+        return sb.toString();
+    }
+
     public static String getRandomExcludeNumber(int length) {
         String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Random random = new Random();
@@ -26,6 +43,6 @@ public class RandomUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(getRandomExcludeNumber(16));
+        System.out.println(getRandomExcludeNumber());
     }
 }

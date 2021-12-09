@@ -12,6 +12,7 @@ import com.hashtech.businessframework.utils.CollectionUtils;
 import com.hashtech.businessframework.utils.StringUtils;
 import com.hashtech.businessframework.validate.BusinessParamsValidate;
 import com.hashtech.common.ResourceCodeBean;
+import com.hashtech.common.StatusEnum;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.mapper.TableSettingMapper;
@@ -23,23 +24,20 @@ import com.hashtech.utils.ResultSetToListUtils;
 import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.ResourceDataRequest;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
-import com.hashtech.web.request.ResourceTablePreviewRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
-import com.hashtech.web.result.*;
+import com.hashtech.web.result.BaseInfo;
+import com.hashtech.web.result.ResourceTablePreposeResult;
+import com.hashtech.web.result.Structure;
+import com.hashtech.web.result.TableSettingResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.SmartDataSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Date;
 import java.util.*;
-
-import static com.hashtech.utils.ResultSetToListUtils.*;
 
 /**
  * <p>
@@ -64,14 +62,15 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
         TableSettingResult result = new TableSettingResult();
         ResourceTableEntity resourceTableEntity = resourceTableService.getById(id);
-        //如果url为空，则生成url并入库
-        if (StringUtils.isBlank(resourceTableEntity.getRequestUrl())) {
-            String requestUrl = RandomUtils.getRandomExcludeNumber(16);
-            result.setRequestUrl(requestUrl);
-            resourceTableEntity.setRequestUrl(requestUrl);
-            resourceTableService.updateById(resourceTableEntity);
+        if (Objects.isNull(resourceTableEntity)) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
         result.setRequestUrl(resourceTableEntity.getRequestUrl());
+        //如果url为空，则生成url返回前端，但不入库
+        if (StringUtils.isBlank(resourceTableEntity.getRequestUrl())) {
+            String requestUrl = RandomUtils.getRandomExcludeNumber();
+            result.setRequestUrl(requestUrl);
+        }
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(id);
         BeanCopyUtils.copyProperties(tableSettingEntity, result);
         if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
@@ -85,7 +84,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     }
 
     @Override
-    @BusinessParamsValidate
+    @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> updateTableSetting(String userId, TableSettingUpdateRequest request) {
         //更新资源表
@@ -93,8 +92,12 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
+        if (!StatusEnum.ENABLE.getCode().equals(resourceTableEntity.getState())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000020.getCode());
+        }
         resourceTableEntity.setUpdateTime(new Date());
         resourceTableEntity.setUpdateBy(userId);
+        resourceTableEntity.setRequestUrl(request.getRequestUrl());
         resourceTableService.updateById(resourceTableEntity);
 
         //更新资源表设置

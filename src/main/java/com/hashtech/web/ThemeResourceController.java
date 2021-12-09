@@ -54,7 +54,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/delete")
-    BusinessResult<Boolean> deleteTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeDeleteRequest request) {
+    BusinessResult<String> deleteTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeDeleteRequest request) {
         return themeResourceService.deleteTheme(userId, request);
     }
 
@@ -96,7 +96,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/resource/delete")
-    BusinessResult<String> deleteResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceDeleteRequest request) {
+    BusinessResult<Map<String, String>> deleteResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceDeleteRequest request) {
         return themeResourceService.deleteResource(userId, request);
     }
 }
