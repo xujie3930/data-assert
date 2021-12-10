@@ -57,6 +57,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private ResourceTableService resourceTableService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private static final int PAGESIZE_MAX = 500;
+    private static final int MAX_IMUM = 10000;
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -154,14 +156,16 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
                 baseInfo.setDataSize(countRs.getLong(1));
             }
-            int index = (request.getPageNum() - 1) * request.getPageSize();
+            //只展示前10000条数据
+            int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
+            int index = (pageNum - 1) * request.getPageSize();
             int end = index + request.getPageSize();
             String pagingData = new StringBuilder("select * from ").append(request.getTableName())
                     .append(" limit ").append(index).append(" , ").append(end).toString();
             ResultSet pagingRs = stmt.executeQuery(pagingData);
             if (pagingRs.next()) {
                 List list = ResultSetToListUtils.convertList(pagingRs);
-                Page<Object> page = new Page<>(request.getPageNum(), request.getPageSize());
+                Page<Object> page = new Page<>(pageNum, request.getPageSize());
                 page.setTotal(baseInfo.getDataSize());
                 result.setSampleList(BusinessPageResult.build(page.setRecords(list), request));
             }
@@ -246,8 +250,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         }
 
         tempSql = tempSql.substring(0, tempSql.lastIndexOf("and"));
-        int index = (request.getPageNum() - 1) * request.getPageSize();
-        int end = index + request.getPageSize();
+        int pageSize = Math.min(request.getPageSize(), PAGESIZE_MAX);
+        int index = (request.getPageNum() - 1) * pageSize;
+        int end = index + pageSize;
         String querySql = tempSql + " limit " + index + " , " + end;
         try {
             conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();

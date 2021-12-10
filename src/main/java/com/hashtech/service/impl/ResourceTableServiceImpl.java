@@ -222,6 +222,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000011.getCode());
         }
+        if (StatusEnum.DISABLE.getCode().equals(resourceTableEntity.getState())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000021.getCode());
+        }
         List<Object> list = tableSettingService.getResourceData(request, resourceTableEntity);
         return BusinessResult.success(list);
     }

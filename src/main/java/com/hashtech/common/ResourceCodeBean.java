@@ -36,6 +36,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000018("60000018", "列表所选中的资源表中包含已在开放平台开放的资源表，暂不能删除，请重新选择！"),
         RESOURCE_CODE_60000019("60000019", "该主题已被删除，不能添加分类！"),
         RESOURCE_CODE_60000020("60000020", "资源表处于开放状态才能进行接口设置！"),
+        RESOURCE_CODE_60000021("60000021", "该资源表尚未开放，不能查看数据"),
         ;
 
         public final String code;
