@@ -18,22 +18,25 @@ import com.hashtech.common.SortEnum;
 import com.hashtech.common.StatusEnum;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
-import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
+import com.hashtech.service.ThemeResourceService;
 import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.*;
-import com.hashtech.web.result.*;
+import com.hashtech.web.result.BaseInfo;
+import com.hashtech.web.result.ResourceTableInfoResult;
+import com.hashtech.web.result.ResourceTablePreposeResult;
+import com.hashtech.web.result.Structure;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.Date;
 
 /**
  * <p>
@@ -49,7 +52,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Autowired
     private SequenceService sequenceService;
     @Autowired
-    private ThemeResourceMapper themeResourceMapper;
+    private ThemeResourceService themeResourceService;
     @Autowired
     private ResourceTableMapper resourceTableMapper;
     @Autowired
@@ -63,6 +66,13 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @DS("master")
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
+        ThemeResourceEntity resourceEntity = themeResourceService.getById(request.getId());
+        if (Objects.isNull(resourceEntity)) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
+        }
+        if (ThemeResourceServiceImpl.getThemeParentId().equals(resourceEntity.getParentId())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000022.getCode());
+        }
         BusinessResult<ResourceTablePreposeResult> result = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(request.getName()));
         if (!result.isSuccess()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
@@ -222,7 +232,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000011.getCode());
         }
-        if (StatusEnum.DISABLE.getCode().equals(resourceTableEntity.getState())){
+        if (StatusEnum.DISABLE.getCode().equals(resourceTableEntity.getState())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000021.getCode());
         }
         List<Object> list = tableSettingService.getResourceData(request, resourceTableEntity);

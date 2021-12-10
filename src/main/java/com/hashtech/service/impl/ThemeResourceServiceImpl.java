@@ -48,6 +48,10 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private ResourceTableMapper resourceTableMapper;
     private static final String THEME_PARENT_ID = "0";
 
+    public static String getThemeParentId() {
+        return THEME_PARENT_ID;
+    }
+
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
