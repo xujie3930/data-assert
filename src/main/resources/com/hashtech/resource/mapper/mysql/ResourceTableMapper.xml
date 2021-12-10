@@ -62,10 +62,10 @@
             and del_flag='N'
         </where>
         <if test='request.ascOrDesc =="asc"'>
-            order by update_time asc
+            order by create_time asc
         </if>
         <if test='request.ascOrDesc =="desc"'>
-            order by update_time desc
+            order by create_time desc
         </if>
     </select>
 
