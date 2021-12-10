@@ -106,11 +106,10 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> updateTheme(String userId, ThemeUpdateRequest request) {
         checkRepetitionName(request.getName(), request.getThemeId());
-        ThemeResourceEntity entity = new ThemeResourceEntity();
+        ThemeResourceEntity entity = getById(request.getThemeId());
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(userId);
         entity.setName(request.getName());
-        entity.setId(request.getThemeId());
         updateById(entity);
         return BusinessResult.success(entity.getId());
     }
@@ -169,7 +168,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
         long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getState())).count();
         if (!CollectionUtils.isEmpty(resourceTableList)) {
-            result.setOpenRate(DoubleUtils.formatDouble(openCount / (double) resourceTableList.size()));
+            result.setOpenRate(DoubleUtils.formatDouble((double) openCount / (double) resourceTableList.size()));
         }
         result.setColumnsCount(resourceTableList.parallelStream().mapToInt(ResourceTableEntity::getColumnsCount).sum());
         result.setTableCount(resourceTableList.size());
@@ -183,7 +182,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> updateResource(String userId, ResourceUpdateRequest request) {
         checkRepetitionNameByResource(request.getName(), request.getId());
-        ThemeResourceEntity entity = BeanCopyUtils.copyProperties(request, new ThemeResourceEntity());
+        ThemeResourceEntity entity = getById(request.getId());
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(userId);
         updateById(entity);
@@ -204,7 +203,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         ThemeResourceEntity entity = getById(request.getId());
         entity.setUpdateBy(userId);
         entity.setUpdateTime(new Date());
-        entity.setDelFlag("Y");
+        entity.setDelFlag(DelFalgEnum.HAS_DELETE.getDesc());
         updateById(entity);
         //返回资源id和主题id（前端高亮用）
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
@@ -301,7 +300,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         ThemeResourceEntity entity = getById(request.getId());
         entity.setUpdateBy(userId);
         entity.setUpdateTime(new Date());
-        entity.setDelFlag("Y");
+        entity.setDelFlag(DelFalgEnum.HAS_DELETE.getDesc());
         return entity;
     }
 }

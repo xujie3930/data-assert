@@ -13,6 +13,7 @@ import com.hashtech.businessframework.result.util.BeanCopyUtils;
 import com.hashtech.businessframework.sequence.api.SequenceService;
 import com.hashtech.businessframework.utils.StringUtils;
 import com.hashtech.businessframework.validate.BusinessParamsValidate;
+import com.hashtech.common.DelFalgEnum;
 import com.hashtech.common.ResourceCodeBean;
 import com.hashtech.common.SortEnum;
 import com.hashtech.common.StatusEnum;
@@ -68,7 +69,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
         ThemeResourceEntity resourceEntity = themeResourceService.getById(request.getId());
         if (Objects.isNull(resourceEntity)) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000007.getCode());
         }
         if (ThemeResourceServiceImpl.getThemeParentId().equals(resourceEntity.getParentId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000022.getCode());
@@ -183,7 +184,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             entity.setId(id);
             entity.setUpdateTime(new Date());
             entity.setUpdateBy(userId);
-            entity.setDelFlag("Y");
+            entity.setDelFlag(DelFalgEnum.HAS_DELETE.getDesc());
             list.add(entity);
         }
         return BusinessResult.success(saveOrUpdateBatch(list));
