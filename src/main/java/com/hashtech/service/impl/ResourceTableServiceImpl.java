@@ -106,7 +106,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
-            ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
+            ResourceTableEntity entity = getById(request.getId());
+            BeanCopyUtils.copyProperties(request, entity);
             entity.setUpdateBy(userId);
             entity.setUpdateTime(new Date());
             return BusinessResult.success(updateById(entity));

@@ -183,6 +183,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     public BusinessResult<String> updateResource(String userId, ResourceUpdateRequest request) {
         checkRepetitionNameByResource(request.getName(), request.getId());
         ThemeResourceEntity entity = getById(request.getId());
+        BeanCopyUtils.copyProperties(request, entity);
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(userId);
         updateById(entity);

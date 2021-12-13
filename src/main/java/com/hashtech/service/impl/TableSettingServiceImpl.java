@@ -166,8 +166,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 List list = ResultSetToListUtils.convertList(pagingRs);
                 Page<Object> page = new Page<>(pageNum, request.getPageSize());
                 page.setTotal(baseInfo.getDataSize());
-                request.setPageNum(Math.min(pageNum,  MAX_IMUM / request.getPageSize()));
                 result.setSampleList(BusinessPageResult.build(page.setRecords(list), request));
+                //这里按前端要求返回pageCount
+                result.getSampleList().setPageCount(getPageCountByMaxImum(baseInfo.getDataSize(), request.getPageSize()));
             }
         } catch (Exception e) {
             log.error("获取表信息失败:{}", e.getMessage());
@@ -185,6 +186,16 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         result.setBaseInfo(baseInfo);
         result.setStructureList(structureList);
         return BusinessResult.success(result);
+    }
+
+    private Long getPageCountByMaxImum(Long total, int pageSize) {
+        if (total == 0L) {
+            return 0L;
+        } else if (total % (long)pageSize > 0L) {
+            return Math.min((total / (long)pageSize + 1L),  (MAX_IMUM / pageSize + 1L));
+        } else {
+            return Math.min((total / (long)pageSize),  MAX_IMUM / pageSize);
+        }
     }
 
     @Override
