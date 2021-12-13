@@ -159,14 +159,14 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             //只展示前10000条数据
             int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
             int index = (pageNum - 1) * request.getPageSize();
-            int end = index + request.getPageSize();
             String pagingData = new StringBuilder("select * from ").append(request.getTableName())
-                    .append(" limit ").append(index).append(" , ").append(end).toString();
+                    .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
             ResultSet pagingRs = stmt.executeQuery(pagingData);
             if (pagingRs.next()) {
                 List list = ResultSetToListUtils.convertList(pagingRs);
                 Page<Object> page = new Page<>(pageNum, request.getPageSize());
                 page.setTotal(baseInfo.getDataSize());
+                request.setPageNum(Math.min(pageNum,  MAX_IMUM / request.getPageSize()));
                 result.setSampleList(BusinessPageResult.build(page.setRecords(list), request));
             }
         } catch (Exception e) {
