@@ -127,4 +127,20 @@
         </where>
         limit 1
     </select>
+
+    <select id="checkHasExitResourceTable"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="name != null and name != '' ">
+                AND name = #{name}
+            </if>
+            <if test="resourceTableId != null and resourceTableId != '' ">
+                AND id != #{resourceTableId}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
 </mapper>

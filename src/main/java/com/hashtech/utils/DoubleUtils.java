@@ -8,20 +8,25 @@ import java.math.BigDecimal;
  * @create 2021-11-10 14:31
  **/
 public class DoubleUtils {
+
     private static final BigDecimal PERCENT = new BigDecimal(100);
 
     /**
-     * 四舍五入，获取百分比返回
-     * @param d
+     * 保留两位小数
+     * @param num
+     * @param count
      * @return
      */
-    public static double doublePercent(double d) {
-        BigDecimal bg = new BigDecimal(d).setScale(4, BigDecimal.ROUND_HALF_UP);
-        return bg.multiply(PERCENT).doubleValue();
+    public static double doublePercent(long num, long count) {
+        if (count == 0L){
+            return 0.00;
+        }
+        double value = new BigDecimal((float)num/count).multiply(PERCENT).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return value;
     }
 
     public static void main(String[] args) {
-        double value = doublePercent(4 / (double)5L);
+        double value = doublePercent(9L, 11L);
         System.out.println(value);
     }
 }

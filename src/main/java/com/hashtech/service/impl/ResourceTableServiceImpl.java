@@ -74,25 +74,31 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (ThemeResourceServiceImpl.getThemeParentId().equals(resourceEntity.getParentId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000022.getCode());
         }
+        checkHasExitResourceTable(request.getName(), null);
         BusinessResult<ResourceTablePreposeResult> result = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(request.getName()));
         if (!result.isSuccess()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         }
         ResourceTableEntity entity = getResourceTableEntitySave(userId, request, result.getData());
         save(entity);
-        TableSettingEntity tableSettingEntity = getTableSettingSaveEntity(result, entity);
+        TableSettingEntity tableSettingEntity = getTableSettingSaveEntity(entity);
         tableSettingService.save(tableSettingEntity);
         return BusinessResult.success(true);
     }
 
-    private TableSettingEntity getTableSettingSaveEntity(BusinessResult<ResourceTablePreposeResult> result, ResourceTableEntity entity) {
+    private Boolean checkHasExitResourceTable(String name, String resourceTableId) {
+        boolean hasExit = BooleanUtils.isTrue(resourceTableMapper.checkHasExitResourceTable(name, resourceTableId));
+        if (hasExit){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000023.getCode());
+        }
+        return hasExit;
+    }
+
+    private TableSettingEntity getTableSettingSaveEntity(ResourceTableEntity entity) {
         String resourceTableId = entity.getId();
         TableSettingEntity tableSettingEntity = new TableSettingEntity();
         tableSettingEntity.setId(sequenceService.nextValueString());
         tableSettingEntity.setResourceTableId(resourceTableId);
-        List<Structure> structureList = result.getData().getStructureList();
-        tableSettingEntity.setColumnsInfo(JSON.toJSON(structureList).toString());
-        //TODO:表结构信息未存储于hdfs中
         return tableSettingEntity;
     }
 
@@ -104,6 +110,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
+        checkHasExitResourceTable(request.getName(), resourceTableEntity.getId());
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = getById(request.getId());
@@ -119,15 +126,14 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         ResourceTableEntity entityUpdate = getResourceTableEntityUpdate(userId, request, result.getData());
         updateById(entityUpdate);
-        TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(result.getData(), entityUpdate);
+        TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(entityUpdate);
         return BusinessResult.success(tableSettingService.updateById(tableSettingUpdateEntity));
     }
 
-    private TableSettingEntity getTableSettingUpdateEntity(ResourceTablePreposeResult result, ResourceTableEntity entity) {
+    private TableSettingEntity getTableSettingUpdateEntity(ResourceTableEntity entity) {
         String resourceTableId = entity.getId();
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableId);
         tableSettingEntity.setParamInfo(null);
-        tableSettingEntity.setColumnsInfo(JSON.toJSON(result.getStructureList()).toString());
         return tableSettingEntity;
     }
 

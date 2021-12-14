@@ -1,6 +1,7 @@
 package com.hashtech.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.businessframework.exception.interval.AppException;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
@@ -29,7 +30,7 @@ public interface TableSettingService extends IService<TableSettingEntity> {
 
     BusinessResult<Boolean> updateTableSetting(String userId, TableSettingUpdateRequest request);
 
-    BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request);
+    BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request) throws AppException;
 
     BusinessResult<List<Map<String, String>>> getTablaList();
 

@@ -31,4 +31,6 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     Boolean hasExitExternalStateByResourceId(@Param("resourceId") String id, @Param("externalState") Integer externalState);
 
     Boolean hasExitExternalStateByIds(@Param("ids") String[] ids, @Param("externalState") Integer externalState);
+
+    Boolean checkHasExitResourceTable(@Param("name") String name, @Param("resourceTableId")String resourceId);
 }

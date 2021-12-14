@@ -107,7 +107,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         entity.setRequestWay(request.getRequestWay());
         entity.setExplainInfo(request.getExplainInfo());
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
-        return BusinessResult.success(tableSettingMapper.updateById(entity) == 1);
+        tableSettingMapper.updateById(entity);
+        return BusinessResult.success(true);
     }
 
     @Override
@@ -115,7 +116,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     /**
      * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
      */
-    public BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request) {
+    public BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request) throws AppException{
         ResourceTablePreposeResult result = new ResourceTablePreposeResult();
         BaseInfo baseInfo = new BaseInfo();
         List<Structure> structureList = new LinkedList<>();
@@ -171,8 +172,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 result.getSampleList().setPageCount(getPageCountByMaxImum(baseInfo.getDataSize(), request.getPageSize()));
             }
         } catch (Exception e) {
-            log.error("获取表信息失败:{}", e.getMessage());
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode(), e.getMessage());
+            log.error("获取表:{}信息失败:{}", request.getTableName(), e.getMessage());
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
             if (null != conn) {
                 try {
