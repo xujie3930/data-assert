@@ -30,6 +30,7 @@ import com.hashtech.web.result.ResourceTablePreposeResult;
 import com.hashtech.web.result.Structure;
 import com.hashtech.web.result.TableSettingResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -78,9 +79,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
             result.setParamInfo(Arrays.asList(tableSettingEntity.getParamInfo().split(",")));
         }
-        if (!StringUtils.isBlank(tableSettingEntity.getColumnsInfo())) {
-            List<Structure> structureList = JSONObject.parseArray(tableSettingEntity.getColumnsInfo(), Structure.class);
-            result.setStructureList(structureList);
+        TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
+        BusinessResult<ResourceTablePreposeResult> tablaInfo = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(resourceTableEntity.getName()));
+        if (tablaInfo.isSuccess()){
+            result.setStructureList(tablaInfo.getData().getStructureList());
         }
         return BusinessResult.success(result);
     }
@@ -142,8 +144,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     String columnType = columnResultSet.getString("TYPE_NAME");
                     structure.setType(columnType);
                     // 描述
-                    String remarks = columnResultSet.getString("REMARKS").toLowerCase(Locale.ROOT);
-                    structure.setFieldChineseName(remarks);
+                    String remarks = columnResultSet.getString("REMARKS");
+                    structure.setFieldChineseName(remarks.toLowerCase());
                     structure.setTableEnglishName(tableEnglishName);
                     structure.setTableChineseName(tableChineseName);
                     structureList.add(structure);
