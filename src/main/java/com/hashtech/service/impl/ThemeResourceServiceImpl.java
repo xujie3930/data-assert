@@ -24,10 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -278,6 +275,9 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
 
     private ThemeResourceEntity getResourceEntity(String userId, ResourceSaveRequest request) {
         ThemeResourceEntity themeEntity = getById(request.getId());
+        if (!ThemeResourceServiceImpl.getThemeParentId().equals(themeEntity.getParentId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000024.getCode());
+        }
         if (DelFalgEnum.HAS_DELETE.getDesc().equals(themeEntity.getDelFlag())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000019.getCode());
         }

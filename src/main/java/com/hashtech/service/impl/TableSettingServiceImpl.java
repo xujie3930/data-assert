@@ -142,7 +142,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     String columnType = columnResultSet.getString("TYPE_NAME");
                     structure.setType(columnType);
                     // 描述
-                    String remarks = columnResultSet.getString("REMARKS");
+                    String remarks = columnResultSet.getString("REMARKS").toLowerCase(Locale.ROOT);
                     structure.setFieldChineseName(remarks);
                     structure.setTableEnglishName(tableEnglishName);
                     structure.setTableChineseName(tableChineseName);

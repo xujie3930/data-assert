@@ -24,7 +24,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000006("60000006", "资源表不存在"),
         RESOURCE_CODE_60000007("60000007", "资源不明确"),
         RESOURCE_CODE_60000008("60000008", "资源表不明确"),
-        RESOURCE_CODE_60000009("60000009", "连接资源库失败"),
+        RESOURCE_CODE_60000009("60000009", "该资源表暂不可用，请联系管理员"),
         RESOURCE_CODE_60000010("60000010", "该资源库下没有表，请更换资源库"),
         RESOURCE_CODE_60000011("60000011", "该url没有匹配到具体的资源表，请重新确认"),
         RESOURCE_CODE_60000012("60000012", "资源名称最多为20字"),
@@ -38,6 +38,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000020("60000020", "资源表处于开放状态才能进行接口设置！"),
         RESOURCE_CODE_60000021("60000021", "该资源表尚未开放，不能查看数据"),
         RESOURCE_CODE_60000022("60000022", "主题下不能添加资源表,请选择具体的资源"),
+        RESOURCE_CODE_60000023("60000023", "该资源表已存在，不能重复添加！"),
+        RESOURCE_CODE_60000024("60000024", "资源只可以在主题下添加！"),
         ;
 
         public final String code;
