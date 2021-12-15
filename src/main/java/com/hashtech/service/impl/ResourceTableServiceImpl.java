@@ -74,7 +74,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (ThemeResourceServiceImpl.getThemeParentId().equals(resourceEntity.getParentId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000022.getCode());
         }
-        checkHasExitResourceTable(request.getName(), null);
+        checkHasExitResourceTable(request.getName(), request.getId(), null);
         BusinessResult<ResourceTablePreposeResult> result = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(request.getName()));
         if (!result.isSuccess()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
@@ -86,8 +86,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         return BusinessResult.success(true);
     }
 
-    private Boolean checkHasExitResourceTable(String name, String resourceTableId) {
-        boolean hasExit = BooleanUtils.isTrue(resourceTableMapper.checkHasExitResourceTable(name, resourceTableId));
+    private Boolean checkHasExitResourceTable(String name, String resourceId, String resourceTableId) {
+        boolean hasExit = BooleanUtils.isTrue(resourceTableMapper.checkHasExitResourceTable(name, resourceId, resourceTableId));
         if (hasExit){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000023.getCode());
         }
@@ -110,7 +110,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
-        checkHasExitResourceTable(request.getName(), resourceTableEntity.getId());
+        checkHasExitResourceTable(request.getName(), resourceTableEntity.getId(), resourceTableEntity.getId());
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = getById(request.getId());

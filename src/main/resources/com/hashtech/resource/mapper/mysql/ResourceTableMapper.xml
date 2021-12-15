@@ -136,6 +136,9 @@
             <if test="name != null and name != '' ">
                 AND name = #{name}
             </if>
+            <if test="resourceId != null and resourceId != '' ">
+                AND resource_id = #{resourceId}
+            </if>
             <if test="resourceTableId != null and resourceTableId != '' ">
                 AND id != #{resourceTableId}
             </if>
