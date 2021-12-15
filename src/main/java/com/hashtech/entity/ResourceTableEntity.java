@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hashtech.common.DelFalgEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -117,5 +118,5 @@ public class ResourceTableEntity implements Serializable {
     /**
      * 删除标识
      */
-    private String delFlag = "N";
+    private String delFlag = DelFalgEnum.NOT_DELETE.getDesc();
 }

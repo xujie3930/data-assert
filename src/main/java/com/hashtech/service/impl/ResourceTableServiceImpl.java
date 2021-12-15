@@ -201,7 +201,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @BusinessParamsValidate
     public BusinessResult<BusinessPageResult> pageList(ResourceTablePageListRequest request) {
         QueryWrapper<ResourceTableEntity> wrapper = new QueryWrapper<>();
-        wrapper.eq(ResourceTableEntity.DEL_FLAG, "N");
+        wrapper.eq(ResourceTableEntity.DEL_FLAG, DelFalgEnum.NOT_DELETE.getDesc());
         wrapper.eq(ResourceTableEntity.RESOURCE_ID, request.getId());
         if (null != request.getState()) {
             wrapper.eq(ResourceTableEntity.STATE, request.getState());
