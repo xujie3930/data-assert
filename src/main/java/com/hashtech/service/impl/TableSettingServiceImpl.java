@@ -139,13 +139,13 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     Structure structure = new Structure();
                     // 字段名称
                     String columnName = columnResultSet.getString("COLUMN_NAME");
-                    structure.setFieldEnglishName(columnName);
+                    structure.setFieldEnglishName(columnName.toLowerCase());
                     // 数据类型
                     String columnType = columnResultSet.getString("TYPE_NAME");
                     structure.setType(columnType);
                     // 描述
                     String remarks = columnResultSet.getString("REMARKS");
-                    structure.setFieldChineseName(remarks.toLowerCase());
+                    structure.setFieldChineseName(remarks);
                     structure.setTableEnglishName(tableEnglishName);
                     structure.setTableChineseName(tableChineseName);
                     structureList.add(structure);
