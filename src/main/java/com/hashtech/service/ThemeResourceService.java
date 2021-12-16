@@ -5,6 +5,7 @@ import com.hashtech.businessframework.exception.interval.AppException;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.web.request.*;
+import com.hashtech.web.result.IdResult;
 import com.hashtech.web.result.ResourceResult;
 import com.hashtech.web.result.ThemeResult;
 
@@ -28,7 +29,7 @@ public interface ThemeResourceService extends IService<ThemeResourceEntity> {
 
     BusinessResult<String> updateTheme(String userId, ThemeUpdateRequest request);
 
-    BusinessResult<String> deleteTheme(String userId, ThemeDeleteRequest request);
+    BusinessResult<IdResult> deleteTheme(String userId, ThemeDeleteRequest request);
 
     BusinessResult<String> saveResource(String userId, ResourceSaveRequest request);
 
@@ -36,7 +37,7 @@ public interface ThemeResourceService extends IService<ThemeResourceEntity> {
 
     BusinessResult<String> updateResource(String userId, ResourceUpdateRequest request);
 
-    BusinessResult<Map<String, String>> deleteResource(String userId, ResourceDeleteRequest request) throws AppException;
+    BusinessResult<IdResult> deleteResource(String userId, ResourceDeleteRequest request) throws AppException;
 
     BusinessResult<Boolean> rearrangement(String userId, Map<String, String[]> request);
 

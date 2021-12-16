@@ -6,6 +6,7 @@ import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.businessframework.result.util.BeanCopyUtils;
 import com.hashtech.businessframework.sequence.api.SequenceService;
 import com.hashtech.businessframework.utils.CollectionUtils;
+import com.hashtech.businessframework.utils.StringUtils;
 import com.hashtech.businessframework.validate.BusinessParamsValidate;
 import com.hashtech.common.DelFalgEnum;
 import com.hashtech.common.ResourceCodeBean;
@@ -17,6 +18,7 @@ import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.ThemeResourceService;
 import com.hashtech.utils.DoubleUtils;
 import com.hashtech.web.request.*;
+import com.hashtech.web.result.IdResult;
 import com.hashtech.web.result.ResourceResult;
 import com.hashtech.web.result.ThemeResult;
 import org.apache.commons.lang.BooleanUtils;
@@ -114,7 +116,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<String> deleteTheme(String userId, ThemeDeleteRequest request) {
+    public BusinessResult<IdResult> deleteTheme(String userId, ThemeDeleteRequest request) {
         //删除主题下的资源
         List<ThemeResult> resourceList = themeResourceMapper.getResourceByParentId(request.getId());
         if (!CollectionUtils.isEmpty(resourceList)) {
@@ -129,7 +131,27 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         //删除主题，返回主题id
         ThemeResourceEntity entity = getThemeResourceEntityDel(userId, request);
         updateById(entity);
-        return BusinessResult.success(entity.getId());
+        IdResult idResult = getIdResult(entity.getId(), entity.getSort(), THEME_PARENT_ID);
+        return BusinessResult.success(idResult);
+    }
+
+    private IdResult getIdResult(String id, Integer sort, String parentId) {
+        IdResult result = new IdResult();
+        result.setCurrent(id);
+        if (!THEME_PARENT_ID.equals(parentId)) {
+            result.setThemeId(parentId);
+        }
+        //查找当前主题或者资源的下一个
+        String nextId = themeResourceMapper.selectNextId(sort, parentId);
+        if (!StringUtils.isBlank(nextId)) {
+            result.setNext(nextId);
+            return result;
+        }
+
+        //查找当前主题或者资源的第一个
+        String previousId = themeResourceMapper.selectPreviousId(sort, parentId);
+        result.setPrevious(previousId);
+        return result;
     }
 
     @Override
@@ -164,7 +186,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         result.setDescriptor(resourceEntity.getDescriptor());
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
         long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getState())).count();
-        result.setOpenRate(DoubleUtils.doublePercent(openCount ,resourceTableList.size()));
+        result.setOpenRate(DoubleUtils.doublePercent(openCount, resourceTableList.size()));
         result.setColumnsCount(resourceTableList.parallelStream().mapToInt(ResourceTableEntity::getColumnsCount).sum());
         result.setTableCount(resourceTableList.size());
         Long dataSizeCount = resourceTableMapper.getCountDataSizeResourceId(id);
@@ -188,7 +210,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Map<String, String>> deleteResource(String userId, ResourceDeleteRequest request) throws AppException {
+    public BusinessResult<IdResult> deleteResource(String userId, ResourceDeleteRequest request) throws AppException {
         //如果删除的资源分类包含有已开放的表,不能删除
         if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceId(request.getId(), StatusEnum.ENABLE.getCode()))) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.getCode());
@@ -202,10 +224,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         entity.setDelFlag(DelFalgEnum.HAS_DELETE.getDesc());
         updateById(entity);
         //返回资源id和主题id（前端高亮用）
-        LinkedHashMap<String, String> map = new LinkedHashMap<>();
-        map.put("themeId", entity.getParentId());
-        map.put("resourceId", entity.getId());
-        return BusinessResult.success(map);
+        IdResult idResult = getIdResult(entity.getId(), entity.getSort(), entity.getParentId());
+        return BusinessResult.success(idResult);
     }
 
     @Override
@@ -275,7 +295,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
 
     private ThemeResourceEntity getResourceEntity(String userId, ResourceSaveRequest request) {
         ThemeResourceEntity themeEntity = getById(request.getId());
-        if (!ThemeResourceServiceImpl.getThemeParentId().equals(themeEntity.getParentId())){
+        if (!ThemeResourceServiceImpl.getThemeParentId().equals(themeEntity.getParentId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000024.getCode());
         }
         if (DelFalgEnum.HAS_DELETE.getDesc().equals(themeEntity.getDelFlag())) {

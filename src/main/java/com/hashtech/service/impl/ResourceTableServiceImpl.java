@@ -88,7 +88,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     private Boolean checkHasExitResourceTable(String name, String resourceId, String resourceTableId) {
         boolean hasExit = BooleanUtils.isTrue(resourceTableMapper.checkHasExitResourceTable(name, resourceId, resourceTableId));
-        if (hasExit){
+        if (hasExit) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000023.getCode());
         }
         return hasExit;

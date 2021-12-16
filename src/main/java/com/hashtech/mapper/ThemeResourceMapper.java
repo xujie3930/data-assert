@@ -34,4 +34,8 @@ public interface ThemeResourceMapper extends BaseMapper<ThemeResourceEntity> {
     List<ThemeResult> getResourceByParentId(@Param("parentId") String id);
 
     Boolean hasExitErrorLevel(@Param("ids") String[] resourceIds, @Param("parentId") String themeParentId);
+
+    String selectNextId(@Param("sort") Integer sort, @Param("parentId") String parentId);
+
+    String selectPreviousId(@Param("sort") Integer sort, @Param("parentId") String parentId);
 }

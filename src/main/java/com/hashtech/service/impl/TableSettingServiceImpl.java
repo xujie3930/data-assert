@@ -81,7 +81,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         }
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
         BusinessResult<ResourceTablePreposeResult> tablaInfo = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(resourceTableEntity.getName()));
-        if (tablaInfo.isSuccess()){
+        if (tablaInfo.isSuccess()) {
             result.setStructureList(tablaInfo.getData().getStructureList());
         }
         return BusinessResult.success(result);
@@ -118,7 +118,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     /**
      * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
      */
-    public BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request) throws AppException{
+    public BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request) throws AppException {
         ResourceTablePreposeResult result = new ResourceTablePreposeResult();
         BaseInfo baseInfo = new BaseInfo();
         List<Structure> structureList = new LinkedList<>();
@@ -194,10 +194,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private Long getPageCountByMaxImum(Long total, int pageSize) {
         if (total == 0L) {
             return 0L;
-        } else if (total % (long)pageSize > 0L) {
-            return Math.min((total / (long)pageSize + 1L),  (MAX_IMUM / pageSize + 1L));
+        } else if (total % (long) pageSize > 0L) {
+            return Math.min((total / (long) pageSize + 1L), (MAX_IMUM / pageSize + 1L));
         } else {
-            return Math.min((total / (long)pageSize),  MAX_IMUM / pageSize);
+            return Math.min((total / (long) pageSize), MAX_IMUM / pageSize);
         }
     }
 

@@ -113,4 +113,38 @@
         </where>
         limit 1
     </select>
+
+    <select id="selectNextId"
+            resultType="string">
+        select id
+        from theme_resource
+        <where>
+            <if test="parentId != null and parentId != '' ">
+                AND parent_id = #{parentId}
+            </if>
+            <if test="sort != null ">
+                AND sort <![CDATA[<]]> #{sort}
+            </if>
+            AND del_flag = 'N'
+            order by sort desc
+        </where>
+        limit 1
+    </select>
+
+    <select id="selectPreviousId"
+            resultType="string">
+        select id
+        from theme_resource
+        <where>
+            <if test="parentId != null and parentId != '' ">
+                AND parent_id = #{parentId}
+            </if>
+            <if test="sort != null ">
+                AND sort > #{sort}
+            </if>
+            AND del_flag = 'N'
+            order by sort asc
+        </where>
+        limit 1
+    </select>
 </mapper>

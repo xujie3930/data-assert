@@ -5,6 +5,7 @@ import com.hashtech.businessframework.log.Logable;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.service.ThemeResourceService;
 import com.hashtech.web.request.*;
+import com.hashtech.web.result.IdResult;
 import com.hashtech.web.result.ResourceResult;
 import com.hashtech.web.result.ThemeResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/delete")
-    BusinessResult<String> deleteTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeDeleteRequest request) {
+    BusinessResult<IdResult> deleteTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeDeleteRequest request) {
         return themeResourceService.deleteTheme(userId, request);
     }
 
@@ -96,7 +97,7 @@ public class ThemeResourceController {
 
     @Logable
     @PostMapping("/resource/delete")
-    BusinessResult<Map<String, String>> deleteResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceDeleteRequest request) {
+    BusinessResult<IdResult> deleteResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceDeleteRequest request) {
         return themeResourceService.deleteResource(userId, request);
     }
 }
