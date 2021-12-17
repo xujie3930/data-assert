@@ -7,7 +7,7 @@
         <version>FRAMEWORK-1.1.1.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>1.2.1</version>
+    <version>1.0.0-SNAPSHOT</version>
     <groupId>com.hashtech</groupId>
     <artifactId>data-assert</artifactId>
     <packaging>jar</packaging>
