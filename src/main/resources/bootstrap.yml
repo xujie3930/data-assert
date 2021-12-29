@@ -6,7 +6,7 @@ spring:
       max-file-size: 30MB
       max-request-size: 50MB
   application:
-    name: assert
+    name: dataresource-backend
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
   http:
@@ -33,7 +33,7 @@ spring:
 server:
   port: 9080
   servlet:
-    context-path: /api
+    context-path: /dataresource/api
 system:
   errorCode: 500
 #mybatis-plus
