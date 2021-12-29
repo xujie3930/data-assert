@@ -110,7 +110,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
-        checkHasExitResourceTable(request.getName(), resourceTableEntity.getId(), resourceTableEntity.getId());
+        checkHasExitResourceTable(request.getName(), resourceTableEntity.getResourceId(), resourceTableEntity.getId());
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = getById(request.getId());
