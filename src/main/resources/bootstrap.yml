@@ -32,8 +32,8 @@ spring:
 
 server:
   port: 9080
-  servlet:
-    context-path: /dataresource
+#  servlet:
+#    context-path: /dataresource
 system:
   errorCode: 500
 #mybatis-plus
