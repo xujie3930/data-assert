@@ -26,6 +26,12 @@ CREATE TABLE `data_source` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='数据来源表';
 
 -- ----------------------------
+-- Records of data_source
+-- ----------------------------
+INSERT INTO `data_source` VALUES ('1', '企查查接口');
+INSERT INTO `data_source` VALUES ('2', '江北新区大数据管理中心数据');
+
+-- ----------------------------
 -- Table structure for resource_table
 -- ----------------------------
 DROP TABLE IF EXISTS `resource_table`;
