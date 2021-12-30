@@ -10,28 +10,20 @@ spring:
       strict: false
       datasource:
         master:
-          url: "jdbc:mysql://192.168.0.23:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
+          url: "jdbc:mysql://192.168.211.2:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
           username: 'daas'
           password: 'daas@1122'
         remote:
-          url: "jdbc:mysql://192.168.211.2:3306/icdstuiframe?useSSL=false&useUnicode=true&characterEncoding=utf8"
+          url: "jdbc:mysql://192.168.211.2:3306/jodpiframe?useSSL=false&useUnicode=true&characterEncoding=utf8"
           username: 'jodp'
           password: 'jodp@2018'
 
   redis:
-    host: 192.168.0.125
-    port: 6379
-    timeout: 20000
-    #    cluster:
-    #      nodes: 192.168.0.32:7001,192.168.0.32:7002,192.168.0.32:7003,192.168.0.32:7004,192.168.0.32:7005
-    #      maxRedirects: 6
-    lettuce:
-      pool:
-        max-active: 8
-        min-idle: 0
-        max-idle: 8
-        max-wait: -1
-#    password: hash2018
+    host: 192.168.211.2 # Redis服务器地址
+    database: 0 # Redis数据库索引（默认为0）
+    port: 6379 # Redis服务器连接端口
+    timeout: 3000ms # 连接超时时间（毫秒）
+    password: VQ1eWwR3
 
 # swagger 登录认证
 knife4j:
@@ -49,4 +41,4 @@ logging:
   #    root: info
   config: classpath:logback/logback-dev.xml
   level:
-    com.hashtech: debug
+    com.hashtech: info
