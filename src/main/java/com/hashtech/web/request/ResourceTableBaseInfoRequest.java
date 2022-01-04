@@ -10,7 +10,7 @@ import lombok.Data;
  * @create 2021-11-24 10:01
  **/
 @Data
-public class ResourceTableInfoRequest extends BusinessBasePageForm {
+public class ResourceTableBaseInfoRequest{
     /**
      * 资源表id
      */

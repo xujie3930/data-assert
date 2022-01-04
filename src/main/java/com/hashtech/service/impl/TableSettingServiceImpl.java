@@ -1,6 +1,5 @@
 package com.hashtech.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -80,10 +79,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             result.setParamInfo(Arrays.asList(tableSettingEntity.getParamInfo().split(",")));
         }
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
-        BusinessResult<ResourceTablePreposeResult> tablaInfo = tableSettingService.getTablaInfo(new ResourceTablePreposeRequest(resourceTableEntity.getName()));
-        if (tablaInfo.isSuccess()) {
-            result.setStructureList(tablaInfo.getData().getStructureList());
-        }
+        List<Structure> structureList = tableSettingService.getStructureList(resourceTableEntity.getName());
+        result.setStructureList(structureList);
         return BusinessResult.success(result);
     }
 
@@ -118,19 +115,54 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     /**
      * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
      */
-    public BusinessResult<ResourceTablePreposeResult> getTablaInfo(ResourceTablePreposeRequest request) throws AppException {
+    public BaseInfo getBaseInfo(ResourceTablePreposeRequest request) throws AppException {
         ResourceTablePreposeResult result = new ResourceTablePreposeResult();
         BaseInfo baseInfo = new BaseInfo();
+        Connection conn = null;
+        try {
+            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
+            String tableEnglishName = request.getTableName();
+            String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
+            baseInfo.setDescriptor(tableChineseName);
+            baseInfo.setName(tableEnglishName);
+            String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
+            Statement stmt = conn.createStatement();
+            ResultSet countRs = stmt.executeQuery(getCountSql);
+            if (countRs.next()) {
+                //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
+                baseInfo.setDataSize(countRs.getLong(1));
+            }
+        } catch (Exception e) {
+            log.error("获取表:{}信息失败:{}", request.getTableName(), e.getMessage());
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
+        } finally {
+            if (null != conn) {
+                try {
+                    conn.close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        }
+        return baseInfo;
+    }
+
+    @Override
+    @DS("remote")
+    /**
+     * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
+     */
+    public List<Structure> getStructureList(String tableName) throws AppException {
+        BaseInfo baseInfo = new BaseInfo();
         List<Structure> structureList = new LinkedList<>();
-        Integer columnsCount = 0;
         Connection conn = null;
         try {
             conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
+            ResultSet tableResultSet = metaData.getTables(null, null, tableName,
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
             while (tableResultSet.next()) {
-                String tableEnglishName = request.getTableName();
+                String tableEnglishName = tableName;
                 String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
                 baseInfo.setDescriptor(tableChineseName);
                 baseInfo.setName(tableEnglishName);
@@ -149,15 +181,40 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     structure.setTableEnglishName(tableEnglishName);
                     structure.setTableChineseName(tableChineseName);
                     structureList.add(structure);
-                    columnsCount++;
                 }
             }
-            String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
+        } catch (Exception e) {
+            log.error("获取表:{}信息失败:{}", tableName, e.getMessage());
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
+        } finally {
+            if (null != conn) {
+                try {
+                    conn.close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        }
+        return structureList;
+    }
+
+    @Override
+    @DS("remote")
+    /**
+     * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
+     */
+    public BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException {
+        Connection conn = null;
+        BusinessPageResult result = null;
+        Long dataSize = 0L;
+        try {
+            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             Statement stmt = conn.createStatement();
+            String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
             ResultSet countRs = stmt.executeQuery(getCountSql);
             if (countRs.next()) {
                 //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
-                baseInfo.setDataSize(countRs.getLong(1));
+                dataSize = countRs.getLong(1);
             }
             //只展示前10000条数据
             int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
@@ -168,10 +225,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             if (pagingRs.next()) {
                 List list = ResultSetToListUtils.convertList(pagingRs);
                 Page<Object> page = new Page<>(pageNum, request.getPageSize());
-                page.setTotal(baseInfo.getDataSize());
-                result.setSampleList(BusinessPageResult.build(page.setRecords(list), request));
+                result = BusinessPageResult.build(page.setRecords(list), request);
                 //这里按前端要求返回pageCount
-                result.getSampleList().setPageCount(getPageCountByMaxImum(baseInfo.getDataSize(), request.getPageSize()));
+                result.setPageCount(getPageCountByMaxImum(dataSize, request.getPageSize()));
             }
         } catch (Exception e) {
             log.error("获取表:{}信息失败:{}", request.getTableName(), e.getMessage());
@@ -185,10 +241,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 }
             }
         }
-        baseInfo.setColumnsCount(columnsCount);
-        result.setBaseInfo(baseInfo);
-        result.setStructureList(structureList);
-        return BusinessResult.success(result);
+        return result;
     }
 
     private Long getPageCountByMaxImum(Long total, int pageSize) {

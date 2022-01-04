@@ -7,7 +7,8 @@ import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.*;
-import com.hashtech.web.result.ResourceTableInfoResult;
+import com.hashtech.web.result.BaseInfo;
+import com.hashtech.web.result.Structure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,9 +57,21 @@ public class ResourceTableController {
     }
 
     @Logable
-    @PostMapping("/info")
-    BusinessResult<ResourceTableInfoResult> getResourceTableInfo(@RequestBody ResourceTableInfoRequest request) {
-        return resourceTableService.getResourceTableInfo(request);
+    @PostMapping("/info/baseInfo")
+    BusinessResult<BaseInfo> getResourceTableBaseInfo(@RequestBody ResourceTableBaseInfoRequest request) {
+        return resourceTableService.getResourceTableBaseInfo(request);
+    }
+
+    @Logable
+    @PostMapping("/info/structureList")
+    BusinessResult<List<Structure>> getResourceTableStructureList(@RequestParam String tableName) {
+        return resourceTableService.getResourceTableStructureList(tableName);
+    }
+
+    @Logable
+    @PostMapping("/info/sampleList")
+    BusinessResult<BusinessPageResult<Object>> getResourceTableSampleList(ResourceTablePreposeRequest request) {
+        return resourceTableService.getResourceTableSampleList(request);
     }
 
     @Logable

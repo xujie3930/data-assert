@@ -15,14 +15,19 @@ import java.util.Map;
 public class JdbcUtils {
 
     public static String getCommentByTableName(String tableName, Connection conn) throws Exception {
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SHOW CREATE TABLE " + tableName);
-        if (rs != null && rs.next()) {
-            String createDDL = rs.getString(2);
-            String comment = parse(createDDL);
-            return comment;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SHOW CREATE TABLE " + tableName);
+            if (rs != null && rs.next()) {
+                String createDDL = rs.getString(2);
+                String comment = parse(createDDL);
+                return comment;
+            }
+            return null;
+        } finally {
+            stmt.close();
         }
-       return null;
     }
 
     public static String parse(String all) {
