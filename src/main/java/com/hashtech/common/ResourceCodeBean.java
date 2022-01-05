@@ -40,6 +40,9 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000022("60000022", "主题下不能添加资源表,请选择具体的资源"),
         RESOURCE_CODE_60000023("60000023", "该分类下资源表已重复，请选择其他资源表!"),
         RESOURCE_CODE_60000024("60000024", "资源只可以在主题下添加！"),
+        RESOURCE_CODE_60000025("60000025", "资源表编号不能为空！"),
+        RESOURCE_CODE_60000026("60000026", "资源表编号最多为50字！"),
+        RESOURCE_CODE_60000027("60000027", "资源表编号不能重复！"),
         ;
 
         public final String code;

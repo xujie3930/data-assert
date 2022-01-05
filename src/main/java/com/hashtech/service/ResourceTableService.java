@@ -38,4 +38,6 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
     BusinessResult<List<Map<Integer, String>>> getDataSource();
 
     BusinessResult<List<Object>> getResourceData(ResourceDataRequest request);
+
+    Boolean hasExitSerialNum(HasExitSerialNumRequest request);
 }

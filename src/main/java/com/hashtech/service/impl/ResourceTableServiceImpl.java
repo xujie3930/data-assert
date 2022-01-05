@@ -75,12 +75,20 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000022.getCode());
         }
         checkHasExitResourceTable(request.getName(), request.getId(), null);
+        checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), null));
         BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getName()));
         ResourceTableEntity entity = getResourceTableEntitySave(userId, request, baseInfo);
         save(entity);
         TableSettingEntity tableSettingEntity = getTableSettingSaveEntity(entity);
         tableSettingService.save(tableSettingEntity);
         return BusinessResult.success(true);
+    }
+
+    private void checkHasExitSerialNum(HasExitSerialNumRequest request) {
+        Boolean hasExist = hasExitSerialNum(request);
+        if (hasExist){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000027.getCode());
+        }
     }
 
     private Boolean checkHasExitResourceTable(String name, String resourceId, String resourceTableId) {
@@ -108,6 +116,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
         checkHasExitResourceTable(request.getName(), resourceTableEntity.getResourceId(), resourceTableEntity.getId());
+        checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), request.getId()));
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = getById(request.getId());
@@ -136,6 +145,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     /**
      * TODO:这里添加外部表的前置接口和接口详情接口为一个接口，可能会有问题
      */
+    @Deprecated
     public BusinessResult<BaseInfo> getResourceTableBaseInfo(ResourceTableBaseInfoRequest request) {
         ResourceTablePreposeRequest preposeRequest = BeanCopyUtils.copyProperties(request, new ResourceTablePreposeRequest());
         //接口详情
@@ -151,7 +161,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (!StringUtils.isBlank(request.getId())) {
             ResourceTableEntity oldEntity = getById(request.getId());
             oldEntity.setDataSize(baseInfo.getDataSize());
+            oldEntity.setColumnsCount(baseInfo.getColumnsCount());
             updateById(oldEntity);
+            BeanCopyUtils.copyProperties(oldEntity, baseInfo);
         }
         return BusinessResult.success(baseInfo);
     }
@@ -250,6 +262,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         List<Object> list = tableSettingService.getResourceData(request, resourceTableEntity);
         return BusinessResult.success(list);
+    }
+
+    @Override
+    public Boolean hasExitSerialNum(HasExitSerialNumRequest request) {
+        return BooleanUtils.isTrue(resourceTableMapper.hasExitSerialNum(request.getSerialNum(), request.getId()));
     }
 
     private ResourceTableEntity getByRequestUrl(String requestUrl) {

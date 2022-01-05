@@ -54,4 +54,16 @@ public class ResourceTableSaveRequest {
      * 排序按照数据库中的排列
      */
     private Integer sort;
+
+    /**
+     * 资源表编号（验证不为空，唯一性）
+     */
+    @NotBlank(message = "60000025")
+    @Length(max = 50, message = "资源编号不能多于50字")
+    private String serialNum;
+
+    /**
+     * 表中文名称
+     */
+    private String chineseName;
 }

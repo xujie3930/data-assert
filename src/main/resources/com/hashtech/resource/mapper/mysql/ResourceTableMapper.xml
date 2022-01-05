@@ -146,4 +146,20 @@
         </where>
         limit 1
     </select>
+
+    <select id="hasExitSerialNum"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="serialNum !=null and serialNum != '' ">
+                and serial_num = #{serialNum}
+            </if>
+            <if test="id !=null and id != '' ">
+                and id != #{id}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
 </mapper>

@@ -40,4 +40,9 @@ public class ResourceTableUpdateRequest {
      */
     @Length(max = 200, message = "注意事项不能多于200字")
     private String matters;
+
+    /**
+     * 资源表编号
+     */
+    private String serialNum;
 }

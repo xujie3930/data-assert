@@ -116,7 +116,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
      * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
      */
     public BaseInfo getBaseInfo(ResourceTablePreposeRequest request) throws AppException {
-        ResourceTablePreposeResult result = new ResourceTablePreposeResult();
         BaseInfo baseInfo = new BaseInfo();
         Connection conn = null;
         try {
@@ -125,6 +124,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
             baseInfo.setDescriptor(tableChineseName);
             baseInfo.setName(tableEnglishName);
+            //TODO:select count(*)大表有性能问题
             String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
             Statement stmt = conn.createStatement();
             ResultSet countRs = stmt.executeQuery(getCountSql);
@@ -132,6 +132,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
                 baseInfo.setDataSize(countRs.getLong(1));
             }
+            //获取表结构没有性能问题
+            List<Structure> structureList = getStructureList(tableEnglishName);
+            baseInfo.setColumnsCount(structureList.size());
         } catch (Exception e) {
             log.error("获取表:{}信息失败:{}", request.getTableName(), e.getMessage());
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
@@ -210,6 +213,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         try {
             conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             Statement stmt = conn.createStatement();
+            //TODO:select count(*)大表有性能问题
             String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
             ResultSet countRs = stmt.executeQuery(getCountSql);
             if (countRs.next()) {
@@ -225,6 +229,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             if (pagingRs.next()) {
                 List list = ResultSetToListUtils.convertList(pagingRs);
                 Page<Object> page = new Page<>(pageNum, request.getPageSize());
+                page.setTotal(dataSize);
                 result = BusinessPageResult.build(page.setRecords(list), request);
                 //这里按前端要求返回pageCount
                 result.setPageCount(getPageCountByMaxImum(dataSize, request.getPageSize()));

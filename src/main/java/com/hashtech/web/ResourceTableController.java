@@ -33,6 +33,13 @@ public class ResourceTableController {
     private TableSettingService tableSettingService;
 
     @Logable
+    @PostMapping("/hasExist")
+    public BusinessResult<Boolean> hasExitSerialNum(@RequestBody HasExitSerialNumRequest request) {
+        Boolean hasExitSerialNum = resourceTableService.hasExitSerialNum(request);
+        return BusinessResult.success(hasExitSerialNum);
+    }
+
+    @Logable
     @GetMapping("/getDataSource")
     public BusinessResult<List<Map<Integer, String>>> getDataSource() {
         return resourceTableService.getDataSource();
@@ -70,7 +77,7 @@ public class ResourceTableController {
 
     @Logable
     @PostMapping("/info/sampleList")
-    BusinessResult<BusinessPageResult<Object>> getResourceTableSampleList(ResourceTablePreposeRequest request) {
+    BusinessResult<BusinessPageResult<Object>> getResourceTableSampleList(@RequestBody ResourceTablePreposeRequest request) {
         return resourceTableService.getResourceTableSampleList(request);
     }
 

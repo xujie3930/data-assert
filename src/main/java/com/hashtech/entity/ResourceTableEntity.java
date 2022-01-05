@@ -59,6 +59,20 @@ public class ResourceTableEntity implements Serializable {
     private String name;
 
     /**
+     * 资源表中文名称
+     */
+    private String chineseName;
+
+    /**
+     * 资源表编号
+     */
+    private String serialNum;
+
+    /**
+     * 所属组织
+     */
+    private String org;
+    /**
      * 表的访问url
      */
     private String requestUrl;

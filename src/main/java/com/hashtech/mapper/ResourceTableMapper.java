@@ -3,6 +3,7 @@ package com.hashtech.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hashtech.entity.ResourceTableEntity;
+import com.hashtech.web.request.HasExitSerialNumRequest;
 import com.hashtech.web.request.ResourceTablePageListRequest;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,4 +34,6 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     Boolean hasExitExternalStateByIds(@Param("ids") String[] ids, @Param("externalState") Integer externalState);
 
     Boolean checkHasExitResourceTable(@Param("name") String name, @Param("resourceId") String resourceId, @Param("resourceTableId") String resourceTableId);
+
+    Boolean hasExitSerialNum(@Param("serialNum") String serialNum, @Param("id") String id);
 }
