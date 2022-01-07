@@ -4,9 +4,7 @@ package com.hashtech.web;
 import com.hashtech.businessframework.log.Logable;
 import com.hashtech.businessframework.result.BusinessResult;
 import com.hashtech.service.TableSettingService;
-import com.hashtech.web.request.ResourceTablePreviewRequest;
-import com.hashtech.web.request.ResourceTableUpdateRequest;
-import com.hashtech.web.request.TableSettingUpdateRequest;
+import com.hashtech.web.request.*;
 import com.hashtech.web.result.TablePreviewResult;
 import com.hashtech.web.result.TableSettingResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +35,13 @@ public class TableSettingController {
     @PostMapping("/update")
     BusinessResult<Boolean> updateTableSetting(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody TableSettingUpdateRequest request) {
         return tableSettingService.updateTableSetting(userId, request);
+    }
+
+    @Logable
+    @PostMapping("/hasExistInterfaceName")
+    public BusinessResult<Boolean> hasExistInterfaceName(@RequestBody ExistInterfaceNamelRequest request) {
+        Boolean hasExistOpenExternalState = tableSettingService.hasExistInterfaceName(request);
+        return BusinessResult.success(hasExistOpenExternalState);
     }
 }
 

@@ -15,6 +15,7 @@ import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
+import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.ThemeResourceService;
 import com.hashtech.utils.DoubleUtils;
 import com.hashtech.web.request.*;
@@ -45,6 +46,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private ThemeResourceMapper themeResourceMapper;
     @Autowired
     private ResourceTableMapper resourceTableMapper;
+    @Autowired
+    private ResourceTableService resourceTableService;
     private static final String THEME_PARENT_ID = "0";
 
     public static String getThemeParentId() {
@@ -185,7 +188,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         result.setName(resourceEntity.getName());
         result.setDescriptor(resourceEntity.getDescriptor());
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
-        long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getState())).count();
+        long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getExternalState())).count();
         result.setOpenRate(DoubleUtils.doublePercent(openCount, resourceTableList.size()));
         result.setColumnsCount(resourceTableList.parallelStream().mapToInt(ResourceTableEntity::getColumnsCount).sum());
         result.setTableCount(resourceTableList.size());
@@ -212,7 +215,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<IdResult> deleteResource(String userId, ResourceDeleteRequest request) throws AppException {
         //如果删除的资源分类包含有已开放的表,不能删除
-        if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceId(request.getId(), StatusEnum.ENABLE.getCode()))) {
+        if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceIds(new String[]{request.getId()}, StatusEnum.ENABLE.getCode()))) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.getCode());
         }
         resourceTableMapper.deleteByResourceId(request.getId());
@@ -287,7 +290,16 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             return BusinessResult.success(list);
         }
         for (ThemeResult themeResult : list) {
+            Boolean themeHidden = resourceTableService.hasExistOpenExternalState(new ExistOpenExternalRequest(themeResult.getId(), null));
+            themeResult.setHidden(themeHidden);
             List<ThemeResult> resourceByParentId = themeResourceMapper.getResourceByParentId(themeResult.getId());
+            if (!CollectionUtils.isEmpty(resourceByParentId)){
+                for (ThemeResult resourceResult : resourceByParentId) {
+                    Boolean resourceHidden = resourceTableService.hasExistOpenExternalState(new ExistOpenExternalRequest(null,
+                            resourceResult.getId()));
+                    resourceResult.setHidden(resourceHidden);
+                }
+            }
             themeResult.setResourceList(resourceByParentId);
         }
         return BusinessResult.success(list);

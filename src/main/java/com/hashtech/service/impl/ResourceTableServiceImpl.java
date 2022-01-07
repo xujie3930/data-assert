@@ -23,21 +23,20 @@ import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
+import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.service.ThemeResourceService;
 import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.*;
-import com.hashtech.web.result.BaseInfo;
-import com.hashtech.web.result.ResourceTableInfoResult;
-import com.hashtech.web.result.ResourceTablePreposeResult;
-import com.hashtech.web.result.Structure;
+import com.hashtech.web.result.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -62,6 +61,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private TableSettingService tableSettingService;
     @Autowired
     private DataSourceMapper dataSourceMapper;
+    @Autowired
+    private ThemeResourceMapper themeResourceMapper;
 
     @Override
     @DS("master")
@@ -142,9 +143,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     @DS("master")
-    /**
-     * TODO:这里添加外部表的前置接口和接口详情接口为一个接口，可能会有问题
-     */
     @Deprecated
     public BusinessResult<BaseInfo> getResourceTableBaseInfo(ResourceTableBaseInfoRequest request) {
         ResourceTablePreposeRequest preposeRequest = BeanCopyUtils.copyProperties(request, new ResourceTablePreposeRequest());
@@ -170,19 +168,13 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     @DS("master")
-    /**
-     * TODO:这里添加外部表的前置接口和接口详情接口为一个接口，可能会有问题
-     */
-    public BusinessResult<List<Structure>> getResourceTableStructureList(String tableName) {
-        List<Structure> structureList = tableSettingService.getStructureList(tableName);
+    public BusinessResult<List<Structure>> getResourceTableStructureList(ResourceTableNameRequest request) {
+        List<Structure> structureList = tableSettingService.getStructureList(request.getTableName());
         return BusinessResult.success(structureList);
     }
 
     @Override
     @DS("master")
-    /**
-     * TODO:这里添加外部表的前置接口和接口详情接口为一个接口，可能会有问题
-     */
     public BusinessResult<BusinessPageResult<Object>> getResourceTableSampleList(ResourceTablePreposeRequest request) {
         BusinessPageResult<Object> sampleList = tableSettingService.getSampleList(request);
         return BusinessResult.success(sampleList);
@@ -220,8 +212,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         QueryWrapper<ResourceTableEntity> wrapper = new QueryWrapper<>();
         wrapper.eq(ResourceTableEntity.DEL_FLAG, DelFalgEnum.NOT_DELETE.getDesc());
         wrapper.eq(ResourceTableEntity.RESOURCE_ID, request.getId());
-        if (null != request.getState()) {
-            wrapper.eq(ResourceTableEntity.STATE, request.getState());
+        if (null != request.getExternalState()) {
+            wrapper.eq(ResourceTableEntity.EXTERNAL_STATE, request.getExternalState());
         }
         if (!StringUtils.isBlank(request.getName())) {
             wrapper.like(ResourceTableEntity.NAME, request.getName());
@@ -230,7 +222,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             wrapper.like(ResourceTableEntity.CREATE_BY, request.getCreateBy());
         }
         if (BooleanUtils.isTrue(request.getStateGroup())) {
-            wrapper.orderByAsc(ResourceTableEntity.STATE);
+            wrapper.orderByAsc(ResourceTableEntity.EXTERNAL_STATE);
         }
         if (SortEnum.DESC.getDesc().equals(request.getAscOrDesc())) {
             wrapper.orderByDesc(ResourceTableEntity.CREATE_TIME);
@@ -257,9 +249,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000011.getCode());
         }
-        if (StatusEnum.DISABLE.getCode().equals(resourceTableEntity.getState())) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000021.getCode());
-        }
         List<Object> list = tableSettingService.getResourceData(request, resourceTableEntity);
         return BusinessResult.success(list);
     }
@@ -269,7 +258,19 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         return BooleanUtils.isTrue(resourceTableMapper.hasExitSerialNum(request.getSerialNum(), request.getId()));
     }
 
-    private ResourceTableEntity getByRequestUrl(String requestUrl) {
+    @Override
+    public Boolean hasExistOpenExternalState(ExistOpenExternalRequest request) {
+        String[] resourceIds = {request.getResourceId()};
+        if (!StringUtils.isBlank(request.getThemeId())){
+            List<ThemeResult> resourceList = themeResourceMapper.getResourceByParentId(request.getThemeId());
+            List<String> collect = resourceList.stream().map(ThemeResult::getId).collect(Collectors.toList());
+            resourceIds = collect.toArray(new String[collect.size()]);
+        }
+        return BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceIds(resourceIds, StatusEnum.ENABLE.getCode()));
+    }
+
+    @Override
+    public ResourceTableEntity getByRequestUrl(String requestUrl) {
         return resourceTableMapper.getByRequestUrl(requestUrl);
     }
 

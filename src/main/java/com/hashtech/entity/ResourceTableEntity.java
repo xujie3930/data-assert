@@ -26,13 +26,13 @@ public class ResourceTableEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String STATE = "STATE";
     public static final String NAME = "NAME";
     public static final String RESOURCE_ID = "RESOURCE_ID";
     public static final String CREATE_BY = "CREATE_BY";
     public static final String DEL_FLAG = "DEL_FLAG";
     public static final String UPDATE_TIME = "UPDATE_TIME";
     public static final String CREATE_TIME = "CREATE_TIME";
+    public static final String EXTERNAL_STATE = "EXTERNAL_STATE";
 
     /**
      * 主键id
@@ -42,11 +42,6 @@ public class ResourceTableEntity implements Serializable {
      * 关联theme_resource表的id
      */
     private String resourceId;
-
-    /**
-     * 0-开放，1-不开放
-     */
-    private Integer state;
 
     /**
      * 是否在开放平台开放：0-开放，1-不开放，默认1

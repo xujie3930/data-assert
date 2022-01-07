@@ -27,7 +27,7 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
 
     BusinessResult<BaseInfo> getResourceTableBaseInfo(ResourceTableBaseInfoRequest request);
 
-    BusinessResult<List<Structure>> getResourceTableStructureList(String tableName);
+    BusinessResult<List<Structure>> getResourceTableStructureList(ResourceTableNameRequest request);
 
     BusinessResult<BusinessPageResult<Object>> getResourceTableSampleList(ResourceTablePreposeRequest request);
 
@@ -40,4 +40,8 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
     BusinessResult<List<Object>> getResourceData(ResourceDataRequest request);
 
     Boolean hasExitSerialNum(HasExitSerialNumRequest request);
+
+    Boolean hasExistOpenExternalState(ExistOpenExternalRequest request);
+
+    ResourceTableEntity getByRequestUrl(String requestUrl);
 }

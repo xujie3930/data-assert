@@ -23,10 +23,6 @@ public class ResourceTableUpdateRequest {
      */
     private String name;
     /**
-     * 是否开放：0-开放，1-不开放
-     */
-    private Integer state = 0;
-    /**
      * 数据来源
      */
     private String source;
@@ -45,4 +41,9 @@ public class ResourceTableUpdateRequest {
      * 资源表编号
      */
     private String serialNum;
+
+    /**
+     * 所属组织
+     */
+    private String org;
 }

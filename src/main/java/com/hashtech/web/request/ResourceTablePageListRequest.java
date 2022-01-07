@@ -22,7 +22,7 @@ public class ResourceTablePageListRequest extends BusinessBasePageForm {
     /**
      * 是否开放：0-开放，1-不开放
      */
-    private Integer state;
+    private Integer externalState;
     /**
      * 表名称
      */

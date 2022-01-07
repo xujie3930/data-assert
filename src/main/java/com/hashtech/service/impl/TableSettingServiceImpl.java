@@ -11,26 +11,24 @@ import com.hashtech.businessframework.utils.CollectionUtils;
 import com.hashtech.businessframework.utils.StringUtils;
 import com.hashtech.businessframework.validate.BusinessParamsValidate;
 import com.hashtech.common.ResourceCodeBean;
-import com.hashtech.common.StatusEnum;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
-import com.hashtech.utils.JdbcUtils;
-import com.hashtech.utils.RandomUtils;
-import com.hashtech.utils.ResultSetToListUtils;
-import com.hashtech.utils.URLProcessUtils;
+import com.hashtech.utils.*;
+import com.hashtech.web.request.ExistInterfaceNamelRequest;
 import com.hashtech.web.request.ResourceDataRequest;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
 import com.hashtech.web.result.BaseInfo;
-import com.hashtech.web.result.ResourceTablePreposeResult;
 import com.hashtech.web.result.Structure;
 import com.hashtech.web.result.TableSettingResult;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,8 +55,11 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private ResourceTableService resourceTableService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Value("${server.port}")
+    private int serverPort;
     private static final int PAGESIZE_MAX = 500;
     private static final int MAX_IMUM = 10000;
+    private static final String INTERFACE_PATH = "/resource/table/getResourceData/";
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -81,6 +82,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
         List<Structure> structureList = tableSettingService.getStructureList(resourceTableEntity.getName());
         result.setStructureList(structureList);
+        result.setInterfaceName(tableSettingEntity.getInterfaceName());
         return BusinessResult.success(result);
     }
 
@@ -93,9 +95,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
-        if (!StatusEnum.ENABLE.getCode().equals(resourceTableEntity.getState())) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000020.getCode());
-        }
         resourceTableEntity.setUpdateTime(new Date());
         resourceTableEntity.setUpdateBy(userId);
         resourceTableEntity.setRequestUrl(request.getRequestUrl());
@@ -104,10 +103,28 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //更新资源表设置
         TableSettingEntity entity = tableSettingMapper.getByResourceTableId(request.getId());
         entity.setRequestWay(request.getRequestWay());
-        entity.setExplainInfo(request.getExplainInfo());
+        //生成接口地址
+        String interfaceUrl = getInterfaceUrl(resourceTableEntity.getRequestUrl(), request.getParamInfo());
+        entity.setExplainInfo(interfaceUrl);
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
+        entity.setInterfaceName(request.getInterfaceName());
         tableSettingMapper.updateById(entity);
         return BusinessResult.success(true);
+    }
+
+    private String getInterfaceUrl(String requestUrl, String[] paramInfo) {
+        String innetIp = AddressUtils.getInnetIp();
+        String interfaceUrl = "http://" + innetIp + ":" + serverPort + INTERFACE_PATH + requestUrl;
+        if (paramInfo.length > 0) {
+            StringBuilder builder = new StringBuilder("?");
+            for (String param : paramInfo) {
+                if (!StringUtils.isBlank(param)){
+                    builder.append(param).append("&");
+                }
+            }
+            interfaceUrl += builder.toString();
+        }
+        return interfaceUrl;
     }
 
     @Override
@@ -123,6 +140,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             String tableEnglishName = request.getTableName();
             String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
             baseInfo.setDescriptor(tableChineseName);
+            baseInfo.setChineseName(tableChineseName);
             baseInfo.setName(tableEnglishName);
             //TODO:select count(*)大表有性能问题
             String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
@@ -203,9 +221,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     @Override
     @DS("remote")
-    /**
-     * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
-     */
     public BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException {
         Connection conn = null;
         BusinessPageResult result = null;
@@ -324,8 +339,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         tempSql = tempSql.substring(0, tempSql.lastIndexOf("and"));
         int pageSize = Math.min(request.getPageSize(), PAGESIZE_MAX);
         int index = (request.getPageNum() - 1) * pageSize;
-        int end = index + pageSize;
-        String querySql = tempSql + " limit " + index + " , " + end;
+        String querySql = tempSql + " limit " + index + " , " + pageSize;
         try {
             conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             Statement stmt = conn.createStatement();
@@ -347,5 +361,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             }
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public Boolean hasExistInterfaceName(ExistInterfaceNamelRequest request) {
+        return BooleanUtils.isTrue(tableSettingMapper.hasExistInterfaceName(request.getInterfaceName()));
     }
 }

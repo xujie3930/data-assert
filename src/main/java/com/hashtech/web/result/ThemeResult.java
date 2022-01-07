@@ -71,4 +71,9 @@ public class ThemeResult implements Serializable {
      * 该主题下的资源列表
      */
     private List<ThemeResult> resourceList = new LinkedList<>();
+
+    /**
+     * 是否隐藏编辑按钮，true：隐藏，false：不隐藏
+     */
+    private Boolean hidden;
 }

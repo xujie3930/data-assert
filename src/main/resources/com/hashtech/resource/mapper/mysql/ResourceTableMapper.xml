@@ -5,7 +5,6 @@
     <sql id="Base_Column_List">
         id               	as  id,
       resource_id       as  resourceId,
-      state             as  state,
       name              as  name,
       request_url       as  requestUrl,
       source            as  source,
@@ -93,13 +92,16 @@
         </where>
     </select>
 
-    <select id="hasExitExternalStateByResourceId"
+    <select id="hasExitExternalStateByResourceIds"
             resultType="java.lang.Boolean">
         select 1
         from resource_table
         <where>
-            <if test="resourceId !=null and resourceId != '' ">
-                and resource_id=#{resourceId}
+            <if test="resourceIds != null and resourceIds.length != 0">
+                AND resource_id in
+                <foreach collection="resourceIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
             </if>
             <if test="externalState !=null">
                 and external_state=#{externalState}
@@ -117,7 +119,7 @@
             <if test="externalState !=null">
                 AND external_state=#{externalState}
             </if>
-            <if test="ids != null and ids != ''">
+            <if test="ids != null and ids.length != 0">
                 AND id in
                 <foreach collection="ids" item="i" open="(" close=")" separator=",">
                     #{i}

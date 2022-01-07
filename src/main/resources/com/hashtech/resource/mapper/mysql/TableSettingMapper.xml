@@ -12,4 +12,16 @@
             </if>
         </where>
     </select>
+
+    <select id="hasExistInterfaceName"
+            resultType="java.lang.Boolean">
+        select 1
+        from table_setting
+        <where>
+            <if test="interfaceName != null and interfaceName != '' ">
+                AND interface_name = #{interfaceName}
+            </if>
+        </where>
+        limit 1
+    </select>
 </mapper>

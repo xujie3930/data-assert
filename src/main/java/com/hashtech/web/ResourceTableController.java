@@ -4,6 +4,7 @@ package com.hashtech.web;
 import com.hashtech.businessframework.log.Logable;
 import com.hashtech.businessframework.result.BusinessPageResult;
 import com.hashtech.businessframework.result.BusinessResult;
+import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.*;
@@ -31,6 +32,13 @@ public class ResourceTableController {
     private ResourceTableService resourceTableService;
     @Autowired
     private TableSettingService tableSettingService;
+
+    @Logable
+    @PostMapping("/hasExistOpenExternalState")
+    public BusinessResult<Boolean> hasExistOpenExternalState(@RequestBody ExistOpenExternalRequest request) {
+        Boolean hasExistOpenExternalState = resourceTableService.hasExistOpenExternalState(request);
+        return BusinessResult.success(hasExistOpenExternalState);
+    }
 
     @Logable
     @PostMapping("/hasExist")
@@ -71,8 +79,8 @@ public class ResourceTableController {
 
     @Logable
     @PostMapping("/info/structureList")
-    BusinessResult<List<Structure>> getResourceTableStructureList(@RequestParam String tableName) {
-        return resourceTableService.getResourceTableStructureList(tableName);
+    BusinessResult<List<Structure>> getResourceTableStructureList(@RequestBody ResourceTableNameRequest request) {
+        return resourceTableService.getResourceTableStructureList(request);
     }
 
     @Logable
@@ -115,6 +123,18 @@ public class ResourceTableController {
     @GetMapping("/getResourceData")
     BusinessResult<List<Object>> getResourceDataByGet(@RequestBody ResourceDataRequest request) {
         return resourceTableService.getResourceData(request);
+    }
+
+    /**
+     *
+     * @param requestUrl
+     * @return
+     */
+    @Logable
+    @GetMapping("/getResourceTable")
+    BusinessResult<ResourceTableEntity> getResourceTable(@RequestParam("requestUrl") String requestUrl) {
+        ResourceTableEntity entity = resourceTableService.getByRequestUrl(requestUrl);
+        return BusinessResult.success(entity);
     }
 }
 

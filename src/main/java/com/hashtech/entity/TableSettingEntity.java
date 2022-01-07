@@ -57,5 +57,8 @@ public class TableSettingEntity implements Serializable {
      */
     private String columnsInfo;
 
-
+    /**
+     * 接口名称
+     */
+    private String interfaceName;
 }

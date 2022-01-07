@@ -34,4 +34,9 @@ public class TableSettingUpdateRequest {
      * 参数信息
      */
     private String[] paramInfo;
+
+    /**
+     * 接口名称
+     */
+    private String interfaceName;
 }

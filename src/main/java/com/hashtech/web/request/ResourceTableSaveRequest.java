@@ -66,4 +66,9 @@ public class ResourceTableSaveRequest {
      * 表中文名称
      */
     private String chineseName;
+
+    /**
+     * 所属组织
+     */
+    private String org;
 }

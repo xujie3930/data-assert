@@ -17,10 +17,15 @@ public class BaseInfo {
      * 表名称,自动识别
      */
     private String name;
+
+    /**
+     * 表中文名称
+     */
+    private String chineseName;
     /**
      * 是否开放：0-开放，1-不开放
      */
-    private Integer state = 0;
+    private Integer externalState = 1;
     /**
      * 资源分类列表展示的列表的总字段，自动识别
      */
@@ -41,4 +46,14 @@ public class BaseInfo {
      * 注意事项
      */
     private String matters;
+
+    /**
+     * 资源表编号
+     */
+    private String serialNum;
+
+    /**
+     * 所属组织
+     */
+    private String org;
 }

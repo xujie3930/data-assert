@@ -53,4 +53,9 @@ public class TableSettingResult implements Serializable {
      * 表结构
      */
     private List<Structure> structureList;
+
+    /**
+     * 接口名称
+     */
+    private String interfaceName;
 }
