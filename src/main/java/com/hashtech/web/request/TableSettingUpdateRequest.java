@@ -1,6 +1,7 @@
 package com.hashtech.web.request;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import java.util.LinkedList;
@@ -38,5 +39,7 @@ public class TableSettingUpdateRequest {
     /**
      * 接口名称
      */
+    @NotBlank(message = "60000029")
+    @Length(max = 200, message = "接口名称在50子以内")
     private String interfaceName;
 }

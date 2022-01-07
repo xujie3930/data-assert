@@ -2,6 +2,7 @@ package com.hashtech.mapper;
 
 import com.hashtech.entity.TableSettingEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.hashtech.web.request.ExistInterfaceNamelRequest;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,5 +18,5 @@ public interface TableSettingMapper extends BaseMapper<TableSettingEntity> {
 
     TableSettingEntity getByResourceTableId(@Param("resourceTableId") String id);
 
-    Boolean hasExistInterfaceName(@Param("interfaceName")String interfaceName);
+    Boolean hasExistInterfaceName(@Param("request") ExistInterfaceNamelRequest request);
 }

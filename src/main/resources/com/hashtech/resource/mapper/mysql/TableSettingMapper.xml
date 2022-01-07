@@ -18,8 +18,11 @@
         select 1
         from table_setting
         <where>
-            <if test="interfaceName != null and interfaceName != '' ">
-                AND interface_name = #{interfaceName}
+            <if test="request.interfaceName != null and request.interfaceName != '' ">
+                AND interface_name = #{request.interfaceName}
+            </if>
+            <if test="request.id != null and request.id != '' ">
+                AND id != #{request.id}
             </if>
         </where>
         limit 1

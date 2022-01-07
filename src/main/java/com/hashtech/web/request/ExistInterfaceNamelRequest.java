@@ -10,7 +10,20 @@ import lombok.Data;
 @Data
 public class ExistInterfaceNamelRequest {
     /**
-     * 主题id
+     * 接口名称
      */
     private String interfaceName;
+
+    /**
+     * 主键id
+     */
+    private String id;
+
+    public ExistInterfaceNamelRequest() {
+    }
+
+    public ExistInterfaceNamelRequest(String interfaceName, String id) {
+        this.interfaceName = interfaceName;
+        this.id = id;
+    }
 }

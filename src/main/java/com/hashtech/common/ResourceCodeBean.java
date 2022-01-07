@@ -43,6 +43,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000025("60000025", "资源表编号不能为空！"),
         RESOURCE_CODE_60000026("60000026", "资源表编号最多为50字！"),
         RESOURCE_CODE_60000027("60000027", "资源表编号不能重复！"),
+        RESOURCE_CODE_60000028("60000028", "该名称已存在"),
+        RESOURCE_CODE_60000029("60000029", "接口名称不能为空"),
         ;
 
         public final String code;

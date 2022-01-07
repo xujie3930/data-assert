@@ -95,6 +95,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
+        checkExistInterfaceName(new ExistInterfaceNamelRequest(request.getInterfaceName(), request.getId()));
         resourceTableEntity.setUpdateTime(new Date());
         resourceTableEntity.setUpdateBy(userId);
         resourceTableEntity.setRequestUrl(request.getRequestUrl());
@@ -365,6 +366,13 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     @Override
     public Boolean hasExistInterfaceName(ExistInterfaceNamelRequest request) {
-        return BooleanUtils.isTrue(tableSettingMapper.hasExistInterfaceName(request.getInterfaceName()));
+        return BooleanUtils.isTrue(tableSettingMapper.hasExistInterfaceName(request));
+    }
+
+    private void checkExistInterfaceName(ExistInterfaceNamelRequest request) {
+        Boolean hasExist = hasExistInterfaceName(request);
+        if (hasExist){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.getCode());
+        }
     }
 }
