@@ -22,7 +22,7 @@
                 AND interface_name = #{request.interfaceName}
             </if>
             <if test="request.id != null and request.id != '' ">
-                AND id != #{request.id}
+                AND resource_table_id != #{request.id}
             </if>
         </where>
         limit 1
