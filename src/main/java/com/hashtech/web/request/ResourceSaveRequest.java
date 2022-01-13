@@ -28,4 +28,9 @@ public class ResourceSaveRequest {
     @Length(max = 200, message = "60000001")
     private String descriptor;
 
+    /**
+     * 分类图标
+     */
+    private String picPath;
+
 }

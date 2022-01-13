@@ -9,6 +9,7 @@
       sort              as  sort,
       create_time       as  createTime,
       create_by         as  createBy,
+      create_user_id    as  createUserId,
       update_time       as  updateTime,
       update_by         as  updateBy
     </sql>

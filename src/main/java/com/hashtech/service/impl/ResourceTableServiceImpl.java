@@ -1,6 +1,5 @@
 package com.hashtech.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -29,7 +28,9 @@ import com.hashtech.service.TableSettingService;
 import com.hashtech.service.ThemeResourceService;
 import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.*;
-import com.hashtech.web.result.*;
+import com.hashtech.web.result.BaseInfo;
+import com.hashtech.web.result.Structure;
+import com.hashtech.web.result.ThemeResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,10 +76,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (ThemeResourceServiceImpl.getThemeParentId().equals(resourceEntity.getParentId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000022.getCode());
         }
-        checkHasExitResourceTable(request.getName(), request.getId(), null);
+        checkHasExitResourceTable(request.getName(), null);
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), null));
         BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getName()));
-        ResourceTableEntity entity = getResourceTableEntitySave(userId, request, baseInfo);
+        ResourceTableEntity entity = getResourceTableEntitySave(userId, request, baseInfo, resourceEntity);
         save(entity);
         TableSettingEntity tableSettingEntity = getTableSettingSaveEntity(entity);
         tableSettingService.save(tableSettingEntity);
@@ -92,10 +93,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
     }
 
-    private Boolean checkHasExitResourceTable(String name, String resourceId, String resourceTableId) {
-        boolean hasExit = BooleanUtils.isTrue(resourceTableMapper.checkHasExitResourceTable(name, resourceId, resourceTableId));
+    private Boolean checkHasExitResourceTable(String name, String id) {
+        boolean hasExit = BooleanUtils.isTrue(resourceTableMapper.checkHasExitResourceTableInAll(name, id));
         if (hasExit) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000023.getCode());
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000031.getCode());
         }
         return hasExit;
     }
@@ -116,7 +117,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
-        checkHasExitResourceTable(request.getName(), resourceTableEntity.getResourceId(), resourceTableEntity.getId());
+        checkHasExitResourceTable(request.getName(),resourceTableEntity.getId());
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), request.getId()));
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
@@ -274,7 +275,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         return resourceTableMapper.getByRequestUrl(requestUrl);
     }
 
-    private ResourceTableEntity getResourceTableEntitySave(String userId, ResourceTableSaveRequest request, BaseInfo baseInfo) {
+    private ResourceTableEntity getResourceTableEntitySave(String userId, ResourceTableSaveRequest request, BaseInfo baseInfo, ThemeResourceEntity resourceEntity) {
         ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
         Date date = new Date();
         entity.setCreateTime(date);
@@ -285,6 +286,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setResourceId(request.getId());
         entity.setColumnsCount(baseInfo.getColumnsCount());
         entity.setDataSize(baseInfo.getDataSize());
+        //保存主题id
+        entity.setThemeId(resourceEntity.getParentId());
         return entity;
     }
 

@@ -76,4 +76,11 @@ public class ThemeResourceEntity implements Serializable {
      * 删除标识
      */
     private String delFlag = DelFalgEnum.NOT_DELETE.getDesc();
+
+    /**
+     * 分类图标
+     */
+    private String picPath;
+
+    private String createUserId;
 }

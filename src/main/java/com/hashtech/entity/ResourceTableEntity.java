@@ -39,7 +39,7 @@ public class ResourceTableEntity implements Serializable {
      */
     private String id;
     /**
-     * 关联theme_resource表的id
+     * 资源id
      */
     private String resourceId;
 
@@ -128,4 +128,9 @@ public class ResourceTableEntity implements Serializable {
      * 删除标识
      */
     private String delFlag = DelFalgEnum.NOT_DELETE.getDesc();
+
+    /**
+     * 主题id（同一张表只能用在一个主题和分类中）
+     */
+    private String themeId;
 }

@@ -56,4 +56,15 @@ public class BaseInfo {
      * 所属组织
      */
     private String org;
+
+    /**
+     * 主题id
+     */
+    private String themeId;
+
+    /**
+     * 资源分类id
+     */
+    private String resourceId;
+
 }

@@ -13,6 +13,10 @@ import com.hashtech.common.ResourceCodeBean;
 import com.hashtech.common.StatusEnum;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.ThemeResourceEntity;
+import com.hashtech.feign.SysUserFeignClient;
+import com.hashtech.feign.result.CommonResult;
+import com.hashtech.feign.result.InternalUserInfoVO;
+import com.hashtech.feign.result.SysUserInfoResult;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.ResourceTableService;
@@ -48,6 +52,9 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private ResourceTableMapper resourceTableMapper;
     @Autowired
     private ResourceTableService resourceTableService;
+    @Autowired
+    private SysUserFeignClient sysUserFeignClient;
+
     private static final String THEME_PARENT_ID = "0";
 
     public static String getThemeParentId() {
@@ -62,6 +69,17 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         ThemeResourceEntity entity = getThemeResourceEntitySave(userId, request);
         save(entity);
         return BusinessResult.success(entity.getId());
+    }
+
+    public  InternalUserInfoVO getSysUserByUserId(String userId) {
+        if (StringUtils.isBlank(userId)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000030.getCode());
+        }
+        CommonResult<InternalUserInfoVO> result = sysUserFeignClient.getUserInfoByUserId(userId);
+        if (Objects.isNull(result.getData())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000030.getCode());
+        }
+        return result.getData();
     }
 
     @Override
@@ -92,6 +110,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         ThemeResourceEntity entity = BeanCopyUtils.copyProperties(request, new ThemeResourceEntity());
         Date date = new Date();
         entity.setCreateBy(userId);
+        entity.setCreateUserId(userId);
         entity.setCreateTime(date);
         entity.setUpdateTime(date);
         entity.setUpdateBy(userId);
@@ -316,6 +335,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         ThemeResourceEntity entity = BeanCopyUtils.copyProperties(request, new ThemeResourceEntity());
         Date date = new Date();
         entity.setCreateBy(userId);
+        entity.setCreateUserId(userId);
         entity.setUpdateBy(userId);
         entity.setCreateTime(date);
         entity.setUpdateTime(date);

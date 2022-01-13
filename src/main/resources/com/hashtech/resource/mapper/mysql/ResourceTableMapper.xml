@@ -149,6 +149,22 @@
         limit 1
     </select>
 
+    <select id="checkHasExitResourceTableInAll"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="name != null and name != '' ">
+                AND name = #{name}
+            </if>
+            <if test="id != null and id != '' ">
+                AND id != #{id}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
+
     <select id="hasExitSerialNum"
             resultType="java.lang.Boolean">
         select 1
