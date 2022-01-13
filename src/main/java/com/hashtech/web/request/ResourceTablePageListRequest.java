@@ -1,11 +1,9 @@
 package com.hashtech.web.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hashtech.businessframework.result.base.BusinessBasePageForm;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
 
 /**
  * @author xujie

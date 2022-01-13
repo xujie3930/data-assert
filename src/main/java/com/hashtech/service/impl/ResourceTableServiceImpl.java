@@ -239,6 +239,16 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
+    @BusinessParamsValidate
+    public BusinessResult<List<ResourceTableEntity>> getList(ResourceTableListRequest request) {
+        QueryWrapper<ResourceTableEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq(ResourceTableEntity.DEL_FLAG, DelFalgEnum.NOT_DELETE.getDesc());
+        wrapper.eq(ResourceTableEntity.RESOURCE_ID, request.getId());
+        List<ResourceTableEntity> list = list(wrapper);
+        return BusinessResult.success(list);
+    }
+
+    @Override
     public BusinessResult<List<Map<Integer, String>>> getDataSource() {
         return BusinessResult.success(dataSourceMapper.getList());
     }
@@ -281,6 +291,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setCreateTime(date);
         entity.setUpdateTime(date);
         entity.setCreateBy(userId);
+        entity.setCreateUserId(userId);
         entity.setUpdateBy(userId);
         entity.setId(sequenceService.nextValueString());
         entity.setResourceId(request.getId());

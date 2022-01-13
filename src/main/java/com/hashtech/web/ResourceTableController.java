@@ -101,6 +101,12 @@ public class ResourceTableController {
         return resourceTableService.pageList(request);
     }
 
+    @Logable
+    @PostMapping("/List")
+    BusinessResult<List<ResourceTableEntity>> getList(@RequestBody ResourceTableListRequest request) {
+        return resourceTableService.getList(request);
+    }
+
     /**
      * 给开放平台提供查询的接口,Post方式
      *

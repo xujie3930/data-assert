@@ -84,3 +84,9 @@ CREATE TABLE `theme_resource` (
   `update_by` varchar(64) DEFAULT NULL COMMENT '更新人',
   `del_flag` char(1) DEFAULT 'N' COMMENT '是否删除:N-否，Y-删除'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='主题资源表';
+
+/*新增字段*/
+use daas;
+alter table resource_table add column theme_id varchar(32) DEFAULT '' COMMENT '资源表所属主题id';
+alter table theme_resource add column create_user_id varchar(64) DEFAULT NULL COMMENT '创建者id';
+alter table resource_table add column create_user_id varchar(64) DEFAULT NULL COMMENT '创建者id';

@@ -133,4 +133,9 @@ public class ResourceTableEntity implements Serializable {
      * 主题id（同一张表只能用在一个主题和分类中）
      */
     private String themeId;
+
+    /**
+     * 创建者id
+     */
+    private String createUserId;
 }

@@ -31,7 +31,7 @@ spring:
     #- classpath:db/migration
 
 server:
-  port: 9080
+  port: 9081
 #  servlet:
 #    context-path: /dataresource
 system:
