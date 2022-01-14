@@ -47,7 +47,7 @@ public class TableSettingResult implements Serializable {
     /**
      * 参数信息
      */
-    private List<String> paramInfo;
+    private List<Structure>paramInfo;
 
     /**
      * 表结构

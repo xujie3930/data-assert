@@ -204,8 +204,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     public BusinessResult<ResourceResult> getResourceInfo(String id) {
         ResourceResult result = new ResourceResult();
         ThemeResourceEntity resourceEntity = getById(id);
-        result.setName(resourceEntity.getName());
-        result.setDescriptor(resourceEntity.getDescriptor());
+        BeanCopyUtils.copyProperties(resourceEntity, result);
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
         long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getExternalState())).count();
         result.setOpenRate(DoubleUtils.doublePercent(openCount, resourceTableList.size()));

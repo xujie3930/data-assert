@@ -81,4 +81,9 @@ public class ThemeResult implements Serializable {
      * 创建者id
      */
     private String createUserId;
+
+    /**
+     * icron图标
+     */
+    private String picPath;
 }

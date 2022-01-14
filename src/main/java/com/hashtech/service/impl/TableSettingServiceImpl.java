@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.*;
 import java.util.Date;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -76,12 +77,16 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         }
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(id);
         BeanCopyUtils.copyProperties(tableSettingEntity, result);
-        if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
-            result.setParamInfo(Arrays.asList(tableSettingEntity.getParamInfo().split(",")));
-        }
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
         List<Structure> structureList = tableSettingService.getStructureList(resourceTableEntity.getName());
         result.setStructureList(structureList);
+        if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
+            List<String> params = Arrays.asList(tableSettingEntity.getParamInfo().split(","));
+            List<Structure> paramsInfo = structureList.stream()
+                    .filter((Structure s) -> params.contains(s.getFieldEnglishName()))
+                    .collect(Collectors.toList());
+            result.setParamInfo(paramsInfo);
+        }
         result.setInterfaceName(tableSettingEntity.getInterfaceName());
         return BusinessResult.success(result);
     }

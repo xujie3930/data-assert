@@ -34,4 +34,9 @@ public class ResourceResult {
      * 初始状态为0
      */
     private Double openRate = 0.00;
+
+    /**
+     * 资源分类图标
+     */
+    private String picPath;
 }
