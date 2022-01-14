@@ -11,7 +11,8 @@
       create_by         as  createBy,
       create_user_id    as  createUserId,
       update_time       as  updateTime,
-      update_by         as  updateBy
+      update_by         as  updateBy,
+      pic_path          as  picPath
     </sql>
 
     <select id="getMaxSort"

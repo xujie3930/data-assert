@@ -25,4 +25,9 @@ public class ResourceUpdateRequest {
     @Length(max = 200, message = "60000001")
     private String descriptor;
 
+    /**
+     * 图片路径
+     */
+    private String picPath;
+
 }
