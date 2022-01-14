@@ -90,6 +90,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             result.setParamInfo(paramsInfo);
         }
         result.setInterfaceName(tableSettingEntity.getInterfaceName());
+        result.setUpdateTime(resourceTableEntity.getUpdateTime());
+        result.setCreateTime(resourceTableEntity.getCreateTime());
         return BusinessResult.success(result);
     }
 
