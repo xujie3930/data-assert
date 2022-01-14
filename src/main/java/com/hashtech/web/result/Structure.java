@@ -20,4 +20,6 @@ public class Structure {
     private String tableChineseName;
     //字段类型
     private String type;
+    //是否必填
+    private Boolean required = true;
 }

@@ -80,6 +80,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
         List<Structure> structureList = tableSettingService.getStructureList(resourceTableEntity.getName());
         result.setStructureList(structureList);
+        //目前显示所有字段
+        result.setOutParamInfo(structureList);
         if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
             List<String> params = Arrays.asList(tableSettingEntity.getParamInfo().split(","));
             List<Structure> paramsInfo = structureList.stream()

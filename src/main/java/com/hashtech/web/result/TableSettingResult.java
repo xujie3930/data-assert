@@ -1,13 +1,9 @@
 package com.hashtech.web.result;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hashtech.entity.ThemeResourceEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -45,9 +41,14 @@ public class TableSettingResult implements Serializable {
     private String explainInfo;
 
     /**
-     * 参数信息
+     * 入参信息
      */
-    private List<Structure>paramInfo;
+    private List<Structure> paramInfo;
+
+    /**
+     * 出参信息
+     */
+    private List<Structure> outParamInfo;
 
     /**
      * 表结构
