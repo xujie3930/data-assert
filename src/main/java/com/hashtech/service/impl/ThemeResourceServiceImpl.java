@@ -13,10 +13,6 @@ import com.hashtech.common.ResourceCodeBean;
 import com.hashtech.common.StatusEnum;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.ThemeResourceEntity;
-import com.hashtech.feign.SysUserFeignClient;
-import com.hashtech.feign.result.CommonResult;
-import com.hashtech.feign.result.InternalUserInfoVO;
-import com.hashtech.feign.result.SysUserInfoResult;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.ResourceTableService;
@@ -31,7 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -52,8 +50,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private ResourceTableMapper resourceTableMapper;
     @Autowired
     private ResourceTableService resourceTableService;
-    @Autowired
-    private SysUserFeignClient sysUserFeignClient;
+    /*@Autowired
+    private SysUserFeignClient sysUserFeignClient;*/
 
     private static final String THEME_PARENT_ID = "0";
 
@@ -71,7 +69,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         return BusinessResult.success(entity.getId());
     }
 
-    public  InternalUserInfoVO getSysUserByUserId(String userId) {
+    /*public  InternalUserInfoVO getSysUserByUserId(String userId) {
         if (StringUtils.isBlank(userId)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000030.getCode());
         }
@@ -80,7 +78,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000030.getCode());
         }
         return result.getData();
-    }
+    }*/
 
     @Override
     @BusinessParamsValidate
