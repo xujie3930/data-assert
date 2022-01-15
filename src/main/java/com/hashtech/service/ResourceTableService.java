@@ -46,4 +46,6 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
     ResourceTableEntity getByRequestUrl(String requestUrl);
 
     BusinessResult<List<ResourceTableEntity>> getList(ResourceTableListRequest request);
+
+    BusinessResult<Boolean> updateResourceTableState(String userId, ResourceTableUpdateStateRequest request);
 }

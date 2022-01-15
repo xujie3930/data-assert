@@ -72,6 +72,12 @@ public class ResourceTableController {
     }
 
     @Logable
+    @PostMapping("/update/state")
+    BusinessResult<Boolean> updateResourceTableState(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTableUpdateStateRequest request) {
+        return resourceTableService.updateResourceTableState(userId, request);
+    }
+
+    @Logable
     @PostMapping("/info/baseInfo")
     BusinessResult<BaseInfo> getResourceTableBaseInfo(@RequestBody ResourceTableBaseInfoRequest request) {
         return resourceTableService.getResourceTableBaseInfo(request);

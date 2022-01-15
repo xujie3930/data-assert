@@ -249,6 +249,18 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
+    public BusinessResult<Boolean> updateResourceTableState(String userId, ResourceTableUpdateStateRequest request) {
+        ResourceTableEntity entity = getById(request.getId());
+        if (Objects.isNull(entity)) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
+        }
+        entity.setUpdateBy(userId);
+        entity.setUpdateTime(new Date());
+        entity.setExternalState(request.getExternalState());
+        return BusinessResult.success(updateById(entity));
+    }
+
+    @Override
     public BusinessResult<List<Map<Integer, String>>> getDataSource() {
         return BusinessResult.success(dataSourceMapper.getList());
     }
