@@ -14,7 +14,7 @@ spring:
           username: 'daas'
           password: 'daas@1122'
         remote:
-          url: "jdbc:mysql://192.168.0.17:3306/icdstuiframe?useSSL=false&useUnicode=true&characterEncoding=utf8"
+          url: "jdbc:mysql://192.168.0.17:3306/jodptest?useSSL=false&useUnicode=true&characterEncoding=utf8"
           username: 'icdstu'
           password: 'icdstu@0902'
 

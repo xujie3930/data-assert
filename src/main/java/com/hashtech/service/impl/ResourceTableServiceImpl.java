@@ -217,7 +217,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             wrapper.eq(ResourceTableEntity.EXTERNAL_STATE, request.getExternalState());
         }
         if (!StringUtils.isBlank(request.getName())) {
-            wrapper.like(ResourceTableEntity.NAME, request.getName());
+            wrapper.like(ResourceTableEntity.CHINESE_NAME, request.getName());
         }
         if (!StringUtils.isBlank(request.getCreateBy())) {
             wrapper.like(ResourceTableEntity.CREATE_BY, request.getCreateBy());

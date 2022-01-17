@@ -27,6 +27,7 @@ public class ResourceTableEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final String NAME = "NAME";
+    public static final String CHINESE_NAME = "CHINESE_NAME";
     public static final String RESOURCE_ID = "RESOURCE_ID";
     public static final String CREATE_BY = "CREATE_BY";
     public static final String DEL_FLAG = "DEL_FLAG";
