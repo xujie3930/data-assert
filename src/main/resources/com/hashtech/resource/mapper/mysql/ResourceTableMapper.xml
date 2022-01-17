@@ -31,7 +31,7 @@
 
     <select id="getListByResourceId" resultType="com.hashtech.entity.ResourceTableEntity">
         select
-        <include refid="Base_Column_List"/>
+        *
         from resource_table
         <where>
             <if test="resourceId !=null and resourceId != '' ">
@@ -43,7 +43,7 @@
 
     <select id="queryPage" resultType="com.hashtech.entity.ResourceTableEntity">
         select
-        <include refid="Base_Column_List"/>
+        *
         from resource_table
         <where>
             <if test="request.id !=null ">
@@ -70,7 +70,7 @@
 
     <select id="getByRequestUrl" resultType="com.hashtech.entity.ResourceTableEntity">
         select
-        <include refid="Base_Column_List"/>
+        *
         from resource_table
         <where>
             <if test="requestUrl !=null and requestUrl != '' ">
