@@ -43,7 +43,12 @@ public class ResourceTableUpdateRequest {
     private String serialNum;
 
     /**
-     * 所属组织
+     * 所属组织Id
      */
-    private String org;
+    private String orgId;
+
+    /**
+     * 所属组织Id
+     */
+    private String orgName;
 }

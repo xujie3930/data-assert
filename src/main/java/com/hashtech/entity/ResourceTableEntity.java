@@ -64,9 +64,15 @@ public class ResourceTableEntity implements Serializable {
     private String serialNum;
 
     /**
-     * 所属组织
+     * 所属组织id
      */
-    private String org;
+    private String orgId;
+
+    /**
+     * 所属组织id
+     */
+    private String orgName;
+
     /**
      * 表的访问url
      */

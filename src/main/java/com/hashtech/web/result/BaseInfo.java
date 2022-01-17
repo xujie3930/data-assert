@@ -53,9 +53,14 @@ public class BaseInfo {
     private String serialNum;
 
     /**
+     * 所属组织id
+     */
+    private String orgId;
+
+    /**
      * 所属组织
      */
-    private String org;
+    private String orgName;
 
     /**
      * 主题id

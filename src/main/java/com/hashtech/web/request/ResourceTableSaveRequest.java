@@ -68,7 +68,12 @@ public class ResourceTableSaveRequest {
     private String chineseName;
 
     /**
-     * 所属组织
+     * 所属组织Id
      */
-    private String org;
+    private String orgId;
+
+    /**
+     * 所属组织Id
+     */
+    private String orgName;
 }
