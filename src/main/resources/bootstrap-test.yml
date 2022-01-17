@@ -10,9 +10,9 @@ spring:
       strict: false
       datasource:
         master:
-          url: "jdbc:mysql://192.168.0.23:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
-          username: 'daas'
-          password: 'daas@1122'
+          url: "jdbc:mysql://192.168.0.193:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
+          username: 'root'
+          password: 'MySQL2021'
         remote:
           url: "jdbc:mysql://192.168.0.17:3306/icdstuiframe?useSSL=false&useUnicode=true&characterEncoding=utf8"
           username: 'icdstu'
