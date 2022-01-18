@@ -57,7 +57,7 @@
             <version>3.2.0</version>
         </dependency>
         <!-- 引入 minio  start-->
-        <!--<dependency>
+        <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
             <version>8.2.0</version>
@@ -68,13 +68,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        &lt;!&ndash; https://mvnrepository.com/artifact/org.web3j/core &ndash;&gt;
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.8.1</version>
-        </dependency>-->
+            <version>4.1.0</version>
+        </dependency>
         <!-- 引入 minio  end-->
     </dependencies>
 

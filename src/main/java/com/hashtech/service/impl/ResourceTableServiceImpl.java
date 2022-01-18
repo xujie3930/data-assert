@@ -130,6 +130,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             BeanCopyUtils.copyProperties(request, entity);
             entity.setUpdateBy(userId);
             entity.setUpdateTime(new Date());
+            entity.setChineseName(request.getChineseName());
             return BusinessResult.success(updateById(entity));
         }
         //更换表，则同时更新更新表信息和表设置

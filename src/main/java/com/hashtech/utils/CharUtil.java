@@ -43,8 +43,9 @@ public class CharUtil {
         for (int i = 0; i < ch.length; i++) {
             char c = ch[i];
             if (isChinese(c)) {
-                return true;
+                continue;
             }
+            return true;
         }
         return false;
     }
