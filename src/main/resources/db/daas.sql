@@ -92,4 +92,5 @@ alter table resource_table add column `org_id` varchar(64) DEFAULT NULL COMMENT 
 alter table resource_table add column `org_name` varchar(64) DEFAULT NULL COMMENT '部门名称';
 alter table theme_resource add column create_user_id varchar(64) DEFAULT NULL COMMENT '创建者id';
 alter table resource_table add column create_user_id varchar(64) DEFAULT NULL COMMENT '创建者id';
-alter table theme_resource add column pic_path varchar(255) DEFAULT NULL COMMENT '分类图标，存储图片的minio地址';
+alter table theme_resource add column pic_path varchar(255) DEFAULT NULL COMMENT '分类图标名称';
+alter table theme_resource add column pic_url varchar(255) DEFAULT NULL COMMENT '分类图标，存储图片的minio地址';

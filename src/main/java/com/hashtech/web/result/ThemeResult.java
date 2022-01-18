@@ -86,4 +86,9 @@ public class ThemeResult implements Serializable {
      * icron图标
      */
     private String picPath;
+
+    /**
+     * icron图标路径
+     */
+    private String picUrl;
 }

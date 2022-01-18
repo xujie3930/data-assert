@@ -39,4 +39,9 @@ public class ResourceResult {
      * 资源分类图标
      */
     private String picPath;
+
+    /**
+     * 分类图标路径
+     */
+    private String picUrl;
 }

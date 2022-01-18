@@ -26,8 +26,13 @@ public class ResourceUpdateRequest {
     private String descriptor;
 
     /**
-     * 图片路径
+     * 资源图标
      */
     private String picPath;
+
+    /**
+     * 资源图标路径
+     */
+    private String picUrl;
 
 }

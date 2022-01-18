@@ -11,6 +11,7 @@ import com.hashtech.businessframework.validate.BusinessParamsValidate;
 import com.hashtech.common.DelFalgEnum;
 import com.hashtech.common.ResourceCodeBean;
 import com.hashtech.common.StatusEnum;
+import com.hashtech.config.FileParse;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.mapper.ResourceTableMapper;
@@ -50,6 +51,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private ResourceTableMapper resourceTableMapper;
     @Autowired
     private ResourceTableService resourceTableService;
+    @Autowired
+    private FileParse fileParse;
     /*@Autowired
     private SysUserFeignClient sysUserFeignClient;*/
 
@@ -222,6 +225,10 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         BeanCopyUtils.copyProperties(request, entity);
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(userId);
+        if (request.getPicPath().equals(entity.getPicPath())){
+            String picUrl = fileParse.uploadFile(request.getPicPath(), request.getPicPath());
+            entity.setPicUrl(picUrl);
+        }
         updateById(entity);
         return BusinessResult.success(entity.getId());
     }
@@ -341,6 +348,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         //TODO:查询和插入得保证原子性
         Integer maxSort = themeResourceMapper.getMaxSortByParentId(request.getId());
         entity.setSort(maxSort + 1);
+        String picUrl = fileParse.uploadFile(request.getPicPath(), request.getPicUrl());
+        entity.setPicUrl(picUrl);
         return entity;
     }
 

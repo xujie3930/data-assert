@@ -82,5 +82,10 @@ public class ThemeResourceEntity implements Serializable {
      */
     private String picPath;
 
+    /**
+     * 分类图标路径
+     */
+    private String picUrl;
+
     private String createUserId;
 }

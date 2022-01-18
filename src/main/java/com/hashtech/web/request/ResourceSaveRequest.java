@@ -33,4 +33,9 @@ public class ResourceSaveRequest {
      */
     private String picPath;
 
+    /**
+     * 分类图标路径
+     */
+    private String picUrl;
+
 }
