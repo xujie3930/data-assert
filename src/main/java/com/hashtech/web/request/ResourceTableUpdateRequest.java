@@ -51,4 +51,11 @@ public class ResourceTableUpdateRequest {
      * 所属组织Id
      */
     private String orgName;
+
+    /**
+     * 表中文名称
+     */
+    @NotBlank(message = "60000034")
+    @Length(max = 50, message = "表名称最多为50字")
+    private String chineseName;
 }

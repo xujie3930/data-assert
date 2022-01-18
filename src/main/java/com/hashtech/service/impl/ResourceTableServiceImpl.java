@@ -26,6 +26,7 @@ import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.service.ThemeResourceService;
+import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
@@ -69,6 +70,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @DS("master")
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
+        checkTableChineseName(request.getChineseName());
+        checkTableHasExist(request.getChineseName(), null);
         ThemeResourceEntity resourceEntity = themeResourceService.getById(request.getId());
         if (Objects.isNull(resourceEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000007.getCode());
@@ -113,6 +116,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> updateResourceTable(String userId, ResourceTableUpdateRequest request) {
+        checkTableChineseName(request.getChineseName());
+        checkTableHasExist(request.getChineseName(), request.getId());
         ResourceTableEntity resourceTableEntity = getById(request.getId());
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
@@ -133,6 +138,12 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         updateById(entityUpdate);
         TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(entityUpdate);
         return BusinessResult.success(tableSettingService.updateById(tableSettingUpdateEntity));
+    }
+
+    private void checkTableHasExist(String chineseName, String id) {
+        if (BooleanUtils.isTrue(resourceTableMapper.checkTableHasExist(chineseName, id))){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000033.getCode());
+        }
     }
 
     private TableSettingEntity getTableSettingUpdateEntity(ResourceTableEntity entity) {
@@ -298,6 +309,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     private ResourceTableEntity getResourceTableEntitySave(String userId, ResourceTableSaveRequest request, BaseInfo baseInfo, ThemeResourceEntity resourceEntity) {
+        checkTableChineseName(baseInfo.getChineseName());
         ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
         Date date = new Date();
         entity.setCreateTime(date);
@@ -312,6 +324,12 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         //保存主题id
         entity.setThemeId(resourceEntity.getParentId());
         return entity;
+    }
+
+    private void checkTableChineseName(String chineseName) {
+        if (!CharUtil.isChinese(chineseName)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000032.getCode());
+        }
     }
 
     private ResourceTableEntity getResourceTableEntityUpdate(String userId, ResourceTableUpdateRequest request, BaseInfo baseInfo) {

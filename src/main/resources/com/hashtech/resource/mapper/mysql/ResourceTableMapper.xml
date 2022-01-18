@@ -180,4 +180,20 @@
         </where>
         limit 1
     </select>
+
+    <select id="checkTableHasExist"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="chineseName !=null and chineseName != '' ">
+                AND chinese_name=#{chineseName}
+            </if>
+            <if test="id != null and id != '' ">
+                AND id != #{id}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
 </mapper>
