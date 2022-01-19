@@ -30,13 +30,13 @@
     </select>
 
     <update id="updateTableSettingState">
-        update resource_table
+        update table_setting
         <set>
             del_flag=#{delFlag}
         </set>
         <where>
             <if test="resourceTableIds != null and resourceTableIds.length != 0">
-                where resource_table_id in
+                and resource_table_id in
                 <foreach collection="resourceTableIds" item="i" open="(" close=")" separator=",">
                     #{i}
                 </foreach>

@@ -1,7 +1,5 @@
 package com.hashtech.utils;
 
-import org.apache.poi.ss.formula.functions.T;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -16,7 +14,7 @@ import java.util.Map;
  * @create 2021-11-30 11:09
  **/
 public class ResultSetToListUtils {
-    public static List<? extends T> convertList(ResultSet rs) throws SQLException {
+    public static<T> List<? extends T> convertList(ResultSet rs) throws SQLException {
         List list = new ArrayList();
         //获取键名
         ResultSetMetaData md = rs.getMetaData();
