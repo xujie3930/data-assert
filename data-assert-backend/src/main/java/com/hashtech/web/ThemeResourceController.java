@@ -34,7 +34,7 @@ public class ThemeResourceController {
     }
 
     @PostMapping("/save")
-    BusinessResult<String> saveTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeSaveRequest request) {
+    BusinessResult<String> saveTheme(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody ThemeSaveRequest request) {
         return themeResourceService.saveTheme(userId, request);
     }
 
@@ -44,12 +44,12 @@ public class ThemeResourceController {
     }
 
     @PostMapping("/update")
-    BusinessResult<String> updateTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeUpdateRequest request) {
+    BusinessResult<String> updateTheme(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody ThemeUpdateRequest request) {
         return themeResourceService.updateTheme(userId, request);
     }
 
     @PostMapping("/delete")
-    BusinessResult<IdResult> deleteTheme(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ThemeDeleteRequest request) {
+    BusinessResult<IdResult> deleteTheme(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody ThemeDeleteRequest request) {
         return themeResourceService.deleteTheme(userId, request);
     }
 
@@ -59,7 +59,7 @@ public class ThemeResourceController {
     }
 
     @PostMapping("/rearrangement")
-    BusinessResult<Boolean> rearrangement(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody Map<String, String[]> request) {
+    BusinessResult<Boolean> rearrangement(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody Map<String, String[]> request) {
         return themeResourceService.rearrangement(userId, request);
     }
 
@@ -69,7 +69,7 @@ public class ThemeResourceController {
     }
 
     @PostMapping("/resource/save")
-    BusinessResult<String> saveResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceSaveRequest request) {
+    BusinessResult<String> saveResource(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody ResourceSaveRequest request) {
         return themeResourceService.saveResource(userId, request);
     }
 
@@ -79,12 +79,12 @@ public class ThemeResourceController {
     }
 
     @PostMapping("/resource/update")
-    BusinessResult<String> updateResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceUpdateRequest request) {
+    BusinessResult<String> updateResource(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody ResourceUpdateRequest request) {
         return themeResourceService.updateResource(userId, request);
     }
 
     @PostMapping("/resource/delete")
-    BusinessResult<IdResult> deleteResource(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceDeleteRequest request) {
+    BusinessResult<IdResult> deleteResource(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody ResourceDeleteRequest request) {
         return themeResourceService.deleteResource(userId, request);
     }
 }

@@ -55,17 +55,17 @@ public class ResourceTableController {
     }
 
     @PostMapping("/save")
-    BusinessResult<Boolean> saveResourceTable(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTableSaveRequest request) {
+    BusinessResult<Boolean> saveResourceTable(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody ResourceTableSaveRequest request) {
         return resourceTableService.saveResourceTable(userId, request);
     }
 
     @PostMapping("/update")
-    BusinessResult<Boolean> updateResourceTable(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTableUpdateRequest request) {
+    BusinessResult<Boolean> updateResourceTable(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody ResourceTableUpdateRequest request) {
         return resourceTableService.updateResourceTable(userId, request);
     }
 
     @PostMapping("/update/state")
-    BusinessResult<Boolean> updateResourceTableState(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody ResourceTableUpdateStateRequest request) {
+    BusinessResult<Boolean> updateResourceTableState(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody ResourceTableUpdateStateRequest request) {
         return resourceTableService.updateResourceTableState(userId, request);
     }
 
@@ -85,7 +85,7 @@ public class ResourceTableController {
     }
 
     @PostMapping("/delete")
-    BusinessResult<Boolean> deleteResourceTable(@RequestHeader(value = "x-userid", defaultValue = "root") String userId, @RequestBody String[] ids) {
+    BusinessResult<Boolean> deleteResourceTable(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody String[] ids) {
         return resourceTableService.deleteResourceTable(userId, ids);
     }
 
