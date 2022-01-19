@@ -179,6 +179,10 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         checkRepetitionNameByResource(request.getName(), null);
         ThemeResourceEntity entity = getResourceEntity(user, request);
         save(entity);
+        //按开放平台保存图片格式
+        String picUrl = fileParse.uploadFile(entity.getId(), request.getPicUrl());
+        entity.setPicUrl(picUrl);
+        updateById(entity);
         return BusinessResult.success(entity.getId());
     }
 
@@ -221,7 +225,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(user.getUsername());
         if (request.getPicPath().equals(entity.getPicPath())) {
-            String picUrl = fileParse.uploadFile(request.getPicPath(), request.getPicUrl());
+            String picUrl = fileParse.uploadFile(request.getId(), request.getPicUrl());
             entity.setPicUrl(picUrl);
         }
         updateById(entity);
@@ -343,8 +347,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         //TODO:查询和插入得保证原子性
         Integer maxSort = themeResourceMapper.getMaxSortByParentId(request.getId());
         entity.setSort(maxSort + 1);
-        String picUrl = fileParse.uploadFile(request.getPicPath(), request.getPicUrl());
-        entity.setPicUrl(picUrl);
+        entity.setPicUrl(null);
         return entity;
     }
 

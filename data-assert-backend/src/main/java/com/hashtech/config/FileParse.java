@@ -53,7 +53,7 @@ public class FileParse {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             String path = LocalDateTime.now().format(formatter);
-            fileName = DIR + '/' + path + '/' + fileName;
+            fileName = DIR + '/' + path + '/' + fileName + ".png";
             byte[] bytes = DatatypeConverter.parseBase64Binary(str64);
             ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
             PutObjectArgs objectArgs = PutObjectArgs.builder().object(fileName)
