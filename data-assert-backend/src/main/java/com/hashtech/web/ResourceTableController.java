@@ -9,7 +9,6 @@ import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,6 @@ import java.util.Map;
  * @author xujie
  * @since 2021-11-23
  */
-@Slf4j
 @RestController
 @RequestMapping("/resource/table")
 public class ResourceTableController {
@@ -130,7 +128,6 @@ public class ResourceTableController {
     @GetMapping("/getResourceTable")
     BusinessResult<ResourceTableEntity> getResourceTable(@RequestParam("requestUrl") String requestUrl) {
         ResourceTableEntity entity = resourceTableService.getByRequestUrl(requestUrl);
-        log.info("requestUrl:{}", requestUrl);
         return BusinessResult.success(entity);
     }
 }
