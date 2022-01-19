@@ -327,9 +327,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     private void checkTableChineseName(String chineseName) {
-        if (!CharUtil.isChinese(chineseName)) {
+        /*if (!CharUtil.isChinese(chineseName)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000032.getCode());
-        }
+        }*/
     }
 
     private ResourceTableEntity getResourceTableEntityUpdate(String userId, ResourceTableUpdateRequest request, BaseInfo baseInfo) {
