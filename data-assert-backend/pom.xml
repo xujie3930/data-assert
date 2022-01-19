@@ -194,7 +194,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>1.5.4.RELEASE</version>
                 <configuration>
-                    <mainClass>com.hashtech.BackendApplication</mainClass>
+                    <mainClass>com.hashtech.DataAssertApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
