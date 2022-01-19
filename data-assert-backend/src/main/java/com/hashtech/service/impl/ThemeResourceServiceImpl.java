@@ -333,12 +333,13 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         }
         ThemeResourceEntity entity = BeanCopyUtils.copyProperties(request, new ThemeResourceEntity());
         Date date = new Date();
+        entity.setId(null);
+        entity.setParentId(request.getId());
         entity.setCreateBy(user.getUsername());
         entity.setCreateUserId(user.getUserId());
         entity.setUpdateBy(user.getUsername());
         entity.setCreateTime(date);
         entity.setUpdateTime(date);
-        entity.setParentId(request.getId());
         //TODO:查询和插入得保证原子性
         Integer maxSort = themeResourceMapper.getMaxSortByParentId(request.getId());
         entity.setSort(maxSort + 1);
