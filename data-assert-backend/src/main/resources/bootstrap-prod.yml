@@ -14,9 +14,9 @@ spring:
           username: 'daas'
           password: 'daas@1122'
         remote:
-          url: "jdbc:mysql://192.168.141.116:3306/faren?useSSL=false&useUnicode=true&characterEncoding=utf8"
-          username: 'farenrw'
-          password: 'NJMPSC7u'
+          url: "jdbc:mysql://192.168.211.2:3306/corporate_data?useSSL=false&useUnicode=true&characterEncoding=utf8"
+          username: 'corporate'
+          password: 'corporate'
 
   redis:
     host: 192.168.211.2 # Redis服务器地址
