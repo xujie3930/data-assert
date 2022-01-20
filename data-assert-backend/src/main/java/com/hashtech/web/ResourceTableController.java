@@ -105,6 +105,7 @@ public class ResourceTableController {
      * @param request
      * @return
      */
+    @Deprecated
     @PostMapping("/getResourceData")
     BusinessResult<List<Object>> getResourceDataByPost(@RequestBody ResourceDataRequest request) {
         return resourceTableService.getResourceData(request);
@@ -116,6 +117,7 @@ public class ResourceTableController {
      * @param request
      * @return
      */
+    @Deprecated
     @GetMapping("/getResourceData")
     BusinessResult<List<Object>> getResourceDataByGet(@RequestBody ResourceDataRequest request) {
         return resourceTableService.getResourceData(request);

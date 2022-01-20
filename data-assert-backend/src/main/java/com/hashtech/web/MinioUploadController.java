@@ -20,12 +20,14 @@ public class MinioUploadController {
     @Autowired
     private FileParse fileParse;
 
+    @Deprecated
     @PostMapping("/import")
     public String uploadFile(@RequestParam("uploadFile") MultipartFile file) {
         String filePath = fileParse.uploadFile(file);
         return filePath;
     }
 
+    @Deprecated
     @PostMapping("/import/string")
     public String uploadStrinig(@RequestBody UploadMinioRequest request) {
         String filePath = fileParse.uploadFile(request.getFileName(), request.getBase64Url());

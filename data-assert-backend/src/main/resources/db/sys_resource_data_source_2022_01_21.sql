@@ -1,3 +1,6 @@
+/*micro-oauth2-api项目*/
+/*插入数据权限*/
+use jodpiframe;
 INSERT INTO `sys_resource` (`sys_resource_id`, `name`, `is_leaf`, `code`, `parent_id`, `status`, `url`, `type`,
                             `layout`, `order_by`, `remark`, `create_time`, `creator_id`, `creator_name`,
                             `creator_depart_id`, `creator_depart_name`, `update_time`, `updater_id`, `updater_name`,
@@ -49,3 +52,27 @@ INSERT INTO `sys_resource` (`sys_resource_id`, `name`, `is_leaf`, `code`, `paren
                             `updater_depart_id`, `updater_depart_name`, `need_auth`)
 VALUES ('925068623448376996', '编辑资源表状态', 1, 'L-211', '925068022387834880', 1, '/*/resource/table/update/state', 1, 3,
         NULL, NULL, '2021-12-29 12:43:14', NULL, NULL, NULL, NULL, '2021-12-29 12:43:14', NULL, NULL, NULL, NULL, NULL);
+
+
+/*新增字段*/
+/*当前项目库*/
+use daas;
+alter table resource_table
+    add column theme_id varchar(32) DEFAULT '' COMMENT '资源表所属主题id';
+alter table resource_table
+    add column `org_id` varchar(64) DEFAULT NULL COMMENT '部门id';
+alter table resource_table
+    add column `org_name` varchar(64) DEFAULT NULL COMMENT '部门名称';
+alter table theme_resource
+    add column create_user_id varchar(64) DEFAULT NULL COMMENT '创建者id';
+alter table resource_table
+    add column create_user_id varchar(64) DEFAULT NULL COMMENT '创建者id';
+alter table theme_resource
+    add column pic_path varchar(255) DEFAULT NULL COMMENT '分类图标名称';
+alter table theme_resource
+    add column pic_url varchar(255) DEFAULT NULL COMMENT '分类图标，存储图片的minio地址';
+alter table table_setting
+    add column `del_flag` char(1) DEFAULT 'N' COMMENT '是否删除:N-否，Y-删除';
+UPDATE table_setting
+set del_flag = 'Y'
+where resource_table_id in (select id from resource_table where del_flag = 'Y');

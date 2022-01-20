@@ -96,25 +96,3 @@ CREATE TABLE `theme_resource`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='主题资源表';
 
-/*新增字段*/
-use daas;
-alter table resource_table
-    add column theme_id varchar(32) DEFAULT '' COMMENT '资源表所属主题id';
-alter table resource_table
-    add column `org_id` varchar(64) DEFAULT NULL COMMENT '部门id';
-alter table resource_table
-    add column `org_name` varchar(64) DEFAULT NULL COMMENT '部门名称';
-alter table theme_resource
-    add column create_user_id varchar(64) DEFAULT NULL COMMENT '创建者id';
-alter table resource_table
-    add column create_user_id varchar(64) DEFAULT NULL COMMENT '创建者id';
-alter table theme_resource
-    add column pic_path varchar(255) DEFAULT NULL COMMENT '分类图标名称';
-alter table theme_resource
-    add column pic_url varchar(255) DEFAULT NULL COMMENT '分类图标，存储图片的minio地址';
-alter table table_setting
-    add column `del_flag` char(1) DEFAULT 'N' COMMENT '是否删除:N-否，Y-删除';
-UPDATE table_setting
-set del_flag = 'Y'
-where resource_table_id in (select id from resource_table where del_flag = 'Y');
-
