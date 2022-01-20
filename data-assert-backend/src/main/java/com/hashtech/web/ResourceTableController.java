@@ -4,6 +4,7 @@ package com.hashtech.web;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.entity.ResourceTableEntity;
+import com.hashtech.feign.result.ResourceTableResult;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.*;
@@ -100,37 +101,13 @@ public class ResourceTableController {
     }
 
     /**
-     * 给开放平台提供查询的接口,Post方式
-     *
-     * @param request
-     * @return
-     */
-    @Deprecated
-    @PostMapping("/getResourceData")
-    BusinessResult<List<Object>> getResourceDataByPost(@RequestBody ResourceDataRequest request) {
-        return resourceTableService.getResourceData(request);
-    }
-
-    /**
-     * 给开放平台提供查询的接口,Get方式
-     *
-     * @param request
-     * @return
-     */
-    @Deprecated
-    @GetMapping("/getResourceData")
-    BusinessResult<List<Object>> getResourceDataByGet(@RequestBody ResourceDataRequest request) {
-        return resourceTableService.getResourceData(request);
-    }
-
-    /**
      * @param requestUrl
      * @return
      */
     @GetMapping("/getResourceTable")
-    BusinessResult<ResourceTableEntity> getResourceTable(@RequestParam("requestUrl") String requestUrl) {
-        ResourceTableEntity entity = resourceTableService.getByRequestUrl(requestUrl);
-        return BusinessResult.success(entity);
+    BusinessResult<ResourceTableResult> getResourceTable(@RequestParam("requestUrl") String requestUrl) {
+        ResourceTableResult result = resourceTableService.getByRequestUrl(requestUrl);
+        return BusinessResult.success(result);
     }
 }
 

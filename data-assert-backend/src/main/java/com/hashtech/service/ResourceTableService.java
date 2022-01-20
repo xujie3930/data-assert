@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.entity.ResourceTableEntity;
+import com.hashtech.feign.result.ResourceTableResult;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
@@ -37,13 +38,11 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
 
     BusinessResult<List<Map<Integer, String>>> getDataSource();
 
-    BusinessResult<List<Object>> getResourceData(ResourceDataRequest request);
-
     Boolean hasExitSerialNum(HasExitSerialNumRequest request);
 
     Boolean hasExistOpenExternalState(ExistOpenExternalRequest request);
 
-    ResourceTableEntity getByRequestUrl(String requestUrl);
+    ResourceTableResult getByRequestUrl(String requestUrl);
 
     BusinessResult<List<ResourceTableEntity>> getList(ResourceTableListRequest request);
 

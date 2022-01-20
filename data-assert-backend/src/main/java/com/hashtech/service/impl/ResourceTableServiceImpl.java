@@ -9,6 +9,7 @@ import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.entity.ThemeResourceEntity;
+import com.hashtech.feign.result.ResourceTableResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -278,17 +280,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
-    public BusinessResult<List<Object>> getResourceData(ResourceDataRequest request) {
-        String requestUrl = URLProcessUtils.getRequestUrl(request.getRequestUrl());
-        ResourceTableEntity resourceTableEntity = getByRequestUrl(requestUrl);
-        if (Objects.isNull(resourceTableEntity)) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000011.getCode());
-        }
-        List<Object> list = tableSettingService.getResourceData(request, resourceTableEntity);
-        return BusinessResult.success(list);
-    }
-
-    @Override
     public Boolean hasExitSerialNum(HasExitSerialNumRequest request) {
         return BooleanUtils.isTrue(resourceTableMapper.hasExitSerialNum(request.getSerialNum(), request.getId()));
     }
@@ -305,8 +296,23 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
-    public ResourceTableEntity getByRequestUrl(String requestUrl) {
-        return resourceTableMapper.getByRequestUrl(requestUrl);
+    public ResourceTableResult getByRequestUrl(String requestUrl) {
+        ResourceTableResult result = new ResourceTableResult();
+        ResourceTableEntity resourceTable = resourceTableMapper.getByRequestUrl(requestUrl);
+        if (Objects.isNull(resourceTable)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
+        }
+        result.setTableName(resourceTable.getName());
+        TableSettingEntity tableSetting = tableSettingMapper.getByResourceTableId(resourceTable.getId());
+        if (Objects.isNull(resourceTable)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
+        }
+        if (StringUtils.isNotBlank(tableSetting.getParamInfo())){
+            String[] split = tableSetting.getParamInfo().split(",");
+            List<String> paramList= Stream.of(split).collect(Collectors.toList());
+            result.setParams(paramList);
+        }
+        return result;
     }
 
     private ResourceTableEntity getResourceTableEntitySave(InternalUserInfoVO user, ResourceTableSaveRequest request, BaseInfo baseInfo, ThemeResourceEntity resourceEntity) {
