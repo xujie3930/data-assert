@@ -21,6 +21,7 @@ public class FileParse {
     private static final String DIR = "backend";
     private Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String PREFIX = "data:image/svg+xml;base64,";
+    private static final String POSTFIX = ".svg";
     @Autowired
     private MinioClient minioClient;
     @Value("${minio.bucketName}")
@@ -55,10 +56,8 @@ public class FileParse {
             String str64 = str.replace(PREFIX, "");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             String path = LocalDateTime.now().format(formatter);
-//            fileName = DIR + '/' + path + '/' + fileName + ".svg";
-            fileName = DIR + '/' + path + '/' + fileName + ".png";
+            fileName = DIR + '/' + path + '/' + fileName + POSTFIX;
             byte[] bytes = DatatypeConverter.parseBase64Binary(str64);
-//            byte[] bytes = DatatypeConverter.parseBase64Binary(str64);
             ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
             PutObjectArgs objectArgs = PutObjectArgs.builder().object(fileName)
                     .bucket(bucketName)
