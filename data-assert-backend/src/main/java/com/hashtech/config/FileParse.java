@@ -14,6 +14,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 
 @Component
 public class FileParse {
@@ -54,7 +55,9 @@ public class FileParse {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             String path = LocalDateTime.now().format(formatter);
             fileName = DIR + '/' + path + '/' + fileName + ".svg";
-            byte[] bytes = DatatypeConverter.parseBase64Binary(str64);
+            Base64.Decoder decoder = Base64.getDecoder();
+            byte[] bytes = decoder.decode(str64);
+//            byte[] bytes = DatatypeConverter.parseBase64Binary(str64);
             ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
             PutObjectArgs objectArgs = PutObjectArgs.builder().object(fileName)
                     .bucket(bucketName)
