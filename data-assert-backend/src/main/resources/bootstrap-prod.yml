@@ -25,6 +25,12 @@ spring:
     timeout: 3000ms # 连接超时时间（毫秒）
     password: VQ1eWwR3
 
+minio:
+  host: http://192.168.211.2:9000
+  accessKey: AKIAIOSFODNN7EXAMPLE
+  secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+  bucketName: jodp
+
 # swagger 登录认证
 knife4j:
   basic:
