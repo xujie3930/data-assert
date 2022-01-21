@@ -224,10 +224,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         BeanCopyUtils.copyProperties(request, entity);
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(user.getUsername());
-        if (request.getPicPath().equals(entity.getPicPath())) {
-            String picUrl = fileParse.uploadFile(request.getId(), request.getPicUrl());
-            entity.setPicUrl(picUrl);
-        }
+        String picUrl = fileParse.uploadFile(request.getId(), request.getPicUrl());
+        entity.setPicUrl(picUrl);
         updateById(entity);
         return BusinessResult.success(entity.getId());
     }
