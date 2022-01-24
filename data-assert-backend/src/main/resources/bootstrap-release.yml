@@ -1,22 +1,22 @@
 spring:
-  #  cloud:
-  #    nacos:
-  #      discovery:
-  #        server-addr: 192.168.110.118:8848
-  #        namespace: dd8ede24-19c7-4547-8956-a566f800a823
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.234:8848
+        group: RELEASE
   datasource:
     dynamic:
       primary: master
       strict: false
       datasource:
         master:
-          url: "jdbc:mysql://192.168.0.23:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
-          username: 'daas'
-          password: 'daas@1122'
-        remote:
-          url: "jdbc:mysql://192.168.211.2:3306/icdstuiframe?useSSL=false&useUnicode=true&characterEncoding=utf8"
+          url: "jdbc:mysql://192.168.0.112:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
           username: 'jodp'
           password: 'jodp@2018'
+        remote:
+          url: "jdbc:mysql://192.168.0.17:3306/jodptest?useSSL=false&useUnicode=true&characterEncoding=utf8"
+          username: 'icdstu'
+          password: 'icdstu@0902'
 
   redis:
     host: 192.168.0.125
@@ -33,6 +33,11 @@ spring:
         max-wait: -1
 #    password: hash2018
 
+minio:
+  host: http://192.168.0.219:9000
+  accessKey: AKIAIOSFODNN7EXAMPLE
+  secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+  bucketName: jodp-test
 # swagger 登录认证
 knife4j:
   basic:
