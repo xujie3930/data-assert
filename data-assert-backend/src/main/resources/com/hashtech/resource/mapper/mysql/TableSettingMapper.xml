@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hashtech.mapper.TableSettingMapper">
+
+    <select id="getByResourceTableId" resultType="com.hashtech.entity.TableSettingEntity">
+        select
+        *
+        from table_setting
+        <where>
+            <if test="resourceTableId !=null and resourceTableId != '' ">
+                and resource_table_id=#{resourceTableId}
+            </if>
+        </where>
+    </select>
+
+    <select id="hasExistInterfaceName"
+            resultType="java.lang.Boolean">
+        select 1
+        from table_setting
+        <where>
+            <if test="request.interfaceName != null and request.interfaceName != '' ">
+                AND interface_name = #{request.interfaceName}
+            </if>
+            <if test="request.id != null and request.id != '' ">
+                AND resource_table_id != #{request.id}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
+
+    <update id="updateTableSettingState">
+        update table_setting
+        <set>
+            del_flag=#{delFlag}
+        </set>
+        <where>
+            <if test="resourceTableIds != null and resourceTableIds.length != 0">
+                and resource_table_id in
+                <foreach collection="resourceTableIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+        </where>
+    </update>
+</mapper>

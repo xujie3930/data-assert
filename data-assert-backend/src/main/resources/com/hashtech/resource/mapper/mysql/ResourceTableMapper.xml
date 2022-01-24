@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hashtech.mapper.ResourceTableMapper">
+
+    <sql id="Base_Column_List">
+        id               	as  id,
+      resource_id       as  resourceId,
+      name              as  name,
+      request_url       as  requestUrl,
+      source            as  source,
+      columns_count     as  columnsCount,
+      data_size     as  dataSize,
+      matters           as  matters,
+      descriptor        as  descriptor,
+      sort              as  sort,
+      create_time       as  createTime,
+      create_by         as  createBy,
+      update_time       as  updateTime,
+      update_by         as  updateBy,
+      del_flag          as  delFlag
+    </sql>
+    <update id="deleteByResourceId">
+        update resource_table
+        <set>
+            del_flag='Y'
+        </set>
+        <where>
+            resource_id=#{id}
+        </where>
+    </update>
+
+    <select id="getListByResourceId" resultType="com.hashtech.entity.ResourceTableEntity">
+        select
+        *
+        from resource_table
+        <where>
+            <if test="resourceId !=null and resourceId != '' ">
+                and resource_id=#{resourceId}
+            </if>
+            and del_flag='N'
+        </where>
+    </select>
+
+    <select id="queryPage" resultType="com.hashtech.entity.ResourceTableEntity">
+        select
+        *
+        from resource_table
+        <where>
+            <if test="request.id !=null ">
+                and resource_id=#{id}
+            </if>
+            <if test="request.state !=null ">
+                and state=#{request.state}
+            </if>
+            <if test="request.name !=null and request.name != '' ">
+                and name like concat ('%', #{request.name}, '%')
+            </if>
+            <if test="request.createBy !=null and request.createBy != '' ">
+                and create_by=#{request.createBy}
+            </if>
+            and del_flag='N'
+        </where>
+        <if test='request.ascOrDesc =="asc"'>
+            order by create_time asc
+        </if>
+        <if test='request.ascOrDesc =="desc"'>
+            order by create_time desc
+        </if>
+    </select>
+
+    <select id="getByRequestUrl" resultType="com.hashtech.entity.ResourceTableEntity">
+        select
+        *
+        from resource_table
+        <where>
+            <if test="requestUrl !=null and requestUrl != '' ">
+                and request_url=#{requestUrl}
+            </if>
+            and del_flag='N'
+        </where>
+    </select>
+
+    <select id="getCountDataSizeResourceId" resultType="java.lang.Long">
+        select
+        ifnull(SUM(data_size), 0)
+        from resource_table
+        <where>
+            <if test="resourceId !=null and resourceId != '' ">
+                and resource_id=#{resourceId}
+            </if>
+            and del_flag='N'
+        </where>
+    </select>
+
+    <select id="hasExitExternalStateByResourceIds"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="resourceIds != null and resourceIds.length != 0">
+                AND resource_id in
+                <foreach collection="resourceIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            <if test="externalState !=null">
+                and external_state=#{externalState}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
+
+    <select id="hasExitExternalStateByIds"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="externalState !=null">
+                AND external_state=#{externalState}
+            </if>
+            <if test="ids != null and ids.length != 0">
+                AND id in
+                <foreach collection="ids" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
+
+    <select id="checkHasExitResourceTable"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="name != null and name != '' ">
+                AND name = #{name}
+            </if>
+            <if test="resourceId != null and resourceId != '' ">
+                AND resource_id = #{resourceId}
+            </if>
+            <if test="resourceTableId != null and resourceTableId != '' ">
+                AND id != #{resourceTableId}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
+
+    <select id="checkHasExitResourceTableInAll"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="name != null and name != '' ">
+                AND name = #{name}
+            </if>
+            <if test="id != null and id != '' ">
+                AND id != #{id}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
+
+    <select id="hasExitSerialNum"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="serialNum !=null and serialNum != '' ">
+                and serial_num = #{serialNum}
+            </if>
+            <if test="id !=null and id != '' ">
+                and id != #{id}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
+
+    <select id="checkTableHasExist"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_table
+        <where>
+            <if test="chineseName !=null and chineseName != '' ">
+                AND chinese_name=#{chineseName}
+            </if>
+            <if test="id != null and id != '' ">
+                AND id != #{id}
+            </if>
+            AND del_flag = 'N'
+        </where>
+        limit 1
+    </select>
+</mapper>
