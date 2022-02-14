@@ -53,6 +53,11 @@ public class ResourceTableEntity implements Serializable {
     private String name;
 
     /**
+     * 数据源uri
+     */
+    private String uri;
+
+    /**
      * 资源表中文名称
      */
     private String chineseName;
@@ -346,5 +351,13 @@ public class ResourceTableEntity implements Serializable {
 
     public void setCreateUserId(String createUserId) {
         this.createUserId = createUserId;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }

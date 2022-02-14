@@ -303,6 +303,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
         result.setTableName(resourceTable.getName());
+        result.setUri(resourceTable.getUri());
         TableSettingEntity tableSetting = tableSettingMapper.getByResourceTableId(resourceTable.getId());
         if (Objects.isNull(resourceTable)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());

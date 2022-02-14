@@ -12,6 +12,8 @@ public class ResourceTableResult {
 
     private String tableName;
 
+    private String uri;
+
     private List<String> params = new ArrayList<>();
 
     public String getTableName() {
@@ -36,5 +38,13 @@ public class ResourceTableResult {
     public ResourceTableResult(String tableName, List<String> params) {
         this.tableName = tableName;
         this.params = params;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }
