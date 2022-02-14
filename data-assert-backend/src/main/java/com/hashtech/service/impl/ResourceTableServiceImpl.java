@@ -303,7 +303,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
         result.setTableName(resourceTable.getName());
-        result.setUri(resourceTable.getUri());
+        result.setSourceId(resourceTable.getSourceId());
         TableSettingEntity tableSetting = tableSettingMapper.getByResourceTableId(resourceTable.getId());
         if (Objects.isNull(resourceTable)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
@@ -312,6 +312,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             String[] split = tableSetting.getParamInfo().split(",");
             List<String> paramList= Stream.of(split).collect(Collectors.toList());
             result.setParams(paramList);
+        }
+        if (StringUtils.isNotBlank(tableSetting.getRespInfo())){
+            String[] respInfoArr = tableSetting.getParamInfo().split(",");
+            List<String> respInfoList = Stream.of(respInfoArr).collect(Collectors.toList());
+            result.setResps(respInfoList);
         }
         return result;
     }

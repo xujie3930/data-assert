@@ -12,9 +12,11 @@ public class ResourceTableResult {
 
     private String tableName;
 
-    private String uri;
+    private String sourceId;
 
     private List<String> params = new ArrayList<>();
+
+    private List<String> resps = new ArrayList<>();
 
     public String getTableName() {
         return tableName;
@@ -40,11 +42,19 @@ public class ResourceTableResult {
         this.params = params;
     }
 
-    public String getUri() {
-        return uri;
+    public List<String> getResps() {
+        return resps;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setResps(List<String> resps) {
+        this.resps = resps;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 }

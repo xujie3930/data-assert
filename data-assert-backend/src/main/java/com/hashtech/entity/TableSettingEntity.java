@@ -52,6 +52,10 @@ public class TableSettingEntity implements Serializable {
      * 参数信息
      */
     private String paramInfo;
+    /**
+     * 返回字段信息
+     */
+    private String respInfo;
 
     /**
      * 表字段信息，存储于hdfs中
@@ -139,5 +143,13 @@ public class TableSettingEntity implements Serializable {
 
     public void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
+    }
+
+    public String getRespInfo() {
+        return respInfo;
+    }
+
+    public void setRespInfo(String respInfo) {
+        this.respInfo = respInfo;
     }
 }
