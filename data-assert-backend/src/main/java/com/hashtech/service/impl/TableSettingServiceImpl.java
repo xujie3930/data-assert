@@ -7,6 +7,8 @@ import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.feign.DatasourceFeignClient;
+import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.DatasourceSync;
@@ -14,10 +16,7 @@ import com.hashtech.service.OauthApiService;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.utils.*;
-import com.hashtech.web.request.ExistInterfaceNamelRequest;
-import com.hashtech.web.request.ResourceDataRequest;
-import com.hashtech.web.request.ResourceTablePreposeRequest;
-import com.hashtech.web.request.TableSettingUpdateRequest;
+import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
 import com.hashtech.web.result.TableSettingResult;
@@ -59,7 +58,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     @Autowired
     private OauthApiService oauthApiService;
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DatasourceFeignClient datasourceFeignClient;
     @Value("${server.port}")
     private int serverPort;
 
@@ -79,7 +78,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(id);
         BeanCopyUtils.copyProperties(tableSettingEntity, result);
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
-        List<Structure> structureList = tableSettingService.getStructureList(resourceTableEntity.getName());
+        List<Structure> structureList = tableSettingService.getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
         result.setStructureList(structureList);
         //目前显示所有字段
         result.setOutParamInfo(structureList);
@@ -140,15 +139,20 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     }
 
     @Override
-    @DS("remote")
     /**
      * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
      */
     public BaseInfo getBaseInfo(ResourceTablePreposeRequest request) throws AppException {
         BaseInfo baseInfo = new BaseInfo();
-        Connection conn = null;
         try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
+            BusinessResult<DatasourceDetailResult> datasourceResult = datasourceFeignClient.info(request.getDatasourceId());
+            if (!datasourceResult.isSuccess() || Objects.isNull(datasourceResult.getData())){
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.getCode());
+            }
+            DatasourceDetailResult datasource = datasourceResult.getData();
+            String uri = datasource.getUri();
+            Integer type = datasource.getType();
+            Connection conn = DBConnectionManager.getInstance().getConnection(uri, type);
             String tableEnglishName = request.getTableName();
             String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
             baseInfo.setDescriptor(tableChineseName);
@@ -163,38 +167,37 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 baseInfo.setDataSize(countRs.getLong(1));
             }
             //获取表结构没有性能问题
-            List<Structure> structureList = getStructureList(tableEnglishName);
+            List<Structure> structureList = getStructureList(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
             baseInfo.setColumnsCount(structureList.size());
         } catch (Exception e) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
         }
         return baseInfo;
     }
 
     @Override
-    @DS("remote")
     /**
      * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
      */
-    public List<Structure> getStructureList(String tableName) throws AppException {
+    public List<Structure> getStructureList(ResourceTableNameRequest request) throws AppException {
         BaseInfo baseInfo = new BaseInfo();
         List<Structure> structureList = new LinkedList<>();
         Connection conn = null;
         try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
+            BusinessResult<DatasourceDetailResult> datasourceResult = datasourceFeignClient.info(request.getDatasourceId());
+            if (!datasourceResult.isSuccess() || Objects.isNull(datasourceResult.getData())){
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.getCode());
+            }
+            DatasourceDetailResult datasource = datasourceResult.getData();
+            String uri = datasource.getUri();
+            String username = DatasourceSync.getUsername(uri);
+            String password = DatasourceSync.getPassword(uri);
+            conn = DatasourceSync.getConn(datasource.getType(), uri, username, password);
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet tableResultSet = metaData.getTables(null, null, tableName,
+            ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
             while (tableResultSet.next()) {
-                String tableEnglishName = tableName;
+                String tableEnglishName = request.getTableName();
                 String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
                 baseInfo.setDescriptor(tableChineseName);
                 baseInfo.setName(tableEnglishName);
@@ -230,13 +233,20 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     }
 
     @Override
-    @DS("remote")
     public BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException {
         Connection conn = null;
         BusinessPageResult result = null;
         Long dataSize = 0L;
         try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
+            BusinessResult<DatasourceDetailResult> datasourceResult = datasourceFeignClient.info(request.getDatasourceId());
+            if (!datasourceResult.isSuccess() || Objects.isNull(datasourceResult.getData())){
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.getCode());
+            }
+            DatasourceDetailResult datasource = datasourceResult.getData();
+            String uri = datasource.getUri();
+            String username = DatasourceSync.getUsername(uri);
+            String password = DatasourceSync.getPassword(uri);
+            conn = DatasourceSync.getConn(datasource.getType(), uri, username, password);
             Statement stmt = conn.createStatement();
             //TODO:select count(*)大表有性能问题
             String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
@@ -284,44 +294,13 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     }
 
     @Override
-    @DS("remote")
-    public BusinessResult<List<Map<String, String>>> getTablaList() {
-        List<Map<String, String>> maps = new LinkedList<>();
-        List<Map<String, Object>> tableMaps;
-        Connection conn = null;
-        try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
-            String schemaName = conn.getCatalog();
-            String tableNameListSql = String.format("select table_name,table_comment from information_schema.tables where table_schema='%s'", schemaName);
-            tableMaps = jdbcTemplate.queryForList(tableNameListSql);
-        } catch (SQLException throwables) {
-//            log.error("resource/table/prepose/getTablaList接口异常:{}", throwables.getMessage());
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
-        }
-        if (CollectionUtils.isEmpty(tableMaps)) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000010.getCode());
-        }
-        for (Map<String, Object> m : tableMaps) {
-            Map<String, String> map = new LinkedHashMap<>();
-            map.put("tableName", (String) m.get("table_name"));
-            map.put("comment", (String) m.get("table_comment"));
-            maps.add(map);
-        }
-        return BusinessResult.success(maps);
+    public BusinessResult<List<Map<String, String>>> getTablaList(TableNameListRequest request) {
+        return datasourceFeignClient.getTableNameList(new TableNameListRequest(request.getId()));
     }
 
     @Override
-    @DS("remote")
     public List<Object> getResourceData(ResourceDataRequest request, ResourceTableEntity entity) {
-        Connection conn = null;
+        /*Connection conn = null;
         //拼接查询sql
         StringBuilder builder = new StringBuilder("select * from " + entity.getName() + " where ");
         //解析请求参数
@@ -368,7 +347,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     throwables.printStackTrace();
                 }
             }
-        }
+        }*/
         return Collections.emptyList();
     }
 

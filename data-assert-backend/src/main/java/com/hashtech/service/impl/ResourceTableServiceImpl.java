@@ -77,7 +77,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         checkHasExitResourceTable(request.getName(), null);
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), null));
-        BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getName()));
+        BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getDatasourceId(), request.getName()));
         ResourceTableEntity entity = getResourceTableEntitySave(user, request, baseInfo, resourceEntity);
         save(entity);
         TableSettingEntity tableSettingEntity = getTableSettingSaveEntity(entity, request);
@@ -135,7 +135,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             return BusinessResult.success(true);
         }
         //更换表，则同时更新更新表信息和表设置
-        BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getName()));
+        BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getDatasourceId(), request.getName()));
         ResourceTableEntity entityUpdate = getResourceTableEntityUpdate(userId, request, baseInfo);
         updateById(entityUpdate);
         TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(entityUpdate, request);
@@ -157,8 +157,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
-    @DS("master")
-    @Deprecated
     public BusinessResult<BaseInfo> getResourceTableBaseInfo(ResourceTableBaseInfoRequest request) {
         ResourceTablePreposeRequest preposeRequest = BeanCopyUtils.copyProperties(request, new ResourceTablePreposeRequest());
         //接口详情
@@ -167,9 +165,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             if (Objects.isNull(entity)){
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
             }
+            preposeRequest.setDatasourceId(entity.getDatasourceId());
             preposeRequest.setTableName(entity.getName());
         } else {
             //添加外部表的前置接口
+            preposeRequest.setDatasourceId(request.getDatasourceId());
             preposeRequest.setTableName(request.getTableName());
         }
         BaseInfo baseInfo = tableSettingService.getBaseInfo(preposeRequest);
@@ -185,14 +185,12 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
-    @DS("master")
     public BusinessResult<List<Structure>> getResourceTableStructureList(ResourceTableNameRequest request) {
-        List<Structure> structureList = tableSettingService.getStructureList(request.getTableName());
+        List<Structure> structureList = tableSettingService.getStructureList(request);
         return BusinessResult.success(structureList);
     }
 
     @Override
-    @DS("master")
     public BusinessResult<BusinessPageResult<Object>> getResourceTableSampleList(ResourceTablePreposeRequest request) {
         BusinessPageResult<Object> sampleList = tableSettingService.getSampleList(request);
         return BusinessResult.success(sampleList);

@@ -51,8 +51,8 @@ public class ResourceTableController {
     }
 
     @PostMapping("/prepose/getTablaList")
-    BusinessResult<List<Map<String, String>>> getTablaList() {
-        return tableSettingService.getTablaList();
+    BusinessResult<List<Map<String, String>>> getTablaList(@RequestBody TableNameListRequest request) {
+        return tableSettingService.getTablaList(request);
     }
 
     @PostMapping("/save")

@@ -15,4 +15,11 @@ public class TableNameListRequest {
     public void setId(String id) {
         this.id = id;
     }
+
+    public TableNameListRequest() {
+    }
+
+    public TableNameListRequest(String id) {
+        this.id = id;
+    }
 }

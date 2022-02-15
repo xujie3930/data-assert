@@ -9,12 +9,20 @@ import com.hashtech.common.BusinessBasePageForm;
  **/
 //@Data
 public class ResourceTablePreposeRequest extends BusinessBasePageForm {
+    /**
+     * 数据源id
+     */
+    private String datasourceId;
+    /**
+     * 表名称
+     */
     private String tableName;
 
     public ResourceTablePreposeRequest() {
     }
 
-    public ResourceTablePreposeRequest(String tableName) {
+    public ResourceTablePreposeRequest(String datasourceId, String tableName) {
+        this.datasourceId = datasourceId;
         this.tableName = tableName;
     }
 
@@ -24,5 +32,13 @@ public class ResourceTablePreposeRequest extends BusinessBasePageForm {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
     }
 }

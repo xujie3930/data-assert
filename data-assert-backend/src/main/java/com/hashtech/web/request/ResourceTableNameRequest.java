@@ -13,11 +13,17 @@ public class ResourceTableNameRequest {
      */
     private String tableName;
 
+    /**
+     * 数据源id
+     */
+    private String datasourceId;
+
     public ResourceTableNameRequest() {
     }
 
-    public ResourceTableNameRequest(String tableName) {
+    public ResourceTableNameRequest(String tableName, String datasourceId) {
         this.tableName = tableName;
+        this.datasourceId = datasourceId;
     }
 
     public String getTableName() {
@@ -26,5 +32,13 @@ public class ResourceTableNameRequest {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
     }
 }

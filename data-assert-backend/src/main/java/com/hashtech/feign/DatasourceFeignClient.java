@@ -1,9 +1,12 @@
 package com.hashtech.feign;
 
 import com.hashtech.common.BusinessResult;
+import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.web.request.DataSourcesListRequest;
 import com.hashtech.web.request.TableNameListRequest;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -28,4 +31,10 @@ public interface DatasourceFeignClient {
      */
     @PostMapping("/datasource/getTableByDatasourceId")
     BusinessResult<List<Map<String, String>>> getTableNameList(@RequestBody TableNameListRequest request);
+
+    /**
+     * 根据主键id查询数据源信息
+     */
+    @GetMapping("/datasource/info/{id}")
+    BusinessResult<DatasourceDetailResult> info(@PathVariable("id") String id);
 }
