@@ -9,16 +9,14 @@ import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.entity.ThemeResourceEntity;
+import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.result.ResourceTableResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
-import com.hashtech.service.OauthApiService;
-import com.hashtech.service.ResourceTableService;
-import com.hashtech.service.TableSettingService;
-import com.hashtech.service.ThemeResourceService;
+import com.hashtech.service.*;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.*;
@@ -60,9 +58,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private ThemeResourceMapper themeResourceMapper;
     @Autowired
     private OauthApiService oauthApiService;
+    @Autowired
+    private RomoteDataSourceService romoteDataSourceService;
 
     @Override
-    @DS("master")
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
@@ -180,6 +179,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             oldEntity.setColumnsCount(baseInfo.getColumnsCount());
             updateById(oldEntity);
             BeanCopyUtils.copyProperties(oldEntity, baseInfo);
+            DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
+            baseInfo.setType(datasource.getType());
+            baseInfo.setDatabaseName(datasource.getName());
+            baseInfo.setDatasourceId(request.getDatasourceId());
         }
         return BusinessResult.success(baseInfo);
     }

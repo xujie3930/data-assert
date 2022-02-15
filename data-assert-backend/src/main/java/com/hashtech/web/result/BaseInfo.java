@@ -70,10 +70,25 @@ public class BaseInfo {
      */
     private String resourceId;
 
+    /**
+     * 数据源类型：1-mysql，2-oracle，3-postgresql，4-sqlServer，5-MongoDB
+     */
+    private Integer type;
+
+    /**
+     * 数据库名称
+     */
+    private String databaseName;
+
+    /**
+     * 数据源id
+     */
+    private String datasourceId;
+
     public BaseInfo() {
     }
 
-    public BaseInfo(String id, String name, String chineseName, Integer externalState, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String themeId, String resourceId) {
+    public BaseInfo(String id, String name, String chineseName, Integer externalState, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String themeId, String resourceId, Integer type, String databaseName, String datasourceId) {
         this.id = id;
         this.name = name;
         this.chineseName = chineseName;
@@ -88,6 +103,9 @@ public class BaseInfo {
         this.orgName = orgName;
         this.themeId = themeId;
         this.resourceId = resourceId;
+        this.type = type;
+        this.databaseName = databaseName;
+        this.datasourceId = datasourceId;
     }
 
     public String getId() {
@@ -200,5 +218,29 @@ public class BaseInfo {
 
     public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
+    }
+
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
     }
 }
