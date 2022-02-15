@@ -47,10 +47,11 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000029("60000029", "接口名称不能为空"),
         RESOURCE_CODE_60000030("60000030", "系统用户错误"),
         RESOURCE_CODE_60000031("60000031", "资源表已添加，不能重复添加"),
-        RESOURCE_CODE_60000032("60000032", "表中文名称只能包含中只能包含中文字符！"),
+        RESOURCE_CODE_60000032("60000032", "表中文名称包含特殊字符，请重新输入！"),
         RESOURCE_CODE_60000033("60000033", "表中文名称不能重复！"),
         RESOURCE_CODE_60000034("60000034", "表中文名称不能为空！"),
         RESOURCE_CODE_60000035("60000035", "用户异常！"),
+        RESOURCE_CODE_60000036("60000036", "获取资源库连接失败！"),
         ;
 
         public final String code;

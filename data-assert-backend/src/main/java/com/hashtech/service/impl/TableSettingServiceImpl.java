@@ -9,6 +9,7 @@ import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.TableSettingMapper;
+import com.hashtech.service.DatasourceSync;
 import com.hashtech.service.OauthApiService;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;

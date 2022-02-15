@@ -1,6 +1,7 @@
 package com.hashtech.utils;
 
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -13,10 +14,12 @@ public class CharUtil {
     public static void main(String[] args) {
         String[] strArr = new String[]{"www.micmiu.com", "!@#$%^&*()_+{}[]|\"'?/:;<>,.", "！￥……（）——：；“”‘’《》，。？、", "不要啊", "やめて", "韩佳人", "???"};
         for (String str : strArr) {
-            System.out.println("===========> 测试字符串：" + str);
+            System.out.println("===========> 测试字符串开始：" + str);
             System.out.println("正则判断结果：" + isChineseByREG(str) + " -- " + isChineseByName(str));
             System.out.println("Unicode判断结果 ：" + isChinese(str));
             System.out.println("详细判断列表：");
+            System.out.println("检查是否存在特殊字符：" + isSpecialChar(str));
+            System.out.println("===========> 测试字符串结束：" + str);
             char[] ch = str.toCharArray();
             for (int i = 0; i < ch.length; i++) {
                 char c = ch[i];
@@ -47,6 +50,14 @@ public class CharUtil {
             }
         }
         return true;
+    }
+
+    //是否包含特殊字符
+    public static boolean isSpecialChar(String str) {
+        String regEx = "[ _`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(str);
+        return m.find();
     }
 
     // 只能判断部分CJK字符（CJK统一汉字）

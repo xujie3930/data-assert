@@ -3,6 +3,8 @@ package com.hashtech.web.request;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author xujie
@@ -76,10 +78,20 @@ public class ResourceTableSaveRequest {
      */
     private String orgName;
 
+    /**
+     * 数据源id
+     */
+    private String datasourceId;
+
+    /**
+     * 脱敏字段
+     */
+    private List<String> desensitizeFields;
+
     public ResourceTableSaveRequest() {
     }
 
-    public ResourceTableSaveRequest(String id, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName) {
+    public ResourceTableSaveRequest(String id, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName, String datasourceId, List<String> desensitizeFields) {
         this.id = id;
         this.state = state;
         this.name = name;
@@ -94,6 +106,8 @@ public class ResourceTableSaveRequest {
         this.chineseName = chineseName;
         this.orgId = orgId;
         this.orgName = orgName;
+        this.datasourceId = datasourceId;
+        this.desensitizeFields = desensitizeFields;
     }
 
     public String getId() {
@@ -206,5 +220,21 @@ public class ResourceTableSaveRequest {
 
     public void setOrgName(String orgName) {
         this.orgName = orgName;
+    }
+
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
+    }
+
+    public List<String> getDesensitizeFields() {
+        return desensitizeFields;
+    }
+
+    public void setDesensitizeFields(List<String> desensitizeFields) {
+        this.desensitizeFields = desensitizeFields;
     }
 }

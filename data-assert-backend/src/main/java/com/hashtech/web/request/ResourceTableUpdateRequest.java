@@ -3,6 +3,7 @@ package com.hashtech.web.request;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * @author xujie
@@ -57,10 +58,20 @@ public class ResourceTableUpdateRequest {
     @Length(max = 50, message = "表名称最多为50字")
     private String chineseName;
 
+    /**
+     * 数据源id
+     */
+    private String datasourceId;
+
+    /**
+     * 脱敏字段
+     */
+    private List<String> desensitizeFields;
+
     public ResourceTableUpdateRequest() {
     }
 
-    public ResourceTableUpdateRequest(String id, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName) {
+    public ResourceTableUpdateRequest(String id, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName, String datasourceId, List<String> desensitizeFields) {
         this.id = id;
         this.name = name;
         this.source = source;
@@ -70,6 +81,8 @@ public class ResourceTableUpdateRequest {
         this.orgId = orgId;
         this.orgName = orgName;
         this.chineseName = chineseName;
+        this.datasourceId = datasourceId;
+        this.desensitizeFields = desensitizeFields;
     }
 
     public String getId() {
@@ -142,5 +155,21 @@ public class ResourceTableUpdateRequest {
 
     public void setChineseName(String chineseName) {
         this.chineseName = chineseName;
+    }
+
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
+    }
+
+    public List<String> getDesensitizeFields() {
+        return desensitizeFields;
+    }
+
+    public void setDesensitizeFields(List<String> desensitizeFields) {
+        this.desensitizeFields = desensitizeFields;
     }
 }

@@ -49,13 +49,18 @@ public class TableSettingEntity implements Serializable {
     private String explainInfo;
 
     /**
-     * 参数信息
+     * 条件字段信息
      */
     private String paramInfo;
     /**
      * 返回字段信息
      */
     private String respInfo;
+
+    /**
+     * 脱敏字段
+     */
+    private String desensitizeFields;
 
     /**
      * 表字段信息，存储于hdfs中
@@ -70,15 +75,25 @@ public class TableSettingEntity implements Serializable {
     public TableSettingEntity() {
     }
 
-    public TableSettingEntity(String id, String resourceTableId, Integer formats, Integer requestWay, String explainInfo, String paramInfo, String columnsInfo, String interfaceName) {
+    public TableSettingEntity(String id, String resourceTableId, Integer formats, Integer requestWay, String explainInfo, String paramInfo, String respInfo, String desensitizeFields, String columnsInfo, String interfaceName) {
         this.id = id;
         this.resourceTableId = resourceTableId;
         this.formats = formats;
         this.requestWay = requestWay;
         this.explainInfo = explainInfo;
         this.paramInfo = paramInfo;
+        this.respInfo = respInfo;
+        this.desensitizeFields = desensitizeFields;
         this.columnsInfo = columnsInfo;
         this.interfaceName = interfaceName;
+    }
+
+    public String getDesensitizeFields() {
+        return desensitizeFields;
+    }
+
+    public void setDesensitizeFields(String desensitizeFields) {
+        this.desensitizeFields = desensitizeFields;
     }
 
     public String getId() {
