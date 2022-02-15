@@ -1,6 +1,5 @@
 package com.hashtech.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
@@ -26,10 +25,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.sql.*;
 import java.util.Date;
@@ -61,6 +58,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private DatasourceFeignClient datasourceFeignClient;
     @Value("${server.port}")
     private int serverPort;
+    private static final String DEFAULT_RESP_INFO = "*";
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -80,8 +78,15 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
         List<Structure> structureList = tableSettingService.getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
         result.setStructureList(structureList);
-        //目前显示所有字段
-        result.setOutParamInfo(structureList);
+        if(DEFAULT_RESP_INFO.equals(tableSettingEntity.getRespInfo())){//所有字段
+            result.setOutParamInfo(structureList);
+        }else{
+            List<String> resps = Arrays.asList(tableSettingEntity.getRespInfo().split(","));
+            List<Structure> respInfoList = structureList.stream()
+                    .filter((Structure s) -> resps.contains(s.getFieldEnglishName()))
+                    .collect(Collectors.toList());
+            result.setOutParamInfo(respInfoList);
+        }
         if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
             List<String> params = Arrays.asList(tableSettingEntity.getParamInfo().split(","));
             List<Structure> paramsInfo = structureList.stream()
