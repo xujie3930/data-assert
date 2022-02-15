@@ -9,6 +9,7 @@ import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.feign.DatasourceFeignClient;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
+import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.*;
 import com.hashtech.utils.*;
@@ -58,6 +59,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     @Value("${server.port}")
     private int serverPort;
     private static final String DEFAULT_RESP_INFO = "*";
+    @Autowired
+    private ResourceTableMapper resourceTableMapper;
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -246,7 +249,15 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             //只展示前10000条数据
             int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
             int index = (pageNum - 1) * request.getPageSize();
-            String pagingData = new StringBuilder("select * from ").append(request.getTableName())
+            String fields = "*";
+            ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
+            if (!Objects.isNull(resourceTableEntity)){
+                TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+                if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
+                    fields = tableSettingEntity.getRespInfo();
+                }
+            }
+            String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
                     .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
             ResultSet pagingRs = stmt.executeQuery(pagingData);
             if (pagingRs.next()) {
