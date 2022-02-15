@@ -64,10 +64,13 @@ public class DBConnectionManager {
     }
 
 
-    public void freeConnection(String name, Connection con) {
-        DBConnectionPool pool = (DBConnectionPool) pools.get(name);
+    public void freeConnection(String uri, Connection conn) {
+        if (conn == null){
+            return;
+        }
+        DBConnectionPool pool = (DBConnectionPool) pools.get(uri);
         if (pool != null) {
-            pool.freeConnection(con);
+            pool.freeConnection(conn);
         }
     }
 

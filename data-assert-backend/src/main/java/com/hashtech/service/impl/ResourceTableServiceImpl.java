@@ -187,6 +187,20 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Override
     public BusinessResult<List<Structure>> getResourceTableStructureList(ResourceTableNameRequest request) {
         List<Structure> structureList = tableSettingService.getStructureList(request);
+        //若该资源表，存储了脱敏字段
+        ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(request);
+        if (!Objects.isNull(resourceTableEntity)){
+            TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getDesensitizeFields())){
+                String[] arr = tableSettingEntity.getDesensitizeFields().split(",");
+                Set<String> set = new HashSet<>(Arrays.asList(arr));
+                for (Structure structure : structureList) {
+                    if (set.contains(structure.getFieldEnglishName())){
+                        structure.setDesensitize(StateEnum.YES.ordinal());
+                    }
+                }
+            }
+        }
         return BusinessResult.success(structureList);
     }
 

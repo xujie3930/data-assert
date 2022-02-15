@@ -52,6 +52,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000034("60000034", "表中文名称不能为空！"),
         RESOURCE_CODE_60000035("60000035", "用户异常！"),
         RESOURCE_CODE_60000036("60000036", "获取资源库连接失败！"),
+        RESOURCE_CODE_60000037("60000037", "数据源不明确，id为空！"),
         ;
 
         public final String code;

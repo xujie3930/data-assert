@@ -196,4 +196,19 @@
         </where>
         limit 1
     </select>
+
+    <select id="getByDatasourceIdAndName" resultType="com.hashtech.entity.ResourceTableEntity">
+        select
+        *
+        from resource_table
+        <where>
+            <if test="request.datasourceId !=null and request.datasourceId != '' ">
+                and datasource_id=#{request.datasourceId}
+            </if>
+            <if test="request.tableName !=null and request.tableName != '' ">
+                and name=#{request.tableName}
+            </if>
+            and del_flag='N'
+        </where>
+    </select>
 </mapper>

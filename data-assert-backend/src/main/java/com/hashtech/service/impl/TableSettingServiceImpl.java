@@ -10,10 +10,7 @@ import com.hashtech.feign.DatasourceFeignClient;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.TableSettingMapper;
-import com.hashtech.service.DatasourceSync;
-import com.hashtech.service.OauthApiService;
-import com.hashtech.service.ResourceTableService;
-import com.hashtech.service.TableSettingService;
+import com.hashtech.service.*;
 import com.hashtech.utils.*;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
@@ -56,6 +53,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private OauthApiService oauthApiService;
     @Autowired
     private DatasourceFeignClient datasourceFeignClient;
+    @Autowired
+    private RomoteDataSourceService romoteDataSourceService;
     @Value("${server.port}")
     private int serverPort;
     private static final String DEFAULT_RESP_INFO = "*";
@@ -149,15 +148,11 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
      */
     public BaseInfo getBaseInfo(ResourceTablePreposeRequest request) throws AppException {
         BaseInfo baseInfo = new BaseInfo();
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
+        String uri = datasource.getUri();
+        Integer type = datasource.getType();
+        Connection conn = DBConnectionManager.getInstance().getConnection(uri, type);
         try {
-            BusinessResult<DatasourceDetailResult> datasourceResult = datasourceFeignClient.info(request.getDatasourceId());
-            if (!datasourceResult.isSuccess() || Objects.isNull(datasourceResult.getData())){
-                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.getCode());
-            }
-            DatasourceDetailResult datasource = datasourceResult.getData();
-            String uri = datasource.getUri();
-            Integer type = datasource.getType();
-            Connection conn = DBConnectionManager.getInstance().getConnection(uri, type);
             String tableEnglishName = request.getTableName();
             String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
             baseInfo.setDescriptor(tableChineseName);
@@ -176,6 +171,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             baseInfo.setColumnsCount(structureList.size());
         } catch (Exception e) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
+        }finally {
+            if (conn != null){
+                DBConnectionManager.getInstance().freeConnection(uri, conn);
+            }
         }
         return baseInfo;
     }
@@ -187,17 +186,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     public List<Structure> getStructureList(ResourceTableNameRequest request) throws AppException {
         BaseInfo baseInfo = new BaseInfo();
         List<Structure> structureList = new LinkedList<>();
-        Connection conn = null;
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
+        String uri = datasource.getUri();
+        Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
         try {
-            BusinessResult<DatasourceDetailResult> datasourceResult = datasourceFeignClient.info(request.getDatasourceId());
-            if (!datasourceResult.isSuccess() || Objects.isNull(datasourceResult.getData())){
-                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.getCode());
-            }
-            DatasourceDetailResult datasource = datasourceResult.getData();
-            String uri = datasource.getUri();
-            String username = DatasourceSync.getUsername(uri);
-            String password = DatasourceSync.getPassword(uri);
-            conn = DatasourceSync.getConn(datasource.getType(), uri, username, password);
             DatabaseMetaData metaData = conn.getMetaData();
             ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
@@ -220,19 +212,14 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     structure.setFieldChineseName(remarks);
                     structure.setTableEnglishName(tableEnglishName);
                     structure.setTableChineseName(tableChineseName);
+                    structure.setDesensitize(StateEnum.NO.ordinal());
                     structureList.add(structure);
                 }
             }
         } catch (Exception e) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
+            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return structureList;
     }
@@ -243,11 +230,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         BusinessPageResult result = null;
         Long dataSize = 0L;
         try {
-            BusinessResult<DatasourceDetailResult> datasourceResult = datasourceFeignClient.info(request.getDatasourceId());
-            if (!datasourceResult.isSuccess() || Objects.isNull(datasourceResult.getData())){
-                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.getCode());
-            }
-            DatasourceDetailResult datasource = datasourceResult.getData();
+            DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
             String uri = datasource.getUri();
             String username = DatasourceSync.getUsername(uri);
             String password = DatasourceSync.getPassword(uri);
@@ -301,59 +284,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     @Override
     public BusinessResult<List<Map<String, String>>> getTablaList(TableNameListRequest request) {
         return datasourceFeignClient.getTableNameList(new TableNameListRequest(request.getId()));
-    }
-
-    @Override
-    public List<Object> getResourceData(ResourceDataRequest request, ResourceTableEntity entity) {
-        /*Connection conn = null;
-        //拼接查询sql
-        StringBuilder builder = new StringBuilder("select * from " + entity.getName() + " where ");
-        //解析请求参数
-        if (!CollectionUtils.isEmpty(request.getParams())) {
-            for (Map.Entry<String, Object> entry : request.getParams().entrySet()) {
-                builder.append(entry.getKey()).append(" = ");
-                builder.append(entry.getValue()).append(" and ");
-            }
-        }
-        String tempSql = builder.toString();
-        //可能URL中也会携带有参数信息
-        List<Map<String, Object>> paramList = URLProcessUtils.getParamList(request.getRequestUrl());
-        if (!CollectionUtils.isEmpty(paramList)) {
-            StringBuilder newBuilder = new StringBuilder(tempSql);
-            for (Map<String, Object> map : paramList) {
-                for (Map.Entry<String, Object> entry : map.entrySet()) {
-                    newBuilder.append(entry.getKey()).append(" = ");
-                    newBuilder.append(entry.getValue()).append(" and ");
-                }
-            }
-            tempSql = newBuilder.toString();
-        }
-
-        tempSql = tempSql.substring(0, tempSql.lastIndexOf("and"));
-        int pageSize = Math.min(request.getPageSize(), PAGESIZE_MAX);
-        int index = (request.getPageNum() - 1) * pageSize;
-        String querySql = tempSql + " limit " + index + " , " + pageSize;
-        try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet pagingRs = stmt.executeQuery(querySql);
-            if (pagingRs.next()) {
-                List list = ResultSetToListUtils.convertList(pagingRs);
-                return list;
-            }
-        } catch (SQLException throwables) {
-//            log.error("/resource/table/getResourceData接口异常:{}", throwables.getMessage());
-            throwables.printStackTrace();
-        } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
-        }*/
-        return Collections.emptyList();
     }
 
     @Override

@@ -36,8 +36,6 @@ public interface TableSettingService extends IService<TableSettingEntity> {
 
     BusinessResult<List<Map<String, String>>> getTablaList(TableNameListRequest request);
 
-    List<Object> getResourceData(ResourceDataRequest requestUrl, ResourceTableEntity entity);
-
     Boolean hasExistInterfaceName(ExistInterfaceNamelRequest request);
 
     void updateTableSettingState(String[] ids, String delFlag);

@@ -18,19 +18,23 @@ public class Structure {
     private String tableChineseName;
     //字段类型
     private String type;
-    //是否必填
+    //是否必填,用于开放平台，作废
     private Boolean required = true;
+    //是否脱敏：0-否，1-是（2022-02-15新增）
+    private Integer desensitize;
+
 
     public Structure() {
     }
 
-    public Structure(String fieldEnglishName, String fieldChineseName, String tableEnglishName, String tableChineseName, String type, Boolean required) {
+    public Structure(String fieldEnglishName, String fieldChineseName, String tableEnglishName, String tableChineseName, String type, Boolean required, Integer desensitize) {
         this.fieldEnglishName = fieldEnglishName;
         this.fieldChineseName = fieldChineseName;
         this.tableEnglishName = tableEnglishName;
         this.tableChineseName = tableChineseName;
         this.type = type;
         this.required = required;
+        this.desensitize = desensitize;
     }
 
     public String getFieldEnglishName() {
@@ -79,5 +83,13 @@ public class Structure {
 
     public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    public Integer getDesensitize() {
+        return desensitize;
+    }
+
+    public void setDesensitize(Integer desensitize) {
+        this.desensitize = desensitize;
     }
 }
