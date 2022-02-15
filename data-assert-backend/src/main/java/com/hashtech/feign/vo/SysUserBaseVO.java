@@ -32,6 +32,9 @@ public class SysUserBaseVO implements Serializable {
 
     private Boolean status;
 
+    /**
+     * 数据源类型：1-mysql，2-oracle，3-postgresql，4-sqlServer，5-MongoDB
+     */
     private Integer type;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
