@@ -12,7 +12,9 @@ public class ResourceTableResult {
 
     private String tableName;
 
-    private String sourceId;
+    private String datasourceId;
+
+    private String desensitizeFields;
 
     private List<String> params = new ArrayList<>();
 
@@ -50,11 +52,19 @@ public class ResourceTableResult {
         this.resps = resps;
     }
 
-    public String getSourceId() {
-        return sourceId;
+    public String getDatasourceId() {
+        return datasourceId;
     }
 
-    public void setSourceId(String sourceId) {
-        this.sourceId = sourceId;
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
+    }
+
+    public String getDesensitizeFields() {
+        return desensitizeFields;
+    }
+
+    public void setDesensitizeFields(String desensitizeFields) {
+        this.desensitizeFields = desensitizeFields;
     }
 }

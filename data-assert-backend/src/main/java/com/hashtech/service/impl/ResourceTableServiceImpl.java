@@ -325,8 +325,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
         result.setTableName(resourceTable.getName());
-        result.setSourceId(resourceTable.getDatasourceId());
+        result.setDatasourceId(resourceTable.getDatasourceId());
         TableSettingEntity tableSetting = tableSettingMapper.getByResourceTableId(resourceTable.getId());
+        result.setDesensitizeFields(tableSetting.getDesensitizeFields());
         if (Objects.isNull(resourceTable)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
@@ -336,7 +337,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             result.setParams(paramList);
         }
         if (StringUtils.isNotBlank(tableSetting.getRespInfo())){
-            String[] respInfoArr = tableSetting.getParamInfo().split(",");
+            String[] respInfoArr = tableSetting.getRespInfo().split(",");
             List<String> respInfoList = Stream.of(respInfoArr).collect(Collectors.toList());
             result.setResps(respInfoList);
         }
