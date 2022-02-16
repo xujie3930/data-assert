@@ -5,18 +5,9 @@ spring:
         server-addr: 192.168.211.3:8848
         group: PROD
   datasource:
-    dynamic:
-      primary: master
-      strict: false
-      datasource:
-        master:
-          url: "jdbc:mysql://192.168.211.2:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
-          username: 'daas'
-          password: 'daas@1122'
-        remote:
-          url: "jdbc:mysql://192.168.211.2:3306/corporate_data?useSSL=false&useUnicode=true&characterEncoding=utf8"
-          username: 'corporate'
-          password: 'corporate'
+    url: "jdbc:mysql://192.168.211.2:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: 'daas'
+    password: 'daas@1122'
 
   redis:
     host: 192.168.211.2 # Redis服务器地址

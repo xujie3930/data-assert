@@ -46,7 +46,7 @@ VALUES
     'L-180',
     NULL,
     '1',
-    '/**',
+    '/datasource/datasource/**',
     '1',
     '3',
     NULL,
