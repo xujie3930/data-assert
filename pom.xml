@@ -83,11 +83,11 @@
         <!--            <artifactId>mybatis-plus-boot-starter</artifactId>-->
         <!--            <version>${mybatis-plus-starter.version}</version>-->
         <!--        </dependency>-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
             <version>3.2.0</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>

@@ -83,7 +83,6 @@ public class DBConnectionManager {
         DBConnectionPool pool = (DBConnectionPool) pools.get(uri);
         if (pool == null) {
             createPools(uri, type);
-            getConnection(uri, type);
         }
         return pool.getConnection();
     }

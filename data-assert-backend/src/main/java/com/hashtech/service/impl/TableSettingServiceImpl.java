@@ -175,9 +175,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         } catch (Exception e) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         }finally {
-            if (conn != null){
-                DBConnectionManager.getInstance().freeConnection(uri, conn);
-            }
+            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return baseInfo;
     }
@@ -229,15 +227,12 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     @Override
     public BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException {
-        Connection conn = null;
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
+        String uri = datasource.getUri();
+        Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
         BusinessPageResult result = null;
         Long dataSize = 0L;
         try {
-            DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
-            String uri = datasource.getUri();
-            String username = DatasourceSync.getUsername(uri);
-            String password = DatasourceSync.getPassword(uri);
-            conn = DatasourceSync.getConn(datasource.getType(), uri, username, password);
             Statement stmt = conn.createStatement();
             //TODO:select count(*)大表有性能问题
             String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
@@ -271,13 +266,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         } catch (Exception e) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
+           DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return result;
     }

@@ -14,11 +14,11 @@
 
     <dependencies>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
             <version>3.2.0</version>
-        </dependency>
+        </dependency>-->
         <!--服务间调用 openFeign-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
