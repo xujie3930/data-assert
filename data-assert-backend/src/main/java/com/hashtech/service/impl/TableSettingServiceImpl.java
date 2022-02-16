@@ -46,6 +46,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private static final int PAGESIZE_MAX = 500;
     private static final int MAX_IMUM = 10000;
     private static final String INTERFACE_PATH = "/resource/table/getResourceData/";
+    private static final String REQ_PARAM = "req";
+    private static final String RESP_PARAM = "resp";
     @Autowired
     private TableSettingMapper tableSettingMapper;
     @Autowired
@@ -80,7 +82,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
         List<Structure> structureList = tableSettingService.getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
         result.setStructureList(structureList);
-        if(DEFAULT_RESP_INFO.equals(tableSettingEntity.getRespInfo())){//所有字段
+        if(StringUtils.isEmpty(tableSettingEntity.getRespInfo()) || DEFAULT_RESP_INFO.equals(tableSettingEntity.getRespInfo())){//所有字段
             result.setOutParamInfo(structureList);
         }else{
             List<String> resps = Arrays.asList(tableSettingEntity.getRespInfo().split(","));
@@ -88,6 +90,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     .filter((Structure s) -> resps.contains(s.getFieldEnglishName()))
                     .collect(Collectors.toList());
             result.setOutParamInfo(respInfoList);
+            //对勾选的返回参数进行设置
+            handleRespParamInfo(tableSettingEntity.getRespInfo(), structureList);
         }
         if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
             List<String> params = Arrays.asList(tableSettingEntity.getParamInfo().split(","));
@@ -95,11 +99,29 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     .filter((Structure s) -> params.contains(s.getFieldEnglishName()))
                     .collect(Collectors.toList());
             result.setParamInfo(paramsInfo);
+            //对勾选的请求参数进行设置
+            handleReqParamInfo(tableSettingEntity.getParamInfo(), structureList);
         }
         result.setInterfaceName(tableSettingEntity.getInterfaceName());
         result.setUpdateTime(resourceTableEntity.getUpdateTime());
         result.setCreateTime(resourceTableEntity.getCreateTime());
         return BusinessResult.success(result);
+    }
+
+    private void handleReqParamInfo(String reqParamStr, List<Structure> structureList) {
+        for (Structure structure : structureList) {
+            if(reqParamStr.contains(structure.getFieldEnglishName())){
+                structure.setReqParam(StateEnum.YES.ordinal());
+            }
+        }
+    }
+
+    private void handleRespParamInfo(String respParamStr, List<Structure> structureList) {
+        for (Structure structure : structureList) {
+            if(respParamStr.contains(structure.getFieldEnglishName())){
+                structure.setResParam(StateEnum.YES.ordinal());
+            }
+        }
     }
 
     @Override
@@ -125,6 +147,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         String interfaceUrl = getInterfaceUrl(resourceTableEntity.getRequestUrl(), request.getParamInfo());
         entity.setExplainInfo(interfaceUrl);
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
+        entity.setRespInfo(StringUtils.join(request.getRespInfo(), ","));
         entity.setInterfaceName(request.getInterfaceName());
         tableSettingMapper.updateById(entity);
         return BusinessResult.success(true);
@@ -214,6 +237,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     structure.setTableEnglishName(tableEnglishName);
                     structure.setTableChineseName(tableChineseName);
                     structure.setDesensitize(StateEnum.NO.ordinal());
+                    structure.setReqParam(StateEnum.NO.ordinal());
+                    structure.setResParam(StateEnum.YES.ordinal());
                     structureList.add(structure);
                 }
             }
