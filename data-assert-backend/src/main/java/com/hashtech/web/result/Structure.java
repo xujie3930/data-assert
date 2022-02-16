@@ -22,6 +22,10 @@ public class Structure {
     private Boolean required = true;
     //是否脱敏：0-否，1-是（2022-02-15新增）
     private Integer desensitize;
+    //是否为返回字段：0-否，1-是
+    private Integer resParam;
+    //是否为请求参数：0-否，1-是
+    private Integer reqParam;
 
 
     public Structure() {
@@ -91,5 +95,21 @@ public class Structure {
 
     public void setDesensitize(Integer desensitize) {
         this.desensitize = desensitize;
+    }
+
+    public Integer getResParam() {
+        return resParam;
+    }
+
+    public void setResParam(Integer resParam) {
+        this.resParam = resParam;
+    }
+
+    public Integer getReqParam() {
+        return reqParam;
+    }
+
+    public void setReqParam(Integer reqParam) {
+        this.reqParam = reqParam;
     }
 }
