@@ -24,7 +24,7 @@ public class ResultSetToListUtils {
         while (rs.next()) {
             Map rowData = new LinkedHashMap();
             for (int i = 1; i <= columnCount; i++) {
-                rowData.put(md.getColumnName(i), rs.getObject(i));
+                rowData.put(md.getColumnName(i), rs.getString(i));
             }
             list.add(rowData);
         }
