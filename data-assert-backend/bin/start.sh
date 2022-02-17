@@ -14,7 +14,7 @@ fi
 
 if test -z "$SERVER_JAVA_OPTS"
 then
-  export SERVER_JAVA_OPTS=" -Xmx$SERVER_HEAP_SIZE -XX:+UseG1GC -Xshareclasses:none"
+  export SERVER_JAVA_OPTS=" -Xmx$SERVER_HEAP_SIZE -XX:+UseG1GC"
 fi
 
 export SERVER_PID=$HOME/bin/icreditstudio-datasource.pid
