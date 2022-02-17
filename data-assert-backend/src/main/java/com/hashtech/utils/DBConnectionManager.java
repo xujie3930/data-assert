@@ -22,6 +22,8 @@ import java.util.Vector;
 @Slf4j
 public class DBConnectionManager {
     private static final String SEPARATOR = "|";
+    private static final String SPLIT_URL_FLAG = "?";
+    private static final String SQL_CHARACTER = "useSSL=false&useUnicode=true&characterEncoding=utf8";
     static private DBConnectionManager instance;
     static private int clients;
     private final Vector drivers = new Vector();
@@ -47,8 +49,7 @@ public class DBConnectionManager {
         //数据库连接信息
         //jdbc:mysql://192.168.0.193:3306/t02?useSSL=false&useUnicode=true&characterEncoding=utf8
         // |username=root|password=92Z2cSfUPcbIJxiedl07og==
-        String databaseName = getDatabaseName(uri);
-        String url = geturi(uri);
+        String url = getUri(uri);
         String username = getUsername(uri);
         String password = getPassword(uri);
         String poolName = uri;
@@ -221,9 +222,9 @@ public class DBConnectionManager {
      * @param uri
      * @return
      */
-    static String geturi(String uri) {
+    static String getUri(String uri) {
         //根据uri获取jdbc连接
-        return uri.substring(0, uri.indexOf(SEPARATOR));
+        return String.valueOf(new StringBuffer(uri.substring(0, uri.indexOf(SPLIT_URL_FLAG))).append(SPLIT_URL_FLAG).append(SQL_CHARACTER));
     }
 
     /**
