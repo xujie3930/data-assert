@@ -286,7 +286,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     fields = tableSettingEntity.getRespInfo();
                 }
             }
-            String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
+            String pagingData = new StringBuilder("select * from ").append(request.getTableName())
                     .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
             ResultSet pagingRs = stmt.executeQuery(pagingData);
             if (pagingRs.next()) {
