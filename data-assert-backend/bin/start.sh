@@ -17,7 +17,7 @@ then
   export SERVER_JAVA_OPTS=" -Xmx$SERVER_HEAP_SIZE -XX:+UseG1GC"
 fi
 
-export SERVER_PID=$HOME/bin/icreditstudio-datasource.pid
+export SERVER_PID=$HOME/bin/icreditstudio-dataassert.pid
 
 if [[ -f "${SERVER_PID}" ]]; then
     pid=$(cat ${SERVER_PID})
