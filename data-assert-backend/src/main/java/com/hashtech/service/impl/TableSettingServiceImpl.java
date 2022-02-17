@@ -118,8 +118,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     private void handleRespParamInfo(String respParamStr, List<Structure> structureList) {
         for (Structure structure : structureList) {
-            if(respParamStr.contains(structure.getFieldEnglishName())){
-                structure.setResParam(StateEnum.YES.ordinal());
+            if(!respParamStr.contains(structure.getFieldEnglishName())){
+                structure.setResParam(StateEnum.NO.ordinal());
             }
         }
     }
