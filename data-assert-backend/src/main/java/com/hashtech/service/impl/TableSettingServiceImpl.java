@@ -109,17 +109,26 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     }
 
     private void handleReqParamInfo(String reqParamStr, List<Structure> structureList) {
+        List<String> reqParamList = Arrays.asList(reqParamStr.split(","));
         for (Structure structure : structureList) {
-            if(reqParamStr.contains(structure.getFieldEnglishName())){
-                structure.setReqParam(StateEnum.YES.ordinal());
+            for (String reqParam : reqParamList) {
+                if(reqParam.equals(structure.getFieldEnglishName())){
+                    structure.setReqParam(StateEnum.YES.ordinal());
+                    break;
+                }
             }
         }
     }
 
     private void handleRespParamInfo(String respParamStr, List<Structure> structureList) {
+        List<String> respParamList = Arrays.asList(respParamStr.split(","));
         for (Structure structure : structureList) {
-            if(!respParamStr.contains(structure.getFieldEnglishName())){
-                structure.setResParam(StateEnum.NO.ordinal());
+            structure.setResParam(StateEnum.NO.ordinal());
+            for (String respParam : respParamList) {
+                if(respParam.equals(structure.getFieldEnglishName())) {
+                    structure.setResParam(StateEnum.YES.ordinal());
+                    break;
+                }
             }
         }
     }
