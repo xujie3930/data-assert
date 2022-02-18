@@ -151,7 +151,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         //更新表后，请求参数、返回参数、脱敏字段置空
         tableSettingEntity.setParamInfo("");
         tableSettingEntity.setRespInfo("");
-        tableSettingEntity.setDesensitizeFields("");
+        tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
         return tableSettingEntity;
     }
 
