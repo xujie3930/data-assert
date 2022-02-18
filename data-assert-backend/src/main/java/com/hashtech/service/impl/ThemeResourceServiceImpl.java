@@ -203,6 +203,9 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     public BusinessResult<ResourceResult> getResourceInfo(String id) {
         ResourceResult result = new ResourceResult();
         ThemeResourceEntity resourceEntity = getById(id);
+        if (resourceEntity == null){
+            return BusinessResult.success(result);
+        }
         BeanCopyUtils.copyProperties(resourceEntity, result);
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
         long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getExternalState())).count();
@@ -305,6 +308,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
 
     @Override
     public BusinessResult<List<ThemeResult>> getList() {
+        //TODO:开放平台需提供接口，返回所有存在开放目录表的主题、和资源分类列表
         List<ThemeResult> list = themeResourceMapper.getResourceByParentId(THEME_PARENT_ID);
         if (CollectionUtils.isEmpty(list)) {
             return BusinessResult.success(list);

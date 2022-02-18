@@ -32,6 +32,10 @@ public class TableSettingUpdateRequest {
      * 参数信息
      */
     private String[] paramInfo;
+    /**
+     * 返回字段信息
+     */
+    private String[] respInfo;
 
     /**
      * 接口名称
@@ -98,5 +102,13 @@ public class TableSettingUpdateRequest {
 
     public void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
+    }
+
+    public String[] getRespInfo() {
+        return respInfo;
+    }
+
+    public void setRespInfo(String[] respInfo) {
+        this.respInfo = respInfo;
     }
 }

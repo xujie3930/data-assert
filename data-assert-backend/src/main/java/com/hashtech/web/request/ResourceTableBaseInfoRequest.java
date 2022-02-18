@@ -18,12 +18,18 @@ public class ResourceTableBaseInfoRequest {
      */
     private String tableName;
 
+    /**
+     * 数据源id
+     */
+    private String datasourceId;
+
     public ResourceTableBaseInfoRequest() {
     }
 
-    public ResourceTableBaseInfoRequest(String id, String tableName) {
+    public ResourceTableBaseInfoRequest(String id, String tableName, String datasourceId) {
         this.id = id;
         this.tableName = tableName;
+        this.datasourceId = datasourceId;
     }
 
     public String getId() {
@@ -40,5 +46,13 @@ public class ResourceTableBaseInfoRequest {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
     }
 }

@@ -30,7 +30,7 @@ public class TableSettingController {
     }
 
     @PostMapping("/update")
-    BusinessResult<Boolean> updateTableSetting(@RequestHeader(value = "userId", defaultValue = "root") String userId, @RequestBody TableSettingUpdateRequest request) {
+    BusinessResult<Boolean> updateTableSetting(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody TableSettingUpdateRequest request) {
         return tableSettingService.updateTableSetting(userId, request);
     }
 

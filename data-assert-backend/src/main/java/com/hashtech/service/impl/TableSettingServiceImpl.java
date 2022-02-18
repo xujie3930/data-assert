@@ -1,22 +1,19 @@
 package com.hashtech.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.feign.DatasourceFeignClient;
+import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
+import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
-import com.hashtech.service.OauthApiService;
-import com.hashtech.service.ResourceTableService;
-import com.hashtech.service.TableSettingService;
+import com.hashtech.service.*;
 import com.hashtech.utils.*;
-import com.hashtech.web.request.ExistInterfaceNamelRequest;
-import com.hashtech.web.request.ResourceDataRequest;
-import com.hashtech.web.request.ResourceTablePreposeRequest;
-import com.hashtech.web.request.TableSettingUpdateRequest;
+import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
 import com.hashtech.web.result.TableSettingResult;
@@ -26,10 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.sql.*;
 import java.util.Date;
@@ -51,6 +46,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private static final int PAGESIZE_MAX = 500;
     private static final int MAX_IMUM = 10000;
     private static final String INTERFACE_PATH = "/resource/table/getResourceData/";
+    private static final String REQ_PARAM = "req";
+    private static final String RESP_PARAM = "resp";
     @Autowired
     private TableSettingMapper tableSettingMapper;
     @Autowired
@@ -58,9 +55,14 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     @Autowired
     private OauthApiService oauthApiService;
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DatasourceFeignClient datasourceFeignClient;
+    @Autowired
+    private RomoteDataSourceService romoteDataSourceService;
     @Value("${server.port}")
     private int serverPort;
+    private static final String DEFAULT_RESP_INFO = "*";
+    @Autowired
+    private ResourceTableMapper resourceTableMapper;
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -78,21 +80,57 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(id);
         BeanCopyUtils.copyProperties(tableSettingEntity, result);
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
-        List<Structure> structureList = tableSettingService.getStructureList(resourceTableEntity.getName());
+        List<Structure> structureList = tableSettingService.getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
         result.setStructureList(structureList);
-        //目前显示所有字段
-        result.setOutParamInfo(structureList);
+        if(StringUtils.isEmpty(tableSettingEntity.getRespInfo()) || DEFAULT_RESP_INFO.equals(tableSettingEntity.getRespInfo())){//所有字段
+            result.setOutParamInfo(structureList);
+        }else{
+            List<String> resps = Arrays.asList(tableSettingEntity.getRespInfo().split(","));
+            List<Structure> respInfoList = structureList.stream()
+                    .filter((Structure s) -> resps.contains(s.getFieldEnglishName()))
+                    .collect(Collectors.toList());
+            result.setOutParamInfo(respInfoList);
+            //对勾选的返回参数进行设置
+            handleRespParamInfo(tableSettingEntity.getRespInfo(), structureList);
+        }
         if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
             List<String> params = Arrays.asList(tableSettingEntity.getParamInfo().split(","));
             List<Structure> paramsInfo = structureList.stream()
                     .filter((Structure s) -> params.contains(s.getFieldEnglishName()))
                     .collect(Collectors.toList());
             result.setParamInfo(paramsInfo);
+            //对勾选的请求参数进行设置
+            handleReqParamInfo(tableSettingEntity.getParamInfo(), structureList);
         }
         result.setInterfaceName(tableSettingEntity.getInterfaceName());
         result.setUpdateTime(resourceTableEntity.getUpdateTime());
         result.setCreateTime(resourceTableEntity.getCreateTime());
         return BusinessResult.success(result);
+    }
+
+    private void handleReqParamInfo(String reqParamStr, List<Structure> structureList) {
+        List<String> reqParamList = Arrays.asList(reqParamStr.split(","));
+        for (Structure structure : structureList) {
+            for (String reqParam : reqParamList) {
+                if(reqParam.equals(structure.getFieldEnglishName())){
+                    structure.setReqParam(StateEnum.YES.ordinal());
+                    break;
+                }
+            }
+        }
+    }
+
+    private void handleRespParamInfo(String respParamStr, List<Structure> structureList) {
+        List<String> respParamList = Arrays.asList(respParamStr.split(","));
+        for (Structure structure : structureList) {
+            structure.setResParam(StateEnum.NO.ordinal());
+            for (String respParam : respParamList) {
+                if(respParam.equals(structure.getFieldEnglishName())) {
+                    structure.setResParam(StateEnum.YES.ordinal());
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -118,6 +156,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         String interfaceUrl = getInterfaceUrl(resourceTableEntity.getRequestUrl(), request.getParamInfo());
         entity.setExplainInfo(interfaceUrl);
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
+        entity.setRespInfo(StringUtils.join(request.getRespInfo(), ","));
         entity.setInterfaceName(request.getInterfaceName());
         tableSettingMapper.updateById(entity);
         return BusinessResult.success(true);
@@ -139,15 +178,16 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     }
 
     @Override
-    @DS("remote")
     /**
      * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
      */
     public BaseInfo getBaseInfo(ResourceTablePreposeRequest request) throws AppException {
         BaseInfo baseInfo = new BaseInfo();
-        Connection conn = null;
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
+        String uri = datasource.getUri();
+        Integer type = datasource.getType();
+        Connection conn = DBConnectionManager.getInstance().getConnection(uri, type);
         try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             String tableEnglishName = request.getTableName();
             String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
             baseInfo.setDescriptor(tableChineseName);
@@ -162,38 +202,32 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 baseInfo.setDataSize(countRs.getLong(1));
             }
             //获取表结构没有性能问题
-            List<Structure> structureList = getStructureList(tableEnglishName);
+            List<Structure> structureList = getStructureList(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
             baseInfo.setColumnsCount(structureList.size());
         } catch (Exception e) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
+        }finally {
+            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return baseInfo;
     }
 
     @Override
-    @DS("remote")
     /**
      * 调用方只需用isSuccess()方法判断，调用成功必有值，不会出现NPE
      */
-    public List<Structure> getStructureList(String tableName) throws AppException {
+    public List<Structure> getStructureList(ResourceTableNameRequest request) throws AppException {
         BaseInfo baseInfo = new BaseInfo();
         List<Structure> structureList = new LinkedList<>();
-        Connection conn = null;
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
+        String uri = datasource.getUri();
+        Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
         try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet tableResultSet = metaData.getTables(null, null, tableName,
+            ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
             while (tableResultSet.next()) {
-                String tableEnglishName = tableName;
+                String tableEnglishName = request.getTableName();
                 String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
                 baseInfo.setDescriptor(tableChineseName);
                 baseInfo.setName(tableEnglishName);
@@ -211,31 +245,28 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     structure.setFieldChineseName(remarks);
                     structure.setTableEnglishName(tableEnglishName);
                     structure.setTableChineseName(tableChineseName);
+                    structure.setDesensitize(StateEnum.NO.ordinal());
+                    structure.setReqParam(StateEnum.NO.ordinal());
+                    structure.setResParam(StateEnum.YES.ordinal());
                     structureList.add(structure);
                 }
             }
         } catch (Exception e) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
+            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return structureList;
     }
 
     @Override
-    @DS("remote")
     public BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException {
-        Connection conn = null;
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
+        String uri = datasource.getUri();
+        Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
         BusinessPageResult result = null;
         Long dataSize = 0L;
         try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
             Statement stmt = conn.createStatement();
             //TODO:select count(*)大表有性能问题
             String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
@@ -247,6 +278,14 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             //只展示前10000条数据
             int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
             int index = (pageNum - 1) * request.getPageSize();
+            String fields = "*";
+            ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
+            if (!Objects.isNull(resourceTableEntity)){
+                TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+                if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
+                    fields = tableSettingEntity.getRespInfo();
+                }
+            }
             String pagingData = new StringBuilder("select * from ").append(request.getTableName())
                     .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
             ResultSet pagingRs = stmt.executeQuery(pagingData);
@@ -261,13 +300,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         } catch (Exception e) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
+           DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return result;
     }
@@ -283,92 +316,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     }
 
     @Override
-    @DS("remote")
-    public BusinessResult<List<Map<String, String>>> getTablaList() {
-        List<Map<String, String>> maps = new LinkedList<>();
-        List<Map<String, Object>> tableMaps;
-        Connection conn = null;
-        try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
-            String schemaName = conn.getCatalog();
-            String tableNameListSql = String.format("select table_name,table_comment from information_schema.tables where table_schema='%s'", schemaName);
-            tableMaps = jdbcTemplate.queryForList(tableNameListSql);
-        } catch (SQLException throwables) {
-//            log.error("resource/table/prepose/getTablaList接口异常:{}", throwables.getMessage());
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
-        }
-        if (CollectionUtils.isEmpty(tableMaps)) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000010.getCode());
-        }
-        for (Map<String, Object> m : tableMaps) {
-            Map<String, String> map = new LinkedHashMap<>();
-            map.put("tableName", (String) m.get("table_name"));
-            map.put("comment", (String) m.get("table_comment"));
-            maps.add(map);
-        }
-        return BusinessResult.success(maps);
-    }
-
-    @Override
-    @DS("remote")
-    public List<Object> getResourceData(ResourceDataRequest request, ResourceTableEntity entity) {
-        Connection conn = null;
-        //拼接查询sql
-        StringBuilder builder = new StringBuilder("select * from " + entity.getName() + " where ");
-        //解析请求参数
-        if (!CollectionUtils.isEmpty(request.getParams())) {
-            for (Map.Entry<String, Object> entry : request.getParams().entrySet()) {
-                builder.append(entry.getKey()).append(" = ");
-                builder.append(entry.getValue()).append(" and ");
-            }
-        }
-        String tempSql = builder.toString();
-        //可能URL中也会携带有参数信息
-        List<Map<String, Object>> paramList = URLProcessUtils.getParamList(request.getRequestUrl());
-        if (!CollectionUtils.isEmpty(paramList)) {
-            StringBuilder newBuilder = new StringBuilder(tempSql);
-            for (Map<String, Object> map : paramList) {
-                for (Map.Entry<String, Object> entry : map.entrySet()) {
-                    newBuilder.append(entry.getKey()).append(" = ");
-                    newBuilder.append(entry.getValue()).append(" and ");
-                }
-            }
-            tempSql = newBuilder.toString();
-        }
-
-        tempSql = tempSql.substring(0, tempSql.lastIndexOf("and"));
-        int pageSize = Math.min(request.getPageSize(), PAGESIZE_MAX);
-        int index = (request.getPageNum() - 1) * pageSize;
-        String querySql = tempSql + " limit " + index + " , " + pageSize;
-        try {
-            conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet pagingRs = stmt.executeQuery(querySql);
-            if (pagingRs.next()) {
-                List list = ResultSetToListUtils.convertList(pagingRs);
-                return list;
-            }
-        } catch (SQLException throwables) {
-//            log.error("/resource/table/getResourceData接口异常:{}", throwables.getMessage());
-            throwables.printStackTrace();
-        } finally {
-            if (null != conn) {
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }
-        }
-        return Collections.emptyList();
+    public BusinessResult<List<Map<String, String>>> getTablaList(TableNameListRequest request) {
+        return datasourceFeignClient.getTableNameList(new TableNameListRequest(request.getId()));
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.hashtech.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hashtech.entity.ResourceTableEntity;
+import com.hashtech.web.request.ResourceTableNameRequest;
 import com.hashtech.web.request.ResourceTablePageListRequest;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,7 +25,7 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
 
     List<ResourceTableEntity> queryPage(Page<ResourceTableEntity> page, @Param(value = "request") ResourceTablePageListRequest request);
 
-    ResourceTableEntity getByRequestUrl(@Param("requestUrl") String requestUrl);
+    ResourceTableEntity getByResourceTableId(@Param("resourceTableId") String resourceTableId);
 
     Long getCountDataSizeResourceId(@Param("resourceId") String id);
 
@@ -39,4 +40,6 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     Boolean checkHasExitResourceTableInAll(@Param("name") String name, @Param("id") String id);
 
     Boolean checkTableHasExist(@Param("chineseName") String chineseName, @Param("id") String id);
+
+    ResourceTableEntity getByDatasourceIdAndName(@Param("request") ResourceTableNameRequest request);
 }

@@ -144,10 +144,15 @@ public class ResourceTableEntity implements Serializable {
      */
     private String createUserId;
 
+    /**
+     * 数据源id
+     */
+    private String datasourceId;
+
     public ResourceTableEntity() {
     }
 
-    public ResourceTableEntity(String id, String resourceId, Integer externalState, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId) {
+    public ResourceTableEntity(String id, String resourceId, Integer externalState, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId) {
         this.id = id;
         this.resourceId = resourceId;
         this.externalState = externalState;
@@ -170,6 +175,7 @@ public class ResourceTableEntity implements Serializable {
         this.delFlag = delFlag;
         this.themeId = themeId;
         this.createUserId = createUserId;
+        this.datasourceId = datasourceId;
     }
 
     public String getId() {
@@ -346,5 +352,13 @@ public class ResourceTableEntity implements Serializable {
 
     public void setCreateUserId(String createUserId) {
         this.createUserId = createUserId;
+    }
+
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
     }
 }

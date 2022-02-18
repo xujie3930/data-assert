@@ -1,6 +1,5 @@
 package com.hashtech.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,18 +8,15 @@ import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.entity.ThemeResourceEntity;
+import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.result.ResourceTableResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
-import com.hashtech.service.OauthApiService;
-import com.hashtech.service.ResourceTableService;
-import com.hashtech.service.TableSettingService;
-import com.hashtech.service.ThemeResourceService;
+import com.hashtech.service.*;
 import com.hashtech.utils.CharUtil;
-import com.hashtech.utils.URLProcessUtils;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
@@ -60,9 +56,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private ThemeResourceMapper themeResourceMapper;
     @Autowired
     private OauthApiService oauthApiService;
+    @Autowired
+    private RomoteDataSourceService romoteDataSourceService;
 
     @Override
-    @DS("master")
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
@@ -77,10 +74,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         checkHasExitResourceTable(request.getName(), null);
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), null));
-        BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getName()));
+        BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getDatasourceId(), request.getName()));
         ResourceTableEntity entity = getResourceTableEntitySave(user, request, baseInfo, resourceEntity);
         save(entity);
-        TableSettingEntity tableSettingEntity = getTableSettingSaveEntity(entity);
+        TableSettingEntity tableSettingEntity = getTableSettingSaveEntity(entity, request);
         tableSettingService.save(tableSettingEntity);
         return BusinessResult.success(true);
     }
@@ -100,10 +97,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         return hasExit;
     }
 
-    private TableSettingEntity getTableSettingSaveEntity(ResourceTableEntity entity) {
+    private TableSettingEntity getTableSettingSaveEntity(ResourceTableEntity entity, ResourceTableSaveRequest request) {
         String resourceTableId = entity.getId();
         TableSettingEntity tableSettingEntity = new TableSettingEntity();
         tableSettingEntity.setResourceTableId(resourceTableId);
+        tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
         return tableSettingEntity;
     }
 
@@ -127,13 +125,17 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             entity.setUpdateBy(user.getUsername());
             entity.setUpdateTime(new Date());
             entity.setChineseName(request.getChineseName());
-            return BusinessResult.success(updateById(entity));
+            updateById(entity);
+            TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(entity.getId());
+            tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
+            tableSettingService.updateById(tableSettingEntity);
+            return BusinessResult.success(true);
         }
         //更换表，则同时更新更新表信息和表设置
-        BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getName()));
+        BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getDatasourceId(), request.getName()));
         ResourceTableEntity entityUpdate = getResourceTableEntityUpdate(userId, request, baseInfo);
         updateById(entityUpdate);
-        TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(entityUpdate);
+        TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(entityUpdate, request);
         return BusinessResult.success(tableSettingService.updateById(tableSettingUpdateEntity));
     }
 
@@ -143,24 +145,30 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
     }
 
-    private TableSettingEntity getTableSettingUpdateEntity(ResourceTableEntity entity) {
+    private TableSettingEntity getTableSettingUpdateEntity(ResourceTableEntity entity, ResourceTableUpdateRequest request) {
         String resourceTableId = entity.getId();
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableId);
-        tableSettingEntity.setParamInfo(null);
+        //更新表后，请求参数、返回参数、脱敏字段置空
+        tableSettingEntity.setParamInfo("");
+        tableSettingEntity.setRespInfo("");
+        tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
         return tableSettingEntity;
     }
 
     @Override
-    @DS("master")
-    @Deprecated
     public BusinessResult<BaseInfo> getResourceTableBaseInfo(ResourceTableBaseInfoRequest request) {
         ResourceTablePreposeRequest preposeRequest = BeanCopyUtils.copyProperties(request, new ResourceTablePreposeRequest());
         //接口详情
         if (!StringUtils.isBlank(request.getId())) {
             ResourceTableEntity entity = getById(request.getId());
+            if (Objects.isNull(entity)){
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
+            }
+            preposeRequest.setDatasourceId(entity.getDatasourceId());
             preposeRequest.setTableName(entity.getName());
         } else {
             //添加外部表的前置接口
+            preposeRequest.setDatasourceId(request.getDatasourceId());
             preposeRequest.setTableName(request.getTableName());
         }
         BaseInfo baseInfo = tableSettingService.getBaseInfo(preposeRequest);
@@ -171,19 +179,35 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             oldEntity.setColumnsCount(baseInfo.getColumnsCount());
             updateById(oldEntity);
             BeanCopyUtils.copyProperties(oldEntity, baseInfo);
+            DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
+            baseInfo.setType(datasource.getType());
+            baseInfo.setDatabaseName(datasource.getName());
+            baseInfo.setDatasourceId(request.getDatasourceId());
         }
         return BusinessResult.success(baseInfo);
     }
 
     @Override
-    @DS("master")
     public BusinessResult<List<Structure>> getResourceTableStructureList(ResourceTableNameRequest request) {
-        List<Structure> structureList = tableSettingService.getStructureList(request.getTableName());
+        List<Structure> structureList = tableSettingService.getStructureList(request);
+        //若该资源表，存储了脱敏字段
+        ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(request);
+        if (!Objects.isNull(resourceTableEntity)){
+            TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getDesensitizeFields())){
+                String[] arr = tableSettingEntity.getDesensitizeFields().split(",");
+                Set<String> set = new HashSet<>(Arrays.asList(arr));
+                for (Structure structure : structureList) {
+                    if (set.contains(structure.getFieldEnglishName())){
+                        structure.setDesensitize(StateEnum.YES.ordinal());
+                    }
+                }
+            }
+        }
         return BusinessResult.success(structureList);
     }
 
     @Override
-    @DS("master")
     public BusinessResult<BusinessPageResult<Object>> getResourceTableSampleList(ResourceTablePreposeRequest request) {
         BusinessPageResult<Object> sampleList = tableSettingService.getSampleList(request);
         return BusinessResult.success(sampleList);
@@ -216,6 +240,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         saveOrUpdateBatch(list);
         //变更资源表表设置状态
         tableSettingService.updateTableSettingState(ids, DelFalgEnum.HAS_DELETE.getDesc());
+        //TODO:开放平台该目录也同步删除,需开放平台提供接口
         return BusinessResult.success(true);
     }
 
@@ -296,14 +321,16 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
-    public ResourceTableResult getByRequestUrl(String requestUrl) {
+    public ResourceTableResult getByResourceTableId(String resourceTableId) {
         ResourceTableResult result = new ResourceTableResult();
-        ResourceTableEntity resourceTable = resourceTableMapper.getByRequestUrl(requestUrl);
+        ResourceTableEntity resourceTable = resourceTableMapper.getByResourceTableId(resourceTableId);
         if (Objects.isNull(resourceTable)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
         result.setTableName(resourceTable.getName());
+        result.setDatasourceId(resourceTable.getDatasourceId());
         TableSettingEntity tableSetting = tableSettingMapper.getByResourceTableId(resourceTable.getId());
+        result.setDesensitizeFields(tableSetting.getDesensitizeFields());
         if (Objects.isNull(resourceTable)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
@@ -311,6 +338,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             String[] split = tableSetting.getParamInfo().split(",");
             List<String> paramList= Stream.of(split).collect(Collectors.toList());
             result.setParams(paramList);
+        }
+        if (StringUtils.isNotBlank(tableSetting.getRespInfo())){
+            String[] respInfoArr = tableSetting.getRespInfo().split(",");
+            List<String> respInfoList = Stream.of(respInfoArr).collect(Collectors.toList());
+            result.setResps(respInfoList);
         }
         return result;
     }
@@ -331,13 +363,14 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setDataSize(baseInfo.getDataSize());
         //保存主题id
         entity.setThemeId(resourceEntity.getParentId());
+        entity.setDatasourceId(request.getDatasourceId());
         return entity;
     }
 
     private void checkTableChineseName(String chineseName) {
-        /*if (!CharUtil.isChinese(chineseName)) {
+        if (CharUtil.isSpecialChar(chineseName)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000032.getCode());
-        }*/
+        }
     }
 
     private ResourceTableEntity getResourceTableEntityUpdate(String userId, ResourceTableUpdateRequest request, BaseInfo baseInfo) {
@@ -347,6 +380,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setUpdateBy(userId);
         entity.setColumnsCount(baseInfo.getColumnsCount());
         entity.setDataSize(baseInfo.getDataSize());
+        entity.setDatasourceId(request.getDatasourceId());
+        entity.setDatasourceId(request.getDatasourceId());
         return entity;
     }
 }

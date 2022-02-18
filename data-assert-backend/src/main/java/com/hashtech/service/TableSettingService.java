@@ -6,10 +6,7 @@ import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
-import com.hashtech.web.request.ExistInterfaceNamelRequest;
-import com.hashtech.web.request.ResourceDataRequest;
-import com.hashtech.web.request.ResourceTablePreposeRequest;
-import com.hashtech.web.request.TableSettingUpdateRequest;
+import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
 import com.hashtech.web.result.TableSettingResult;
@@ -33,13 +30,11 @@ public interface TableSettingService extends IService<TableSettingEntity> {
 
     BaseInfo getBaseInfo(ResourceTablePreposeRequest request) throws AppException;
 
-    List<Structure> getStructureList(String tableName) throws AppException;
+    List<Structure> getStructureList(ResourceTableNameRequest request) throws AppException;
 
     BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException;
 
-    BusinessResult<List<Map<String, String>>> getTablaList();
-
-    List<Object> getResourceData(ResourceDataRequest requestUrl, ResourceTableEntity entity);
+    BusinessResult<List<Map<String, String>>> getTablaList(TableNameListRequest request);
 
     Boolean hasExistInterfaceName(ExistInterfaceNamelRequest request);
 
