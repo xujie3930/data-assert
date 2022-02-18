@@ -101,12 +101,12 @@ public class ResourceTableController {
     }
 
     /**
-     * @param requestUrl
+     * @param resourceTableId
      * @return
      */
     @GetMapping("/getResourceTable")
-    BusinessResult<ResourceTableResult> getResourceTable(@RequestParam("requestUrl") String requestUrl) {
-        ResourceTableResult result = resourceTableService.getByRequestUrl(requestUrl);
+    BusinessResult<ResourceTableResult> getResourceTable(@RequestParam("resourceTableId") String resourceTableId) {
+        ResourceTableResult result = resourceTableService.getByResourceTableId(resourceTableId);
         return BusinessResult.success(result);
     }
 }

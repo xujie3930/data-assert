@@ -321,9 +321,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
-    public ResourceTableResult getByRequestUrl(String requestUrl) {
+    public ResourceTableResult getByResourceTableId(String resourceTableId) {
         ResourceTableResult result = new ResourceTableResult();
-        ResourceTableEntity resourceTable = resourceTableMapper.getByRequestUrl(requestUrl);
+        ResourceTableEntity resourceTable = resourceTableMapper.getByResourceTableId(resourceTableId);
         if (Objects.isNull(resourceTable)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
