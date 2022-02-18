@@ -149,10 +149,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         String resourceTableId = entity.getId();
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableId);
         //更新表后，请求参数、返回参数、脱敏字段置空
-        tableSettingEntity.setParamInfo(null);
-        tableSettingEntity.setRespInfo(null);
-        tableSettingEntity.setDesensitizeFields(null);
-        tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
+        tableSettingEntity.setParamInfo("");
+        tableSettingEntity.setRespInfo("");
+        tableSettingEntity.setDesensitizeFields("");
         return tableSettingEntity;
     }
 
