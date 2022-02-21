@@ -34,6 +34,10 @@ public interface TableSettingService extends IService<TableSettingEntity> {
 
     BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException;
 
+    BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request) throws AppException;
+
+    List<String> getTableColumnChineseName(String tableName, String datasourceId);
+
     BusinessResult<List<Map<String, String>>> getTablaList(TableNameListRequest request);
 
     Boolean hasExistInterfaceName(ExistInterfaceNamelRequest request);

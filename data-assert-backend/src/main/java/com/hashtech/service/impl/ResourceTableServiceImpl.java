@@ -384,4 +384,18 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setDatasourceId(request.getDatasourceId());
         return entity;
     }
+
+    @Override
+    public Map<String, Object> dataPreview(ResourceDataPreviewRequest request) {
+        ResourceTableEntity resourceTable = resourceTableMapper.selectById(request.getResourceTableId());
+        ResourceTablePreposeRequest resourceRequest = new ResourceTablePreposeRequest(resourceTable.getDatasourceId(), resourceTable.getName());
+        resourceRequest.setPageSize(request.getPageSize());
+        resourceRequest.setPageNum(request.getPageNum());
+        BusinessPageResult<Object> resultList = tableSettingService.getResourceDataList(resourceRequest);
+        List<String> tableColumnChineseNameList = tableSettingService.getTableColumnChineseName(resourceTable.getName(), resourceTable.getDatasourceId());
+        Map<String, Object> result = new HashMap<>();
+        result.put("headList", tableColumnChineseNameList);
+        result.put("resultList", resultList);
+        return result;
+    }
 }

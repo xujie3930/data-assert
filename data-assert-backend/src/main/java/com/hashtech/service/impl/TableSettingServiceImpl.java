@@ -261,6 +261,15 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     @Override
     public BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException {
+        //只展示前10000条数据
+        int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
+        int index = (pageNum - 1) * request.getPageSize();
+        String pagingData = new StringBuilder("select * from ").append(request.getTableName())
+                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
+        return getDataBySql(request, pagingData, pageNum, "");
+    }
+
+    private BusinessPageResult<Object> getDataBySql(ResourceTablePreposeRequest request, String sql, int pageNum, String desensitizeFields){
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
@@ -275,34 +284,56 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
                 dataSize = countRs.getLong(1);
             }
-            //只展示前10000条数据
-            int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
-            int index = (pageNum - 1) * request.getPageSize();
-            String fields = "*";
-            ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
-            if (!Objects.isNull(resourceTableEntity)){
-                TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
-                if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
-                    fields = tableSettingEntity.getRespInfo();
-                }
-            }
-            String pagingData = new StringBuilder("select * from ").append(request.getTableName())
-                    .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
-            ResultSet pagingRs = stmt.executeQuery(pagingData);
+            ResultSet pagingRs = stmt.executeQuery(sql);
             if (pagingRs.next()) {
-                List list = ResultSetToListUtils.convertList(pagingRs);
+                List list = ResultSetToListUtils.convertList(pagingRs, desensitizeFields);
                 Page<Object> page = new Page<>(pageNum, request.getPageSize());
                 page.setTotal(dataSize);
                 result = BusinessPageResult.build(page.setRecords(list), request);
                 //这里按前端要求返回pageCount
                 result.setPageCount(getPageCountByMaxImum(dataSize, request.getPageSize()));
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
-           DBConnectionManager.getInstance().freeConnection(uri, conn);
+            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return result;
+    }
+
+    @Override
+    public BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request) throws AppException {
+        //只展示前10000条数据
+        int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
+        int index = (pageNum - 1) * request.getPageSize();
+        String fields = "*";
+        TableSettingEntity tableSettingEntity = null;
+        ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
+        if (!Objects.isNull(resourceTableEntity)){
+            tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
+                fields = tableSettingEntity.getRespInfo();
+            }
+        }
+        String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
+                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
+        return getDataBySql(request, pagingData, pageNum, null == tableSettingEntity ? "" : tableSettingEntity.getDesensitizeFields());
+    }
+
+    public List<String> getTableColumnChineseName(String tableName, String datasourceId) {
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(datasourceId);
+        String uri = datasource.getUri();
+        Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
+        List<String> columnNameList = new ArrayList<>();
+        try {
+            ResultSet rs = conn.getMetaData().getColumns(null, null, tableName, "%");
+            while(rs.next()) {
+                columnNameList.add(rs.getString(12));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return columnNameList;
     }
 
     private Long getPageCountByMaxImum(Long total, int pageSize) {
