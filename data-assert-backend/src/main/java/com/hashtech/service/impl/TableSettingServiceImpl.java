@@ -332,6 +332,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return columnNameList;
     }
