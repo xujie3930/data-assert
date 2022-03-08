@@ -11,7 +11,10 @@ import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
-import com.hashtech.service.*;
+import com.hashtech.service.OauthApiService;
+import com.hashtech.service.ResourceTableService;
+import com.hashtech.service.RomoteDataSourceService;
+import com.hashtech.service.TableSettingService;
 import com.hashtech.utils.*;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
@@ -20,14 +23,18 @@ import com.hashtech.web.result.TableSettingResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.*;
-import java.util.Date;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,6 +50,7 @@ import java.util.stream.Collectors;
 @Service
 public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, TableSettingEntity> implements TableSettingService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TableSettingServiceImpl.class);
     private static final int PAGESIZE_MAX = 500;
     private static final int MAX_IMUM = 10000;
     private static final String INTERFACE_PATH = "/resource/table/getResourceData/";
@@ -205,6 +213,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             List<Structure> structureList = getStructureList(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
             baseInfo.setColumnsCount(structureList.size());
         } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("表基本信息接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         }finally {
             DBConnectionManager.getInstance().freeConnection(uri, conn);
@@ -252,6 +262,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("表结构接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
             DBConnectionManager.getInstance().freeConnection(uri, conn);
@@ -294,6 +306,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 result.setPageCount(getPageCountByMaxImum(dataSize, request.getPageSize()));
             }
         }catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("采样数据接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
             DBConnectionManager.getInstance().freeConnection(uri, conn);
@@ -330,8 +344,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             while(rs.next()) {
                 columnNameList.add(rs.getString(12));
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            LOGGER.error("采样数据接口异常：", e);
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
             DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
