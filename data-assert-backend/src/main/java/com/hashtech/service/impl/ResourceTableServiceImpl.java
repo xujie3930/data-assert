@@ -164,6 +164,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             if (Objects.isNull(entity)){
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
             }
+            //对接开放平台，如果删除了的话，那个data返回为空
+            if (DelFalgEnum.HAS_DELETE.getDesc().equals(entity.getDelFlag())){
+                return BusinessResult.success(null);
+            }
             preposeRequest.setDatasourceId(entity.getDatasourceId());
             preposeRequest.setTableName(entity.getName());
         } else {
