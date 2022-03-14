@@ -177,7 +177,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         tableSettingMapper.updateById(entity);
         //这里组装参数,调用数据服务
         DatasourceApiSaveRequest dataApiRequest = getDatasourceApiSaveRequest(request, resourceTableEntity, entity);
-        dataApiFeignClient.createDataSourceApi(userId, dataApiRequest);
+        dataApiFeignClient.createOrUpdateDataSourceApiAndPublish(userId, dataApiRequest);
         return BusinessResult.success(true);
     }
 
@@ -192,13 +192,11 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         dataApiRequest.setRequestType("GET");
         dataApiRequest.setResponseType("JSON");
         dataApiRequest.setPath(resourceTableEntity.getRequestUrl());
-        //默认分组id：统一放到业务流程/默认分组下进行维护
-        dataApiRequest.setApiGroupId("0");
         dataApiRequest.setDesc(entity.getExplainInfo());
         DatasourceApiGenerateSaveRequest apiGenerateSaveRequest = new DatasourceApiGenerateSaveRequest();
         apiGenerateSaveRequest.setModel(0);
         apiGenerateSaveRequest.setDatasourceId(resourceTableEntity.getDatasourceId());
-        apiGenerateSaveRequest.setTableName(resourceTableEntity.getChineseName());
+        apiGenerateSaveRequest.setTableName(resourceTableEntity.getName());
         dataApiRequest.setApiGenerateSaveRequest(apiGenerateSaveRequest);
         List<Structure> structureList = getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
         Set<String> params = new HashSet<>(Arrays.asList(request.getParamInfo()));
