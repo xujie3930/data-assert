@@ -23,7 +23,7 @@ public class TableSettingUpdateRequest {
     /**
      * 请求方式：0-POST,1-GET
      */
-    private Integer requestWay = 0;
+    private Integer requestWay = 1;
     /**
      * 请求示例说明
      */

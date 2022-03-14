@@ -6,7 +6,11 @@ import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.feign.DataApiFeignClient;
 import com.hashtech.feign.DatasourceFeignClient;
+import com.hashtech.feign.request.DatasourceApiGenerateSaveRequest;
+import com.hashtech.feign.request.DatasourceApiParamSaveRequest;
+import com.hashtech.feign.request.DatasourceApiSaveRequest;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
@@ -23,6 +27,7 @@ import com.hashtech.web.result.TableSettingResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopContext;
@@ -30,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -71,6 +77,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private static final String DEFAULT_RESP_INFO = "*";
     @Autowired
     private ResourceTableMapper resourceTableMapper;
+    @Autowired
+    private DataApiFeignClient dataApiFeignClient;
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -167,7 +175,53 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         entity.setRespInfo(StringUtils.join(request.getRespInfo(), ","));
         entity.setInterfaceName(request.getInterfaceName());
         tableSettingMapper.updateById(entity);
+        //这里组装参数,调用数据服务
+        DatasourceApiSaveRequest dataApiRequest = getDatasourceApiSaveRequest(request, resourceTableEntity, entity);
+        dataApiFeignClient.createDataSourceApi(userId, dataApiRequest);
         return BusinessResult.success(true);
+    }
+
+    @NotNull
+    private DatasourceApiSaveRequest getDatasourceApiSaveRequest(TableSettingUpdateRequest request, ResourceTableEntity resourceTableEntity, TableSettingEntity entity) {
+        DatasourceApiSaveRequest dataApiRequest = new DatasourceApiSaveRequest();
+        dataApiRequest.setSaveType(0);
+        //默认mysql
+        dataApiRequest.setType(1);
+        dataApiRequest.setName(request.getInterfaceName());
+        //0-POST,1-GET
+        dataApiRequest.setRequestType("GET");
+        dataApiRequest.setResponseType("JSON");
+        dataApiRequest.setPath(resourceTableEntity.getRequestUrl());
+        //默认分组id：统一放到业务流程/默认分组下进行维护
+        dataApiRequest.setApiGroupId("0");
+        dataApiRequest.setDesc(entity.getExplainInfo());
+        DatasourceApiGenerateSaveRequest apiGenerateSaveRequest = new DatasourceApiGenerateSaveRequest();
+        apiGenerateSaveRequest.setModel(0);
+        apiGenerateSaveRequest.setDatasourceId(resourceTableEntity.getDatasourceId());
+        apiGenerateSaveRequest.setTableName(resourceTableEntity.getChineseName());
+        dataApiRequest.setApiGenerateSaveRequest(apiGenerateSaveRequest);
+        List<Structure> structureList = getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
+        Set<String> params = new HashSet<>(Arrays.asList(request.getParamInfo()));
+        Set<String> resps = new HashSet<>(Arrays.asList(request.getRespInfo()));
+        List<DatasourceApiParamSaveRequest> paramList = new LinkedList<>();
+        for (Structure structure : structureList) {
+            DatasourceApiParamSaveRequest save = new DatasourceApiParamSaveRequest();
+            String fieldName = structure.getFieldEnglishName();
+            save.setFieldName(fieldName);
+            save.setFieldType(structure.getType());
+            //看请求参数
+            if (params.contains(fieldName)){
+                save.setRequired(0);
+                save.setIsRequest(0);
+            }
+            save.setDesc(structure.getFieldChineseName());
+            if (resps.contains(fieldName)){
+                save.setIsResponse(0);
+            }
+            paramList.add(save);
+        }
+        dataApiRequest.setApiParamSaveRequestList(paramList);
+        return dataApiRequest;
     }
 
     private String getInterfaceUrl(String requestUrl, String[] paramInfo) {
