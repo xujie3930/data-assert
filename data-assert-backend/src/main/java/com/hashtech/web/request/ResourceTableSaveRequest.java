@@ -237,4 +237,26 @@ public class ResourceTableSaveRequest {
     public void setDesensitizeFields(List<String> desensitizeFields) {
         this.desensitizeFields = desensitizeFields;
     }
+
+    @Override
+    public String toString() {
+        return "ResourceTableSaveRequest{" +
+                "id='" + id + '\'' +
+                ", state=" + state +
+                ", name='" + name + '\'' +
+                ", requestUrl='" + requestUrl + '\'' +
+                ", columnsCount=" + columnsCount +
+                ", dataSize=" + dataSize +
+                ", source='" + source + '\'' +
+                ", descriptor='" + descriptor + '\'' +
+                ", matters='" + matters + '\'' +
+                ", sort=" + sort +
+                ", serialNum='" + serialNum + '\'' +
+                ", chineseName='" + chineseName + '\'' +
+                ", orgId='" + orgId + '\'' +
+                ", orgName='" + orgName + '\'' +
+                ", datasourceId='" + datasourceId + '\'' +
+                ", desensitizeFields=" + desensitizeFields +
+                '}';
+    }
 }
