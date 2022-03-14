@@ -149,7 +149,7 @@ public class DBConnectionManager {
                 } catch (SQLException e) {
                     con = getConnection();
                 }
-            } else if (maxConn == 0 || checkedOut < maxConn) {
+            } else {
                 con = newConnection();
             }
             if (con != null) {
