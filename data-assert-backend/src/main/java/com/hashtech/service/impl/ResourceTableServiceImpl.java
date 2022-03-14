@@ -24,6 +24,8 @@ import com.hashtech.web.result.Structure;
 import com.hashtech.web.result.ThemeResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,7 @@ import java.util.stream.Stream;
 @Service
 public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, ResourceTableEntity> implements ResourceTableService {
 
+    private final Logger logger = LoggerFactory.getLogger(ResourceTableServiceImpl.class);
     @Autowired
     private ThemeResourceService themeResourceService;
     @Autowired
@@ -66,6 +69,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
+        logger.info("request:{}", request);
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         checkTableChineseName(request.getChineseName());
         checkTableHasExist(request.getChineseName(), null);
