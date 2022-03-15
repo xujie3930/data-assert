@@ -168,9 +168,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //更新资源表设置
         TableSettingEntity entity = tableSettingMapper.getByResourceTableId(request.getId());
         entity.setRequestWay(request.getRequestWay());
-        //生成接口地址
-        String interfaceUrl = getInterfaceUrl(resourceTableEntity.getRequestUrl(), request.getParamInfo());
-        entity.setExplainInfo(interfaceUrl);
+        //TODO:从数据服务中获取，生成接口地址
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
         entity.setRespInfo(StringUtils.join(request.getRespInfo(), ","));
         entity.setInterfaceName(request.getInterfaceName());
