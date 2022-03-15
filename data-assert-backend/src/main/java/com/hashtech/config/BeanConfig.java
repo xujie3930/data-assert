@@ -65,4 +65,14 @@ public class BeanConfig {
         );
         return executor;
     }
+
+//    @Bean
+//    public FilterRegistrationBean filterRegistrationBean() {
+//        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+//        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+//        characterEncodingFilter.setForceEncoding(true);
+//        characterEncodingFilter.setEncoding("UTF-8");
+//        registrationBean.setFilter(characterEncodingFilter);
+//        return registrationBean;
+//    }
 }
