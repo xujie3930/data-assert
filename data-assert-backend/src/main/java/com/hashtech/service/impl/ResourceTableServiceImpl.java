@@ -352,7 +352,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     private ResourceTableEntity getResourceTableEntitySave(InternalUserInfoVO user, ResourceTableSaveRequest request, BaseInfo baseInfo, ThemeResourceEntity resourceEntity) {
-        checkTableChineseName(baseInfo.getChineseName());
         ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
         Date date = new Date();
         entity.setId(null);
