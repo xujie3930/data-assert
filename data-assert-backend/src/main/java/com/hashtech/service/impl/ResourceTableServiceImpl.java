@@ -240,6 +240,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
         }
         Set<String> openResourceIds = new HashSet<>(Arrays.asList(result.getData()));
+        logger.info("所有开放资源表id:{}, 待删除资源表ids：{}", openResourceIds, ids);
         openResourceIds.retainAll(resourceIds);
         if (openResourceIds.size() > 0) {
             if (ids.length == 1) {
