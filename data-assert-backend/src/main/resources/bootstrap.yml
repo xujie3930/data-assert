@@ -1,4 +1,7 @@
 spring:
+  mvc:
+    async:
+      request-timeout: 10000
   profiles:
     active: test
   servlet:
