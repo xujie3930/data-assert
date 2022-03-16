@@ -22,5 +22,5 @@ import java.util.Map;
 public interface DataApiFeignClient {
 
     @PostMapping("/dataserve/apiBase/datasourceApi/createAndPublish")
-    BusinessResult<ApiSaveResult> createOrUpdateDataSourceApiAndPublish(@RequestHeader(value = "userId") String userId, @RequestBody DatasourceApiSaveRequest apiSaveRequest);
+    BusinessResult<ApiSaveResult> createAndPublish(@RequestHeader(value = "userId") String userId, @RequestBody DatasourceApiSaveRequest apiSaveRequest);
 }

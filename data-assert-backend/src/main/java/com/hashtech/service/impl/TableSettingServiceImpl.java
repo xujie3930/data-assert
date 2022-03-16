@@ -11,6 +11,7 @@ import com.hashtech.feign.DatasourceFeignClient;
 import com.hashtech.feign.request.DatasourceApiGenerateSaveRequest;
 import com.hashtech.feign.request.DatasourceApiParamSaveRequest;
 import com.hashtech.feign.request.DatasourceApiSaveRequest;
+import com.hashtech.feign.result.ApiSaveResult;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
@@ -168,14 +169,18 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //更新资源表设置
         TableSettingEntity entity = tableSettingMapper.getByResourceTableId(request.getId());
         entity.setRequestWay(request.getRequestWay());
-        //TODO:从数据服务中获取，生成接口地址
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
         entity.setRespInfo(StringUtils.join(request.getRespInfo(), ","));
         entity.setInterfaceName(request.getInterfaceName());
-        tableSettingMapper.updateById(entity);
         //这里组装参数,调用数据服务
         DatasourceApiSaveRequest dataApiRequest = getDatasourceApiSaveRequest(request, resourceTableEntity, entity);
-        dataApiFeignClient.createOrUpdateDataSourceApiAndPublish(userId, dataApiRequest);
+        BusinessResult<ApiSaveResult> result = dataApiFeignClient.createAndPublish(userId, dataApiRequest);
+        if (!result.isSuccess() || Objects.isNull(result.getData())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000039.getCode());
+        }
+        //数据服务获取接口地址
+        entity.setExplainInfo(result.getData().getDesc());
+        tableSettingMapper.updateById(entity);
         return BusinessResult.success(true);
     }
 

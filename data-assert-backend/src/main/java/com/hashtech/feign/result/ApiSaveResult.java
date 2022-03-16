@@ -5,6 +5,7 @@ import java.util.List;
 public class ApiSaveResult {
 
     private String id;
+    private String desc;
     private ApiGenerateSaveResult apiGenerateSaveRequest;
     private List<ApiParamSaveResult> apiParamSaveRequestList;
 
@@ -14,6 +15,14 @@ public class ApiSaveResult {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public ApiGenerateSaveResult getApiGenerateSaveRequest() {
@@ -35,8 +44,9 @@ public class ApiSaveResult {
     public ApiSaveResult() {
     }
 
-    public ApiSaveResult(String id, ApiGenerateSaveResult apiGenerateSaveRequest, List<ApiParamSaveResult> apiParamSaveRequestList) {
+    public ApiSaveResult(String id, String desc, ApiGenerateSaveResult apiGenerateSaveRequest, List<ApiParamSaveResult> apiParamSaveRequestList) {
         this.id = id;
+        this.desc = desc;
         this.apiGenerateSaveRequest = apiGenerateSaveRequest;
         this.apiParamSaveRequestList = apiParamSaveRequestList;
     }

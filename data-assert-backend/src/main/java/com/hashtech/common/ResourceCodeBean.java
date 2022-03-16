@@ -54,6 +54,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000036("60000036", "获取资源库连接失败！"),
         RESOURCE_CODE_60000037("60000037", "数据源不明确，id为空！"),
         RESOURCE_CODE_60000038("60000038", "获取开放平台状态失败！"),
+        RESOURCE_CODE_60000039("60000039", "数据服务异常！"),
         ;
 
         public final String code;
