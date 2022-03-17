@@ -13,6 +13,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_10000000("10000000", "非法请求参数"),
         RESOURCE_CODE_10000001("10000001", "请求参数错误"),
         RESOURCE_CODE_10000002("10000002", "接口返回异常"),
+        RESOURCE_CODE_10000003("10000003", "系统繁忙，请稍后再试"),
+
 
         RESOURCE_CODE_60000000("60000000", "主题名称最多为12字"),
         RESOURCE_CODE_60000001("60000001", "描述最多为200字"),

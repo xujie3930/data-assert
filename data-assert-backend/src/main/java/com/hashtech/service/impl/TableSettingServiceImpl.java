@@ -250,6 +250,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         String uri = datasource.getUri();
         Integer type = datasource.getType();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, type);
+        if(conn == null){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
+        }
         try {
             String tableEnglishName = request.getTableName();
             String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
@@ -287,6 +290,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
+        if(conn == null){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
+        }
         try {
             DatabaseMetaData metaData = conn.getMetaData();
             ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
@@ -340,6 +346,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
+        if(conn == null){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
+        }
         BusinessPageResult result = null;
         Long dataSize = 0L;
         try {
