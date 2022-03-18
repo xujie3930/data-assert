@@ -72,7 +72,7 @@ public class ThemeResult implements Serializable {
     /**
      * 是否隐藏编辑按钮，true：隐藏，false：不隐藏
      */
-    private Boolean hidden;
+    private Boolean hidden = true;
 
     /**
      * 创建者id
