@@ -34,7 +34,7 @@ spring:
     #- classpath:db/migration
 
 server:
-  port: 9081
+  port: 9080
 
 minio:
   host: http://192.168.0.219:9000
