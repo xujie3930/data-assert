@@ -420,8 +420,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     public Map<String, Object> dataPreview(ResourceDataPreviewRequest request) {
         ResourceTableEntity resourceTable = resourceTableMapper.selectById(request.getResourceTableId());
         ResourceTablePreposeRequest resourceRequest = new ResourceTablePreposeRequest(resourceTable.getDatasourceId(), resourceTable.getName());
-        resourceRequest.setPageSize(request.getPageSize());
-        resourceRequest.setPageNum(request.getPageNum());
         BusinessPageResult<Object> pageResult = tableSettingService.getResourceDataList(resourceRequest);
 
         List<List<String>> list = new LinkedList<>();
@@ -435,7 +433,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         List<List<String>> headList = new LinkedList<>();
         headList.add(tableColumnChineseNameList);
         result.put("headList", headList);
-        result.put("resultList", BusinessPageResult.build(list, request, pageResult.getTotal()));
+        result.put("resultList", BusinessPageResult.build(list, request, 10));
         return result;
     }
 
