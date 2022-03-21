@@ -395,7 +395,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             }
         }
         String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
-                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
+                .append(" limit 10").toString();
         return getDataBySql(request, pagingData, pageNum, null == tableSettingEntity ? "" : tableSettingEntity.getDesensitizeFields());
     }
 
@@ -403,7 +403,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(datasourceId);
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
-        List<String> columnNameList = new ArrayList<>();
+        List<String> columnNameList = new LinkedList<>();
         try {
             ResultSet rs = conn.getMetaData().getColumns(null, null, tableName, "%");
             while(rs.next()) {

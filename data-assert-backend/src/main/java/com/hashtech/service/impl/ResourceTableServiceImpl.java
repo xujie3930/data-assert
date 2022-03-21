@@ -420,13 +420,32 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     public Map<String, Object> dataPreview(ResourceDataPreviewRequest request) {
         ResourceTableEntity resourceTable = resourceTableMapper.selectById(request.getResourceTableId());
         ResourceTablePreposeRequest resourceRequest = new ResourceTablePreposeRequest(resourceTable.getDatasourceId(), resourceTable.getName());
-        resourceRequest.setPageSize(request.getPageSize());
-        resourceRequest.setPageNum(request.getPageNum());
-        BusinessPageResult<Object> resultList = tableSettingService.getResourceDataList(resourceRequest);
+        BusinessPageResult<Object> pageResult = tableSettingService.getResourceDataList(resourceRequest);
+
+        List<List<String>> list = new LinkedList<>();
+        for (Object o : pageResult.getList()) {
+            List<String> l = castList(o, String.class);
+            list.add(l);
+        }
+
         List<String> tableColumnChineseNameList = tableSettingService.getTableColumnChineseName(resourceTable.getName(), resourceTable.getDatasourceId());
         Map<String, Object> result = new HashMap<>();
-        result.put("headList", tableColumnChineseNameList);
-        result.put("resultList", resultList);
+        List<List<String>> headList = new LinkedList<>();
+        headList.add(tableColumnChineseNameList);
+        result.put("headList", headList);
+        result.put("resultList", BusinessPageResult.build(list, request, 10));
         return result;
+    }
+
+    //将object转换为list
+    private <T> List<T> castList(Object obj, Class<T> clazz){
+        List<T> resultList = new LinkedList<>();
+        if(obj instanceof Map<?, ?>){
+            for (Object o : ((Map) obj).keySet()) {
+                resultList.add(clazz.cast(((Map) obj).get(o)));
+            }
+            return resultList;
+        }
+        return null;
     }
 }
