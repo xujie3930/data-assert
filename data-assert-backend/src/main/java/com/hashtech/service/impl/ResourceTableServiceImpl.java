@@ -432,7 +432,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
         List<String> tableColumnChineseNameList = tableSettingService.getTableColumnChineseName(resourceTable.getName(), resourceTable.getDatasourceId());
         Map<String, Object> result = new HashMap<>();
-        result.put("headList", tableColumnChineseNameList);
+        List<List<String>> headList = new LinkedList<>();
+        headList.add(tableColumnChineseNameList);
+        result.put("headList", headList);
         result.put("resultList", BusinessPageResult.build(list, request, pageResult.getTotal()));
         return result;
     }
