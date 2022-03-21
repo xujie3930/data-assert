@@ -13,6 +13,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_10000000("10000000", "非法请求参数"),
         RESOURCE_CODE_10000001("10000001", "请求参数错误"),
         RESOURCE_CODE_10000002("10000002", "接口返回异常"),
+        RESOURCE_CODE_10000003("10000003", "系统繁忙，请稍后再试"),
+
 
         RESOURCE_CODE_60000000("60000000", "主题名称最多为12字"),
         RESOURCE_CODE_60000001("60000001", "描述最多为200字"),
@@ -53,6 +55,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000035("60000035", "用户异常！"),
         RESOURCE_CODE_60000036("60000036", "获取资源库连接失败！"),
         RESOURCE_CODE_60000037("60000037", "数据源不明确，id为空！"),
+        RESOURCE_CODE_60000038("60000038", "获取开放平台状态失败！"),
+        RESOURCE_CODE_60000039("60000039", "数据服务异常！"),
         ;
 
         public final String code;

@@ -6,7 +6,12 @@ import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.feign.DataApiFeignClient;
 import com.hashtech.feign.DatasourceFeignClient;
+import com.hashtech.feign.request.DatasourceApiGenerateSaveRequest;
+import com.hashtech.feign.request.DatasourceApiParamSaveRequest;
+import com.hashtech.feign.request.DatasourceApiSaveRequest;
+import com.hashtech.feign.result.ApiSaveResult;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
@@ -23,6 +28,7 @@ import com.hashtech.web.result.TableSettingResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopContext;
@@ -30,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -71,6 +78,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private static final String DEFAULT_RESP_INFO = "*";
     @Autowired
     private ResourceTableMapper resourceTableMapper;
+    @Autowired
+    private DataApiFeignClient dataApiFeignClient;
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -113,6 +122,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         result.setInterfaceName(tableSettingEntity.getInterfaceName());
         result.setUpdateTime(resourceTableEntity.getUpdateTime());
         result.setCreateTime(resourceTableEntity.getCreateTime());
+        result.setRequestWay(RquestWayEnum.GET.getCode());
         return BusinessResult.success(result);
     }
 
@@ -160,14 +170,60 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //更新资源表设置
         TableSettingEntity entity = tableSettingMapper.getByResourceTableId(request.getId());
         entity.setRequestWay(request.getRequestWay());
-        //生成接口地址
-        String interfaceUrl = getInterfaceUrl(resourceTableEntity.getRequestUrl(), request.getParamInfo());
-        entity.setExplainInfo(interfaceUrl);
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
         entity.setRespInfo(StringUtils.join(request.getRespInfo(), ","));
         entity.setInterfaceName(request.getInterfaceName());
+        //这里组装参数,调用数据服务
+        DatasourceApiSaveRequest dataApiRequest = getDatasourceApiSaveRequest(request, resourceTableEntity, entity);
+        BusinessResult<ApiSaveResult> result = dataApiFeignClient.createAndPublish(userId, dataApiRequest);
+        if (!result.isSuccess() || Objects.isNull(result.getData())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000039.getCode());
+        }
+        //数据服务获取接口地址
+        entity.setExplainInfo(result.getData().getDesc());
         tableSettingMapper.updateById(entity);
         return BusinessResult.success(true);
+    }
+
+    @NotNull
+    private DatasourceApiSaveRequest getDatasourceApiSaveRequest(TableSettingUpdateRequest request, ResourceTableEntity resourceTableEntity, TableSettingEntity entity) {
+        DatasourceApiSaveRequest dataApiRequest = new DatasourceApiSaveRequest();
+        dataApiRequest.setSaveType(0);
+        //默认mysql
+        dataApiRequest.setType(1);
+        dataApiRequest.setName(request.getInterfaceName());
+        //0-POST,1-GET
+        dataApiRequest.setRequestType("GET");
+        dataApiRequest.setResponseType("JSON");
+        dataApiRequest.setPath(resourceTableEntity.getRequestUrl());
+        dataApiRequest.setDesc(entity.getExplainInfo());
+        DatasourceApiGenerateSaveRequest apiGenerateSaveRequest = new DatasourceApiGenerateSaveRequest();
+        apiGenerateSaveRequest.setModel(0);
+        apiGenerateSaveRequest.setDatasourceId(resourceTableEntity.getDatasourceId());
+        apiGenerateSaveRequest.setTableName(resourceTableEntity.getName());
+        dataApiRequest.setApiGenerateSaveRequest(apiGenerateSaveRequest);
+        List<Structure> structureList = getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
+        Set<String> params = new HashSet<>(Arrays.asList(request.getParamInfo()));
+        Set<String> resps = new HashSet<>(Arrays.asList(request.getRespInfo()));
+        List<DatasourceApiParamSaveRequest> paramList = new LinkedList<>();
+        for (Structure structure : structureList) {
+            DatasourceApiParamSaveRequest save = new DatasourceApiParamSaveRequest();
+            String fieldName = structure.getFieldEnglishName();
+            save.setFieldName(fieldName);
+            save.setFieldType(structure.getType());
+            //看请求参数
+            if (params.contains(fieldName)){
+                save.setRequired(0);
+                save.setIsRequest(0);
+            }
+            save.setDesc(structure.getFieldChineseName());
+            if (resps.contains(fieldName)){
+                save.setIsResponse(0);
+            }
+            paramList.add(save);
+        }
+        dataApiRequest.setApiParamSaveRequestList(paramList);
+        return dataApiRequest;
     }
 
     private String getInterfaceUrl(String requestUrl, String[] paramInfo) {
@@ -195,6 +251,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         String uri = datasource.getUri();
         Integer type = datasource.getType();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, type);
+        if(conn == null){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
+        }
         try {
             String tableEnglishName = request.getTableName();
             String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
@@ -232,6 +291,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
+        if(conn == null){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
+        }
         try {
             DatabaseMetaData metaData = conn.getMetaData();
             ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
@@ -273,9 +335,21 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     @Override
     public BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException {
+        //只展示前10000条数据
+        int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
+        int index = (pageNum - 1) * request.getPageSize();
+        String pagingData = new StringBuilder("select * from ").append(request.getTableName())
+                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
+        return getDataBySql(request, pagingData, pageNum, "");
+    }
+
+    private BusinessPageResult<Object> getDataBySql(ResourceTablePreposeRequest request, String sql, int pageNum, String desensitizeFields){
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
+        if(conn == null){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
+        }
         BusinessPageResult result = null;
         Long dataSize = 0L;
         try {
@@ -287,36 +361,62 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
                 dataSize = countRs.getLong(1);
             }
-            //只展示前10000条数据
-            int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
-            int index = (pageNum - 1) * request.getPageSize();
-            String fields = "*";
-            ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
-            if (!Objects.isNull(resourceTableEntity)){
-                TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
-                if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
-                    fields = tableSettingEntity.getRespInfo();
-                }
-            }
-            String pagingData = new StringBuilder("select * from ").append(request.getTableName())
-                    .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
-            ResultSet pagingRs = stmt.executeQuery(pagingData);
+            ResultSet pagingRs = stmt.executeQuery(sql);
             if (pagingRs.next()) {
-                List list = ResultSetToListUtils.convertList(pagingRs);
+                List list = ResultSetToListUtils.convertList(pagingRs, desensitizeFields);
                 Page<Object> page = new Page<>(pageNum, request.getPageSize());
                 page.setTotal(dataSize);
                 result = BusinessPageResult.build(page.setRecords(list), request);
                 //这里按前端要求返回pageCount
                 result.setPageCount(getPageCountByMaxImum(dataSize, request.getPageSize()));
             }
+        }catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("采样数据接口异常：", e);
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
+        } finally {
+            DBConnectionManager.getInstance().freeConnection(uri, conn);
+        }
+        return result;
+    }
+
+    @Override
+    public BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request) throws AppException {
+        //只展示前10000条数据
+        int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
+        int index = (pageNum - 1) * request.getPageSize();
+        String fields = "*";
+        TableSettingEntity tableSettingEntity = null;
+        ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
+        if (!Objects.isNull(resourceTableEntity)){
+            tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
+                fields = tableSettingEntity.getRespInfo();
+            }
+        }
+        String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
+                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
+        return getDataBySql(request, pagingData, pageNum, null == tableSettingEntity ? "" : tableSettingEntity.getDesensitizeFields());
+    }
+
+    public List<String> getTableColumnChineseName(String tableName, String datasourceId) {
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(datasourceId);
+        String uri = datasource.getUri();
+        Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
+        List<String> columnNameList = new ArrayList<>();
+        try {
+            ResultSet rs = conn.getMetaData().getColumns(null, null, tableName, "%");
+            while(rs.next()) {
+                columnNameList.add(rs.getString(12));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("采样数据接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         } finally {
-           DBConnectionManager.getInstance().freeConnection(uri, conn);
+            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
-        return result;
+        return columnNameList;
     }
 
     private Long getPageCountByMaxImum(Long total, int pageSize) {

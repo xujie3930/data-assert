@@ -6,6 +6,7 @@ import com.hashtech.config.FileParse;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.ThemeResourceEntity;
+import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
@@ -50,6 +51,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private FileParse fileParse;
     @Autowired
     private OauthApiService oauthApiService;
+    @Autowired
+    private ServeFeignClient serveFeignClient;
 
     public static String getThemeParentId() {
         return THEME_PARENT_ID;
@@ -134,6 +137,16 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<IdResult> deleteTheme(String userId, ThemeDeleteRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
+        BusinessResult<Map<String, List<String>>> result = serveFeignClient.getOpenTopicAndClassifyIds();
+        if (!result.isSuccess()){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
+        }
+        Map<String, List<String>> map = result.getData();
+        //所有在开放平台开放的主题
+        List<String> openTopicIds = map.get("topicIds");
+        if (openTopicIds.contains(request.getId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.getCode());
+        }
         //删除主题下的资源
         List<ThemeResult> resourceList = themeResourceMapper.getResourceByParentId(request.getId());
         if (!CollectionUtils.isEmpty(resourceList)) {
@@ -239,7 +252,15 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     public BusinessResult<IdResult> deleteResource(String userId, ResourceDeleteRequest request) throws AppException {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         //如果删除的资源分类包含有已开放的表,不能删除
-        if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceIds(new String[]{request.getId()}, StatusEnum.ENABLE.getCode()))) {
+        BusinessResult<Map<String, List<String>>> result = serveFeignClient.getOpenTopicAndClassifyIds();
+        if (!result.isSuccess()){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
+        }
+        Map<String, List<String>> map = result.getData();
+        //所有在开放平台开放的主题
+        //所有在开放平台开放的资源分类
+        List<String> openResourceIds = map.get("classifyIds");
+        if (openResourceIds.contains(request.getId())){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.getCode());
         }
         resourceTableMapper.deleteByResourceId(request.getId());
@@ -308,22 +329,12 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
 
     @Override
     public BusinessResult<List<ThemeResult>> getList() {
-        //TODO:开放平台需提供接口，返回所有存在开放目录表的主题、和资源分类列表
         List<ThemeResult> list = themeResourceMapper.getResourceByParentId(THEME_PARENT_ID);
         if (CollectionUtils.isEmpty(list)) {
             return BusinessResult.success(list);
         }
         for (ThemeResult themeResult : list) {
-            Boolean themeHidden = resourceTableService.hasExistOpenExternalState(new ExistOpenExternalRequest(themeResult.getId(), null));
-            themeResult.setHidden(themeHidden);
             List<ThemeResult> resourceByParentId = themeResourceMapper.getResourceByParentId(themeResult.getId());
-            if (!CollectionUtils.isEmpty(resourceByParentId)) {
-                for (ThemeResult resourceResult : resourceByParentId) {
-                    Boolean resourceHidden = resourceTableService.hasExistOpenExternalState(new ExistOpenExternalRequest(null,
-                            resourceResult.getId()));
-                    resourceResult.setHidden(resourceHidden);
-                }
-            }
             themeResult.setResourceList(resourceByParentId);
         }
         return BusinessResult.success(list);

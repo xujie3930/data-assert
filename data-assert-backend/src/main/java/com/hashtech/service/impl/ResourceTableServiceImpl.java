@@ -8,6 +8,7 @@ import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.entity.ThemeResourceEntity;
+import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.result.ResourceTableResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,6 +63,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private OauthApiService oauthApiService;
     @Autowired
     private RomoteDataSourceService romoteDataSourceService;
+    @Autowired
+    private ServeFeignClient serveFeignClient;
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
@@ -105,6 +109,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         String resourceTableId = entity.getId();
         TableSettingEntity tableSettingEntity = new TableSettingEntity();
         tableSettingEntity.setResourceTableId(resourceTableId);
+        tableSettingEntity.setInterfaceName("请输入接口名称");
         tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
         return tableSettingEntity;
     }
@@ -168,6 +173,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             if (Objects.isNull(entity)){
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
             }
+            //对接开放平台，如果删除了的话，那个data返回为空
+            if (DelFalgEnum.HAS_DELETE.getDesc().equals(entity.getDelFlag())){
+                return BusinessResult.success(null);
+            }
             preposeRequest.setDatasourceId(entity.getDatasourceId());
             preposeRequest.setTableName(entity.getName());
         } else {
@@ -224,8 +233,15 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (ids.length <= 0) {
             return BusinessResult.success(true);
         }
-        //开放平台中开放的表不能删除
-        if (BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByIds(ids, StatusEnum.ENABLE.getCode()))) {
+        Set<String> resourceIds = new HashSet<>(Arrays.asList(ids));
+        String resourceId = getById(ids[0]).getResourceId();
+        BusinessResult<String[]> result = serveFeignClient.getOpenDirIds(resourceId);
+        if (!result.isSuccess()){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
+        }
+        Set<String> openResourceIds = new HashSet<>(Arrays.asList(result.getData()));
+        openResourceIds.retainAll(resourceIds);
+        if (openResourceIds.size() > 0) {
             if (ids.length == 1) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000017.getCode());
             }
@@ -244,7 +260,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         saveOrUpdateBatch(list);
         //变更资源表表设置状态
         tableSettingService.updateTableSettingState(ids, DelFalgEnum.HAS_DELETE.getDesc());
-        //TODO:开放平台该目录也同步删除,需开放平台提供接口
         return BusinessResult.success(true);
     }
 
@@ -315,13 +330,26 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     public Boolean hasExistOpenExternalState(ExistOpenExternalRequest request) {
-        String[] resourceIds = {request.getResourceId()};
-        if (!StringUtils.isBlank(request.getThemeId())) {
-            List<ThemeResult> resourceList = themeResourceMapper.getResourceByParentId(request.getThemeId());
-            List<String> collect = resourceList.stream().map(ThemeResult::getId).collect(Collectors.toList());
-            resourceIds = collect.toArray(new String[collect.size()]);
+//        String[] resourceIds = {request.getResourceId()};
+//        if (!StringUtils.isBlank(request.getThemeId())) {
+//            List<ThemeResult> resourceList = themeResourceMapper.getResourceByParentId(request.getThemeId());
+//            List<String> collect = resourceList.stream().map(ThemeResult::getId).collect(Collectors.toList());
+//            resourceIds = collect.toArray(new String[collect.size()]);
+//        }
+//        return BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceIds(resourceIds, StatusEnum.ENABLE.getCode()));
+        BusinessResult<Map<String, List<String>>> result = serveFeignClient.getOpenTopicAndClassifyIds();
+        if (!result.isSuccess() || CollectionUtils.isEmpty(result.getData())){
+            return true;
         }
-        return BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceIds(resourceIds, StatusEnum.ENABLE.getCode()));
+        Map<String, List<String>> map = result.getData();
+        //所有在开放平台开放的主题
+        List<String> openTopicIds = map.get("topicIds");
+        //所有在开放平台开放的资源分类
+        List<String> openResourceIds = map.get("classifyIds");
+        if (openTopicIds.contains(request.getThemeId()) || openResourceIds.contains(request.getResourceId())){
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -386,5 +414,19 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setDatasourceId(request.getDatasourceId());
         entity.setDatasourceId(request.getDatasourceId());
         return entity;
+    }
+
+    @Override
+    public Map<String, Object> dataPreview(ResourceDataPreviewRequest request) {
+        ResourceTableEntity resourceTable = resourceTableMapper.selectById(request.getResourceTableId());
+        ResourceTablePreposeRequest resourceRequest = new ResourceTablePreposeRequest(resourceTable.getDatasourceId(), resourceTable.getName());
+        resourceRequest.setPageSize(request.getPageSize());
+        resourceRequest.setPageNum(request.getPageNum());
+        BusinessPageResult<Object> resultList = tableSettingService.getResourceDataList(resourceRequest);
+        List<String> tableColumnChineseNameList = tableSettingService.getTableColumnChineseName(resourceTable.getName(), resourceTable.getDatasourceId());
+        Map<String, Object> result = new HashMap<>();
+        result.put("headList", tableColumnChineseNameList);
+        result.put("resultList", resultList);
+        return result;
     }
 }

@@ -85,6 +85,11 @@ public class ResourceTableController {
         return resourceTableService.getResourceTableSampleList(request);
     }
 
+    @PostMapping("/dataPreview")
+    Map<String, Object> dataPreview(@RequestBody ResourceDataPreviewRequest request){
+        return resourceTableService.dataPreview(request);
+    }
+
     @PostMapping("/delete")
     BusinessResult<Boolean> deleteResourceTable(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody String[] ids) {
         return resourceTableService.deleteResourceTable(userId, ids);
