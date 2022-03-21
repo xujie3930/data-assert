@@ -395,7 +395,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             }
         }
         String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
-                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
+                .append(" limit 10").toString();
         return getDataBySql(request, pagingData, pageNum, null == tableSettingEntity ? "" : tableSettingEntity.getDesensitizeFields());
     }
 
