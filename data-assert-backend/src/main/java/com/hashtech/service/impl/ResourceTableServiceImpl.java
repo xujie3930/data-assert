@@ -130,6 +130,14 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = getById(request.getId());
+            BusinessResult<String[]> serveResult = serveFeignClient.getOpenDirIds(entity.getResourceId());
+            if (!serveResult.isSuccess()){
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
+            }
+            Set<String> openResourceIds = new HashSet<>(Arrays.asList(serveResult.getData()));
+            if (openResourceIds.contains(entity.getId())){
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000040.getCode());
+            }
             BeanCopyUtils.copyProperties(request, entity);
             entity.setUpdateBy(user.getUsername());
             entity.setUpdateTime(new Date());
@@ -269,17 +277,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         QueryWrapper<ResourceTableEntity> wrapper = new QueryWrapper<>();
         wrapper.eq(ResourceTableEntity.DEL_FLAG, DelFalgEnum.NOT_DELETE.getDesc());
         wrapper.eq(ResourceTableEntity.RESOURCE_ID, request.getId());
-        if (null != request.getExternalState()) {
-            wrapper.eq(ResourceTableEntity.EXTERNAL_STATE, request.getExternalState());
-        }
         if (!StringUtils.isBlank(request.getName())) {
             wrapper.like(ResourceTableEntity.CHINESE_NAME, request.getName());
         }
         if (!StringUtils.isBlank(request.getCreateBy())) {
             wrapper.like(ResourceTableEntity.CREATE_BY, request.getCreateBy());
-        }
-        if (BooleanUtils.isTrue(request.getStateGroup())) {
-            wrapper.orderByAsc(ResourceTableEntity.EXTERNAL_STATE);
         }
         if (SortEnum.DESC.getDesc().equals(request.getAscOrDesc())) {
             wrapper.orderByDesc(ResourceTableEntity.CREATE_TIME);
@@ -313,7 +315,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         entity.setUpdateBy(user.getUsername());
         entity.setUpdateTime(new Date());
-        entity.setExternalState(request.getExternalState());
         return BusinessResult.success(updateById(entity));
     }
 

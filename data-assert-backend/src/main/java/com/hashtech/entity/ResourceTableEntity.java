@@ -30,7 +30,6 @@ public class ResourceTableEntity implements Serializable {
     public static final String DEL_FLAG = "DEL_FLAG";
     public static final String UPDATE_TIME = "UPDATE_TIME";
     public static final String CREATE_TIME = "CREATE_TIME";
-    public static final String EXTERNAL_STATE = "EXTERNAL_STATE";
     private static final long serialVersionUID = 1L;
     /**
      * 主键id
@@ -41,11 +40,6 @@ public class ResourceTableEntity implements Serializable {
      * 资源id
      */
     private String resourceId;
-
-    /**
-     * 是否在开放平台开放：0-开放，1-不开放，默认1
-     */
-    private Integer externalState = 1;
 
     /**
      * 资源表名称
@@ -152,10 +146,9 @@ public class ResourceTableEntity implements Serializable {
     public ResourceTableEntity() {
     }
 
-    public ResourceTableEntity(String id, String resourceId, Integer externalState, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId) {
+    public ResourceTableEntity(String id, String resourceId, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId) {
         this.id = id;
         this.resourceId = resourceId;
-        this.externalState = externalState;
         this.name = name;
         this.chineseName = chineseName;
         this.serialNum = serialNum;
@@ -192,14 +185,6 @@ public class ResourceTableEntity implements Serializable {
 
     public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
-    }
-
-    public Integer getExternalState() {
-        return externalState;
-    }
-
-    public void setExternalState(Integer externalState) {
-        this.externalState = externalState;
     }
 
     public String getName() {

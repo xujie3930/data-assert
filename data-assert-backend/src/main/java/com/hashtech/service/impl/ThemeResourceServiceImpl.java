@@ -221,7 +221,11 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         }
         BeanCopyUtils.copyProperties(resourceEntity, result);
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
-        long openCount = resourceTableList.stream().filter(entity -> StatusEnum.ENABLE.getCode().equals(entity.getExternalState())).count();
+        BusinessResult<String[]> serveResult = serveFeignClient.getOpenDirIds(id);
+        if (!serveResult.isSuccess()){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
+        }
+        long openCount = serveResult.getData().length;
         result.setOpenRate(DoubleUtils.doublePercent(openCount, resourceTableList.size()));
         result.setColumnsCount(resourceTableList.parallelStream().mapToInt(ResourceTableEntity::getColumnsCount).sum());
         result.setTableCount(resourceTableList.size());
