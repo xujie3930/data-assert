@@ -1,7 +1,6 @@
 package com.hashtech.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
@@ -10,6 +9,7 @@ import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.result.DatasourceDetailResult;
+import com.hashtech.feign.result.ResourceTableEntityResult;
 import com.hashtech.feign.result.ResourceTableResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.DataSourceMapper;
@@ -21,7 +21,6 @@ import com.hashtech.utils.CharUtil;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
-import com.hashtech.web.result.ThemeResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -32,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -266,32 +267,58 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Override
     @BusinessParamsValidate
     public BusinessResult<BusinessPageResult> pageList(ResourceTablePageListRequest request) {
-        QueryWrapper<ResourceTableEntity> wrapper = new QueryWrapper<>();
-        wrapper.eq(ResourceTableEntity.DEL_FLAG, DelFalgEnum.NOT_DELETE.getDesc());
-        wrapper.eq(ResourceTableEntity.RESOURCE_ID, request.getId());
-        if (null != request.getExternalState()) {
-            wrapper.eq(ResourceTableEntity.EXTERNAL_STATE, request.getExternalState());
-        }
+        List<ResourceTableEntity> list = resourceTableMapper.getListByResourceId(request.getId());
+        list = list.stream()
+                .filter((ResourceTableEntity r) -> DelFalgEnum.NOT_DELETE.getDesc().equals(r.getDelFlag()))
+                .collect(Collectors.toList());
         if (!StringUtils.isBlank(request.getName())) {
-            wrapper.like(ResourceTableEntity.CHINESE_NAME, request.getName());
+            Pattern pattern = Pattern.compile(request.getName());
+            for(int i=0; i < list.size(); i++){
+                Matcher matcher = pattern.matcher((list.get(i)).getChineseName());
+                if(!matcher.matches()){
+                    list.remove(list.get(i));
+                }
+            }
         }
         if (!StringUtils.isBlank(request.getCreateBy())) {
-            wrapper.like(ResourceTableEntity.CREATE_BY, request.getCreateBy());
-        }
-        if (BooleanUtils.isTrue(request.getStateGroup())) {
-            wrapper.orderByAsc(ResourceTableEntity.EXTERNAL_STATE);
+            Pattern pattern = Pattern.compile(request.getCreateBy());
+            for(int i=0; i < list.size(); i++){
+                Matcher matcher = pattern.matcher((list.get(i)).getCreateBy());
+                if(!matcher.matches()){
+                    list.remove(list.get(i));
+                }
+            }
         }
         if (SortEnum.DESC.getDesc().equals(request.getAscOrDesc())) {
-            wrapper.orderByDesc(ResourceTableEntity.CREATE_TIME);
+            Comparator<ResourceTableEntity> byCreateTime = Comparator.comparing(ResourceTableEntity::getCreateTime).reversed();
+            list.sort(byCreateTime);
         }
         if (SortEnum.ASC.getDesc().equals(request.getAscOrDesc())) {
-            wrapper.orderByAsc(ResourceTableEntity.CREATE_TIME);
+            Comparator<ResourceTableEntity> byCreateTime = Comparator.comparing(ResourceTableEntity::getCreateTime);
+            list.sort(byCreateTime);
         }
-        IPage<ResourceTableEntity> page = this.page(
-                new Query<ResourceTableEntity>().getPage(request),
-                wrapper
-        );
-        return BusinessResult.success(BusinessPageResult.build(page, request));
+        BusinessResult<String[]> result = serveFeignClient.getOpenDirIds(request.getId());
+        if (!result.isSuccess()){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
+        }
+        Set<String> openResourceIds = new HashSet<>(Arrays.asList(result.getData()));
+        List<ResourceTableEntityResult> resourceTableList = new LinkedList<>();
+        for (ResourceTableEntity resourceTableEntity : list) {
+            ResourceTableEntityResult tableEntityResult = new ResourceTableEntityResult();
+            BeanCopyUtils.copyProperties(resourceTableEntity, tableEntityResult);
+            if (openResourceIds.contains(resourceTableEntity.getId())){
+                //0-开放，1-不开放
+                tableEntityResult.setExternalState(OpenFalgEnum.OPEN.getCode());
+            }else {
+                tableEntityResult.setExternalState(OpenFalgEnum.NOT_OPEN.getCode());
+            }
+            resourceTableList.add(tableEntityResult);
+        }
+        if (BooleanUtils.isTrue(request.getStateGroup())) {
+            Comparator<ResourceTableEntityResult> byExternalState = Comparator.comparing(ResourceTableEntityResult::getExternalState);
+            resourceTableList.sort(byExternalState);
+        }
+        return BusinessResult.success(BusinessPageResult.build(resourceTableList, request, resourceTableList.size()));
     }
 
     @Override
@@ -313,7 +340,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         entity.setUpdateBy(user.getUsername());
         entity.setUpdateTime(new Date());
-        entity.setExternalState(request.getExternalState());
         return BusinessResult.success(updateById(entity));
     }
 

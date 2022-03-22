@@ -1,4 +1,4 @@
-package com.hashtech.entity;
+package com.hashtech.feign.result;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -18,23 +18,13 @@ import java.util.Date;
  * @author xujie
  * @since 2021-11-23
  */
-//@Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("resource_table")
-public class ResourceTableEntity implements Serializable {
+public class ResourceTableEntityResult implements Serializable {
 
-    public static final String NAME = "NAME";
-    public static final String CHINESE_NAME = "CHINESE_NAME";
-    public static final String RESOURCE_ID = "RESOURCE_ID";
-    public static final String CREATE_BY = "CREATE_BY";
-    public static final String DEL_FLAG = "DEL_FLAG";
-    public static final String UPDATE_TIME = "UPDATE_TIME";
-    public static final String CREATE_TIME = "CREATE_TIME";
     private static final long serialVersionUID = 1L;
     /**
      * 主键id
      */
-    @TableId(type = IdType.ID_WORKER)
     private String id;
     /**
      * 资源id
@@ -104,7 +94,6 @@ public class ResourceTableEntity implements Serializable {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /**
@@ -115,7 +104,6 @@ public class ResourceTableEntity implements Serializable {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /**
@@ -143,10 +131,12 @@ public class ResourceTableEntity implements Serializable {
      */
     private String datasourceId;
 
-    public ResourceTableEntity() {
+    private Integer externalState;
+
+    public ResourceTableEntityResult() {
     }
 
-    public ResourceTableEntity(String id, String resourceId, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId) {
+    public ResourceTableEntityResult(String id, String resourceId, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId, Integer externalState) {
         this.id = id;
         this.resourceId = resourceId;
         this.name = name;
@@ -169,6 +159,15 @@ public class ResourceTableEntity implements Serializable {
         this.themeId = themeId;
         this.createUserId = createUserId;
         this.datasourceId = datasourceId;
+        this.externalState = externalState;
+    }
+
+    public Integer getExternalState() {
+        return externalState;
+    }
+
+    public void setExternalState(Integer externalState) {
+        this.externalState = externalState;
     }
 
     public String getId() {
