@@ -420,7 +420,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     public BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request) throws AppException {
         //只展示前10000条数据
         int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
-        int index = (pageNum - 1) * request.getPageSize();
         String fields = "*";
         TableSettingEntity tableSettingEntity = null;
         ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
@@ -440,10 +439,21 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
         List<String> columnNameList = new LinkedList<>();
+        ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(tableName, datasourceId));
+
+        String fields = "*";
+        if (!Objects.isNull(resourceTableEntity)) {
+            TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
+                fields = tableSettingEntity.getRespInfo();
+            }
+        }
         try {
-            ResultSet rs = conn.getMetaData().getColumns(null, null, tableName, "%");
+            ResultSet rs = conn.getMetaData().getColumns(conn.getCatalog(), null, tableName, "%");
             while(rs.next()) {
-                columnNameList.add(rs.getString(12));
+                if(fields.contains(rs.getString(4)) || "*".equals(fields)) {
+                    columnNameList.add(rs.getString(12));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
