@@ -28,7 +28,7 @@ public class DBConnectionManager {
     static private int clients;
     private final Vector drivers = new Vector();
     private Hashtable pools = new Hashtable();
-    private final int defaultConn = 20;
+    private final int defaultConn = 50;
 
     public Hashtable getPools() {
         return pools;
