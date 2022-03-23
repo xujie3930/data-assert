@@ -269,7 +269,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 baseInfo.setDataSize(countRs.getLong(1));
             }
             //获取表结构没有性能问题
-            List<Structure> structureList = getStructureList(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
+//            List<Structure> structureList = getStructureList(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
+            List<Structure> structureList = getStructureListLocal(conn, request.getTableName());
             baseInfo.setColumnsCount(structureList.size());
         } catch (Exception e) {
             e.printStackTrace();
@@ -279,6 +280,41 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return baseInfo;
+    }
+
+    private List<Structure> getStructureListLocal(Connection conn, String tableName) {
+        List<Structure> structureList = new LinkedList<>();
+        try {
+            DatabaseMetaData metaData = conn.getMetaData();
+            ResultSet tableResultSet = metaData.getTables(null, null, tableName,
+                    new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
+            while (tableResultSet.next()) {
+                String tableEnglishName = tableName;
+                String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
+                ResultSet columnResultSet = metaData.getColumns(null, "%", tableEnglishName, "%");
+                while (columnResultSet.next()) {
+                    Structure structure = new Structure();
+                    // 字段名称
+                    String columnName = columnResultSet.getString("COLUMN_NAME");
+                    structure.setFieldEnglishName(columnName);
+                    // 数据类型
+                    String columnType = columnResultSet.getString("TYPE_NAME");
+                    structure.setType(columnType.toLowerCase());
+                    // 描述
+                    String remarks = columnResultSet.getString("REMARKS");
+                    structure.setFieldChineseName(remarks);
+                    structure.setTableEnglishName(tableEnglishName);
+                    structure.setTableChineseName(tableChineseName);
+                    structure.setDesensitize(StateEnum.NO.ordinal());
+                    structure.setReqParam(StateEnum.NO.ordinal());
+                    structure.setResParam(StateEnum.YES.ordinal());
+                    structureList.add(structure);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return structureList;
     }
 
     @Override
