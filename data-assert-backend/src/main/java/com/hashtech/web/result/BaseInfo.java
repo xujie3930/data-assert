@@ -80,6 +80,8 @@ public class BaseInfo {
      */
     private String databaseName;
 
+    private MasterDataResult masterData;
+
     /**
      * 数据源id
      */
@@ -88,7 +90,7 @@ public class BaseInfo {
     public BaseInfo() {
     }
 
-    public BaseInfo(String id, String name, String chineseName, Integer externalState, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String themeId, String resourceId, Integer type, String databaseName, String datasourceId) {
+    public BaseInfo(String id, String name, String chineseName, Integer externalState, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String themeId, String resourceId, Integer type, String databaseName, MasterDataResult masterData, String datasourceId) {
         this.id = id;
         this.name = name;
         this.chineseName = chineseName;
@@ -105,6 +107,7 @@ public class BaseInfo {
         this.resourceId = resourceId;
         this.type = type;
         this.databaseName = databaseName;
+        this.masterData = masterData;
         this.datasourceId = datasourceId;
     }
 
@@ -242,5 +245,13 @@ public class BaseInfo {
 
     public void setDatasourceId(String datasourceId) {
         this.datasourceId = datasourceId;
+    }
+
+    public MasterDataResult getMasterData() {
+        return masterData;
+    }
+
+    public void setMasterData(MasterDataResult masterData) {
+        this.masterData = masterData;
     }
 }
