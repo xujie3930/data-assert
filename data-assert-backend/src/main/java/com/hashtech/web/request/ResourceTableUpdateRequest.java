@@ -68,10 +68,15 @@ public class ResourceTableUpdateRequest {
      */
     private List<String> desensitizeFields;
 
+    /**
+     * 主数据类别
+     */
+    private Integer masterDataId;
+
     public ResourceTableUpdateRequest() {
     }
 
-    public ResourceTableUpdateRequest(String id, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName, String datasourceId, List<String> desensitizeFields) {
+    public ResourceTableUpdateRequest(String id, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName, String datasourceId, List<String> desensitizeFields, Integer masterDataId) {
         this.id = id;
         this.name = name;
         this.source = source;
@@ -83,6 +88,7 @@ public class ResourceTableUpdateRequest {
         this.chineseName = chineseName;
         this.datasourceId = datasourceId;
         this.desensitizeFields = desensitizeFields;
+        this.masterDataId = masterDataId;
     }
 
     public String getId() {

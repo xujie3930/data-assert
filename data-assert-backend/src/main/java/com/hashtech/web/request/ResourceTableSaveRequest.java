@@ -88,10 +88,15 @@ public class ResourceTableSaveRequest {
      */
     private List<String> desensitizeFields;
 
+    /**
+     * 主数据类别id
+     */
+    private Integer masterDataId;
+
     public ResourceTableSaveRequest() {
     }
 
-    public ResourceTableSaveRequest(String id, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName, String datasourceId, List<String> desensitizeFields) {
+    public ResourceTableSaveRequest(String id, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName, String datasourceId, List<String> desensitizeFields, Integer masterDataId) {
         this.id = id;
         this.state = state;
         this.name = name;
@@ -108,6 +113,7 @@ public class ResourceTableSaveRequest {
         this.orgName = orgName;
         this.datasourceId = datasourceId;
         this.desensitizeFields = desensitizeFields;
+        this.masterDataId = masterDataId;
     }
 
     public String getId() {
@@ -238,6 +244,14 @@ public class ResourceTableSaveRequest {
         this.desensitizeFields = desensitizeFields;
     }
 
+    public Integer getMasterDataId() {
+        return masterDataId;
+    }
+
+    public void setMasterDataId(Integer masterDataId) {
+        this.masterDataId = masterDataId;
+    }
+
     @Override
     public String toString() {
         return "ResourceTableSaveRequest{" +
@@ -257,6 +271,7 @@ public class ResourceTableSaveRequest {
                 ", orgName='" + orgName + '\'' +
                 ", datasourceId='" + datasourceId + '\'' +
                 ", desensitizeFields=" + desensitizeFields +
+                ", masterDataId=" + masterDataId +
                 '}';
     }
 }

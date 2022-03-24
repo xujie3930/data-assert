@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
+import com.hashtech.entity.MasterDataEntity;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.entity.ThemeResourceEntity;
@@ -65,6 +66,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private RomoteDataSourceService romoteDataSourceService;
     @Autowired
     private ServeFeignClient serveFeignClient;
+    @Autowired
+    private MasterDataService masterDataService;
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
@@ -204,6 +207,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             baseInfo.setType(datasource.getType());
             baseInfo.setDatabaseName(datasource.getName());
             baseInfo.setDatasourceId(request.getDatasourceId());
+            baseInfo.setMasterDataId(oldEntity.getMasterDataId());
+            MasterDataEntity masterDataEntity = masterDataService.getById(oldEntity.getMasterDataId());
+            if (Objects.nonNull(masterDataEntity)){
+                baseInfo.setMasterDataName(masterDataEntity.getName());
+            }
         }
         return BusinessResult.success(baseInfo);
     }
