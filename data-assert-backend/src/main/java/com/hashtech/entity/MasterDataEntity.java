@@ -19,14 +19,6 @@ public class MasterDataEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public MasterDataEntity() {
-    }
-
-    public MasterDataEntity(Integer id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
     /**
      * 主数据类别id
      */
@@ -35,6 +27,14 @@ public class MasterDataEntity implements Serializable {
      * 主数据类别描述
      */
     private String name;
+
+    public MasterDataEntity() {
+    }
+
+    public MasterDataEntity(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Integer getId() {
         return id;

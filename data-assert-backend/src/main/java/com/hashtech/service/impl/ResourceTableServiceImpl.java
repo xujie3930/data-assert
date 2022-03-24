@@ -21,8 +21,8 @@ import com.hashtech.service.*;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
+import com.hashtech.web.result.MasterDataResult;
 import com.hashtech.web.result.Structure;
-import com.hashtech.web.result.ThemeResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -207,13 +207,22 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             baseInfo.setType(datasource.getType());
             baseInfo.setDatabaseName(datasource.getName());
             baseInfo.setDatasourceId(request.getDatasourceId());
-            baseInfo.setMasterDataId(oldEntity.getMasterDataId());
-            MasterDataEntity masterDataEntity = masterDataService.getById(oldEntity.getMasterDataId());
-            if (Objects.nonNull(masterDataEntity)){
-                baseInfo.setMasterDataName(masterDataEntity.getName());
-            }
+            setMasterData(baseInfo, oldEntity);
         }
         return BusinessResult.success(baseInfo);
+    }
+
+    private void setMasterData(BaseInfo baseInfo, ResourceTableEntity oldEntity) {
+        MasterDataEntity masterDataEntity = masterDataService.getById(oldEntity.getMasterDataId());
+        if (Objects.nonNull(masterDataEntity)) {
+            MasterDataResult masterData = new MasterDataResult();
+            masterData.setMasterDataId(masterDataEntity.getId());
+            masterData.setMasterDataName(masterDataEntity.getName());
+            masterData.setMasterDataFlag(MasterFlagEnum.YES.getCode());
+            baseInfo.setMasterData(masterData);
+        } else {
+            baseInfo.setMasterData(new MasterDataResult(null, null ,MasterFlagEnum.NO.getDesc()));
+        }
     }
 
     @Override
