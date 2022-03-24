@@ -20,6 +20,7 @@ import com.hashtech.service.OauthApiService;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.RomoteDataSourceService;
 import com.hashtech.service.TableSettingService;
+import com.hashtech.service.bo.TableFieldsBO;
 import com.hashtech.utils.*;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
@@ -32,12 +33,11 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -58,27 +58,24 @@ import java.util.stream.Collectors;
 public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, TableSettingEntity> implements TableSettingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TableSettingServiceImpl.class);
-    private static final int PAGESIZE_MAX = 500;
     private static final int MAX_IMUM = 10000;
     private static final String INTERFACE_PATH = "/resource/table/getResourceData/";
-    private static final String REQ_PARAM = "req";
-    private static final String RESP_PARAM = "resp";
-    @Autowired
+    @Resource
     private TableSettingMapper tableSettingMapper;
-    @Autowired
+    @Resource
     private ResourceTableService resourceTableService;
-    @Autowired
+    @Resource
     private OauthApiService oauthApiService;
-    @Autowired
+    @Resource
     private DatasourceFeignClient datasourceFeignClient;
-    @Autowired
+    @Resource
     private RomoteDataSourceService romoteDataSourceService;
     @Value("${server.port}")
     private int serverPort;
     private static final String DEFAULT_RESP_INFO = "*";
-    @Autowired
+    @Resource
     private ResourceTableMapper resourceTableMapper;
-    @Autowired
+    @Resource
     private DataApiFeignClient dataApiFeignClient;
 
     @Override
@@ -417,44 +414,53 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     }
 
     @Override
-    public BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request) throws AppException {
+    public BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request, String fields) throws AppException {
         //只展示前10000条数据
         int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
-        String fields = "*";
         TableSettingEntity tableSettingEntity = null;
-        ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
-        if (!Objects.isNull(resourceTableEntity)){
-            tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
-            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
-                fields = tableSettingEntity.getRespInfo();
-            }
-        }
         String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
                 .append(" limit 10").toString();
         return getDataBySql(request, pagingData, pageNum, null == tableSettingEntity ? "" : tableSettingEntity.getDesensitizeFields());
     }
 
-    public List<String> getTableColumnChineseName(String tableName, String datasourceId) {
+    @Override
+    public TableFieldsBO getTableColumnChineseName(String tableName, String datasourceId) {
+        TableFieldsBO tableFieldsBO = new TableFieldsBO();
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(datasourceId);
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
         List<String> columnNameList = new LinkedList<>();
         ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(tableName, datasourceId));
-
-        String fields = "*";
+        StringBuilder fieldSb = new StringBuilder();
+        String fields = DEFAULT_RESP_INFO;
         if (!Objects.isNull(resourceTableEntity)) {
             TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
             if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
                 fields = tableSettingEntity.getRespInfo();
             }
         }
+        String[] fieldArr = null;
+        if(!DEFAULT_RESP_INFO.equals(fields)){
+            fieldArr = fields.split(",");
+        }
         try {
             ResultSet rs = conn.getMetaData().getColumns(conn.getCatalog(), null, tableName, "%");
             while(rs.next()) {
-                if(fields.contains(rs.getString(4)) || "*".equals(fields)) {
+                if(null == fieldArr && DEFAULT_RESP_INFO.equals(fields)) {
                     columnNameList.add(rs.getString(12));
+                    fieldSb.append(rs.getString(4)).append(",");
+                }else{
+                    for (String field : fieldArr) {
+                        if(rs.getString(4).equals(field)){
+                            columnNameList.add(rs.getString(12));
+                            fieldSb.append(rs.getString(4)).append(",");
+                        }
+                    }
                 }
             }
+            tableFieldsBO.setFieldChineseNameList(columnNameList);
+            fields = String.valueOf(fieldSb);
+            tableFieldsBO.setFields(fields.substring(0, fields.lastIndexOf(",")));
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("采样数据接口异常：", e);
@@ -462,7 +468,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         } finally {
             DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
-        return columnNameList;
+        return tableFieldsBO;
     }
 
     private Long getPageCountByMaxImum(Long total, int pageSize) {
