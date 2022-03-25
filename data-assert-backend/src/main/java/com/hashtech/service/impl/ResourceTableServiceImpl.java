@@ -221,7 +221,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             masterData.setMasterDataFlag(MasterFlagEnum.YES.getCode());
             baseInfo.setMasterData(masterData);
         } else {
-            baseInfo.setMasterData(new MasterDataResult(null, null ,MasterFlagEnum.NO.getDesc()));
+            baseInfo.setMasterData(new MasterDataResult(MasterFlagEnum.NO.getCode(), null ,MasterFlagEnum.NO.getDesc()));
         }
     }
 

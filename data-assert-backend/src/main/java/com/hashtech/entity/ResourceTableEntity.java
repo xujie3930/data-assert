@@ -148,10 +148,15 @@ public class ResourceTableEntity implements Serializable {
      */
     private Integer masterDataId;
 
+    /**
+     * 是否为主数据，0-是，1-否，默认0（2022-03-24新增）
+     */
+    private Integer masterDataFlag;
+
     public ResourceTableEntity() {
     }
 
-    public ResourceTableEntity(String id, String resourceId, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId, Integer masterDataId) {
+    public ResourceTableEntity(String id, String resourceId, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId, Integer masterDataId, Integer masterDataFlag) {
         this.id = id;
         this.resourceId = resourceId;
         this.name = name;
@@ -175,6 +180,7 @@ public class ResourceTableEntity implements Serializable {
         this.createUserId = createUserId;
         this.datasourceId = datasourceId;
         this.masterDataId = masterDataId;
+        this.masterDataFlag = masterDataFlag;
     }
 
     public String getId() {
@@ -359,5 +365,13 @@ public class ResourceTableEntity implements Serializable {
 
     public void setMasterDataId(Integer masterDataId) {
         this.masterDataId = masterDataId;
+    }
+
+    public Integer getMasterDataFlag() {
+        return masterDataFlag;
+    }
+
+    public void setMasterDataFlag(Integer masterDataFlag) {
+        this.masterDataFlag = masterDataFlag;
     }
 }

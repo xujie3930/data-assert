@@ -93,10 +93,15 @@ public class ResourceTableSaveRequest {
      */
     private Integer masterDataId;
 
+    /**
+     * 是否为主数据，0-是，1-否，默认0（2022-03-24新增）
+     */
+    private Integer masterDataFlag;
+
     public ResourceTableSaveRequest() {
     }
 
-    public ResourceTableSaveRequest(String id, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName, String datasourceId, List<String> desensitizeFields, Integer masterDataId) {
+    public ResourceTableSaveRequest(String id, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag) {
         this.id = id;
         this.state = state;
         this.name = name;
@@ -114,6 +119,7 @@ public class ResourceTableSaveRequest {
         this.datasourceId = datasourceId;
         this.desensitizeFields = desensitizeFields;
         this.masterDataId = masterDataId;
+        this.masterDataFlag = masterDataFlag;
     }
 
     public String getId() {
@@ -252,6 +258,14 @@ public class ResourceTableSaveRequest {
         this.masterDataId = masterDataId;
     }
 
+    public Integer getMasterDataFlag() {
+        return masterDataFlag;
+    }
+
+    public void setMasterDataFlag(Integer masterDataFlag) {
+        this.masterDataFlag = masterDataFlag;
+    }
+
     @Override
     public String toString() {
         return "ResourceTableSaveRequest{" +
@@ -272,6 +286,7 @@ public class ResourceTableSaveRequest {
                 ", datasourceId='" + datasourceId + '\'' +
                 ", desensitizeFields=" + desensitizeFields +
                 ", masterDataId=" + masterDataId +
+                ", masterDataFlag=" + masterDataFlag +
                 '}';
     }
 }
