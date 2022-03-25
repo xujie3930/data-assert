@@ -21,7 +21,6 @@ import com.hashtech.service.*;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
-import com.hashtech.web.result.MasterDataResult;
 import com.hashtech.web.result.Structure;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -215,13 +214,13 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private void setMasterData(BaseInfo baseInfo, ResourceTableEntity oldEntity) {
         MasterDataEntity masterDataEntity = masterDataService.getById(oldEntity.getMasterDataId());
         if (Objects.nonNull(masterDataEntity)) {
-            MasterDataResult masterData = new MasterDataResult();
-            masterData.setMasterDataId(masterDataEntity.getId());
-            masterData.setMasterDataName(masterDataEntity.getName());
-            masterData.setMasterDataFlag(MasterFlagEnum.YES.getCode());
-            baseInfo.setMasterData(masterData);
+            baseInfo.setMasterDataId(masterDataEntity.getId());
+            baseInfo.setMasterDataName(masterDataEntity.getName());
+            baseInfo.setMasterDataFlag(MasterFlagEnum.YES.getCode());
         } else {
-            baseInfo.setMasterData(new MasterDataResult(MasterFlagEnum.NO.getCode(), null ,MasterFlagEnum.NO.getDesc()));
+            baseInfo.setMasterDataId(null);
+            baseInfo.setMasterDataName(MasterFlagEnum.NO.getDesc());
+            baseInfo.setMasterDataFlag(MasterFlagEnum.NO.getCode());
         }
     }
 
