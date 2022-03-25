@@ -422,9 +422,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
         if (!Objects.isNull(resourceTableEntity)){
             tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
-            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
-                fields = tableSettingEntity.getRespInfo();
-            }
         }
         String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
                 .append(" limit 10").toString();
