@@ -1,6 +1,5 @@
 package com.hashtech.web;
 
-
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.entity.ResourceTableEntity;
