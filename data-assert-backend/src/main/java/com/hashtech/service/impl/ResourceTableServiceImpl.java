@@ -15,22 +15,21 @@ import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
-import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.*;
+import com.hashtech.service.bo.TableFieldsBO;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
-import com.hashtech.web.result.ThemeResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,23 +46,21 @@ import java.util.stream.Stream;
 public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, ResourceTableEntity> implements ResourceTableService {
 
     private final Logger logger = LoggerFactory.getLogger(ResourceTableServiceImpl.class);
-    @Autowired
+    @Resource
     private ThemeResourceService themeResourceService;
-    @Autowired
+    @Resource
     private ResourceTableMapper resourceTableMapper;
-    @Autowired
+    @Resource
     private TableSettingMapper tableSettingMapper;
-    @Autowired
+    @Resource
     private TableSettingService tableSettingService;
-    @Autowired
+    @Resource
     private DataSourceMapper dataSourceMapper;
-    @Autowired
-    private ThemeResourceMapper themeResourceMapper;
-    @Autowired
+    @Resource
     private OauthApiService oauthApiService;
-    @Autowired
+    @Resource
     private RomoteDataSourceService romoteDataSourceService;
-    @Autowired
+    @Resource
     private ServeFeignClient serveFeignClient;
 
     @Override
@@ -421,7 +418,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     public Map<String, Object> dataPreview(ResourceDataPreviewRequest request) {
         ResourceTableEntity resourceTable = resourceTableMapper.selectById(request.getResourceTableId());
         ResourceTablePreposeRequest resourceRequest = new ResourceTablePreposeRequest(resourceTable.getDatasourceId(), resourceTable.getName());
-        BusinessPageResult<Object> pageResult = tableSettingService.getResourceDataList(resourceRequest);
+        TableFieldsBO tableFieldsBO = tableSettingService.getTableColumnChineseName(resourceTable.getName(), resourceTable.getDatasourceId());
+        String fields = tableFieldsBO.getFields();
+
+        BusinessPageResult<Object> pageResult = tableSettingService.getResourceDataList(resourceRequest, fields);
 
         List<List<String>> list = new LinkedList<>();
         for (Object o : pageResult.getList()) {
@@ -429,10 +429,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             list.add(l);
         }
 
-        List<String> tableColumnChineseNameList = tableSettingService.getTableColumnChineseName(resourceTable.getName(), resourceTable.getDatasourceId());
         Map<String, Object> result = new HashMap<>();
         List<List<String>> headList = new LinkedList<>();
-        headList.add(tableColumnChineseNameList);
+        headList.add(tableFieldsBO.getFieldChineseNameList());
         result.put("headList", headList);
         result.put("resultList", BusinessPageResult.build(list, request, 10));
         return result;
