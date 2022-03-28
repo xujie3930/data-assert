@@ -417,7 +417,12 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     public BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request, String fields) throws AppException {
         //只展示前10000条数据
         int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
+
         TableSettingEntity tableSettingEntity = null;
+        ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
+        if (!Objects.isNull(resourceTableEntity)){
+            tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+        }
         String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
                 .append(" limit 10").toString();
         return getDataBySql(request, pagingData, pageNum, null == tableSettingEntity ? "" : tableSettingEntity.getDesensitizeFields());
