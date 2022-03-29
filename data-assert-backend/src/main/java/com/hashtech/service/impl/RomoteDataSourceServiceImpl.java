@@ -3,6 +3,7 @@ package com.hashtech.service.impl;
 import com.hashtech.common.AppException;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.common.ResourceCodeBean;
+import com.hashtech.common.StatusEnum;
 import com.hashtech.feign.DatasourceFeignClient;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.service.RomoteDataSourceService;
@@ -27,6 +28,7 @@ public class RomoteDataSourceServiceImpl implements RomoteDataSourceService {
     private DatasourceFeignClient datasourceFeignClient;
     @Override
     public BusinessResult<List<Map<String, Object>>> getDataSourcesList(DataSourcesListRequest request) {
+        request.setStatus(StatusEnum.ENABLE.getCode());
         return datasourceFeignClient.getDataSourcesList(request);
     }
 
