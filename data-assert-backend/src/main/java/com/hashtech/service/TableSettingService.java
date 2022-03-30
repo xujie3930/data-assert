@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.common.AppException;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
-import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.service.bo.TableFieldsBO;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
@@ -34,9 +34,9 @@ public interface TableSettingService extends IService<TableSettingEntity> {
 
     BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException;
 
-    BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request) throws AppException;
+    BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request, String fields) throws AppException;
 
-    List<String> getTableColumnChineseName(String tableName, String datasourceId);
+    TableFieldsBO getTableColumnChineseName(String tableName, String datasourceId);
 
     BusinessResult<List<Map<String, String>>> getTablaList(TableNameListRequest request);
 
