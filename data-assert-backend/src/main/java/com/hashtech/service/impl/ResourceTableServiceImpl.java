@@ -9,6 +9,7 @@ import com.hashtech.entity.MasterDataEntity;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.entity.ThemeResourceEntity;
+import com.hashtech.feign.DataApiFeignClient;
 import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.result.ResourceTableResult;
@@ -67,6 +68,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private ServeFeignClient serveFeignClient;
     @Autowired
     private MasterDataService masterDataService;
+    @Autowired
+    private DataApiFeignClient dataApiFeignClient;
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
@@ -273,6 +276,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         //变更资源表状态
         List<ResourceTableEntity> list = new ArrayList<>();
+        List<String> apiPathList = new ArrayList<>();
         for (String id : ids) {
             ResourceTableEntity entity = new ResourceTableEntity();
             entity.setId(id);
@@ -280,10 +284,13 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             entity.setUpdateBy(user.getUsername());
             entity.setDelFlag(DelFalgEnum.HAS_DELETE.getDesc());
             list.add(entity);
+            apiPathList.add(entity.getRequestUrl());
         }
         saveOrUpdateBatch(list);
         //变更资源表表设置状态
         tableSettingService.updateTableSettingState(ids, DelFalgEnum.HAS_DELETE.getDesc());
+        //批量删除数据服务对应API信息
+        dataApiFeignClient.deleteByPath(userId, apiPathList);
         return BusinessResult.success(true);
     }
 
