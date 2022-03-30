@@ -277,7 +277,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         List<ResourceTableEntity> list = new ArrayList<>();
         List<String> apiPathList = new ArrayList<>();
         for (String id : ids) {
-            ResourceTableEntity entity = new ResourceTableEntity();
+            ResourceTableEntity entity = getById(id);
             entity.setId(id);
             entity.setUpdateTime(new Date());
             entity.setUpdateBy(user.getUsername());
