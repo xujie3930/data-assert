@@ -218,12 +218,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (Objects.nonNull(masterDataEntity)) {
             baseInfo.setMasterDataId(masterDataEntity.getId());
             baseInfo.setMasterDataName(masterDataEntity.getName());
-            baseInfo.setMasterDataFlag(MasterFlagEnum.YES.getCode());
         } else {
             baseInfo.setMasterDataId(null);
             baseInfo.setMasterDataName(MasterFlagEnum.NO.getDesc());
-            baseInfo.setMasterDataFlag(MasterFlagEnum.NO.getCode());
         }
+        baseInfo.setMasterDataFlag(oldEntity.getMasterDataFlag());
     }
 
     @Override
