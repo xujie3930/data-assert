@@ -216,6 +216,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     private void setMasterData(BaseInfo baseInfo, ResourceTableEntity oldEntity) {
+        baseInfo.setMasterDataFlag(MasterFlagEnum.NO.getCode());
+        baseInfo.setMasterDataId(null);
+        baseInfo.setMasterDataName(null);
         MasterDataEntity masterDataEntity = masterDataService.getById(oldEntity.getMasterDataId());
         if (Objects.nonNull(masterDataEntity)) {
             if (MasterFlagEnum.YES.getCode().equals(oldEntity.getMasterDataFlag())){
