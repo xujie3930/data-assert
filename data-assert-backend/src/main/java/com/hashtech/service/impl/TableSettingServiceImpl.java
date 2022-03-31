@@ -266,7 +266,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 baseInfo.setDataSize(countRs.getLong(1));
             }
             //获取表结构没有性能问题
-//            List<Structure> structureList = getStructureList(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
             List<Structure> structureList = getStructureListLocal(conn, request.getTableName());
             baseInfo.setColumnsCount(structureList.size());
         } catch (Exception e) {

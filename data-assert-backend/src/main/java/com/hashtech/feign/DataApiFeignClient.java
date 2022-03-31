@@ -3,15 +3,12 @@ package com.hashtech.feign;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.feign.request.DatasourceApiSaveRequest;
 import com.hashtech.feign.result.ApiSaveResult;
-import com.hashtech.feign.result.DatasourceDetailResult;
-import com.hashtech.web.request.DataSourcesListRequest;
-import com.hashtech.web.request.TableNameListRequest;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author xujie
@@ -23,4 +20,7 @@ public interface DataApiFeignClient {
 
     @PostMapping("/dataserve/apiBase/datasourceApi/createAndPublish")
     BusinessResult<ApiSaveResult> createAndPublish(@RequestHeader(value = "userId") String userId, @RequestBody DatasourceApiSaveRequest apiSaveRequest);
+
+    @PostMapping("/dataserve/apiBase/deleteByPath")
+    BusinessResult<Boolean> deleteByPath(@RequestHeader(value = "userId") String userId, @RequestBody List<String> request);
 }

@@ -68,10 +68,20 @@ public class ResourceTableUpdateRequest {
      */
     private List<String> desensitizeFields;
 
+    /**
+     * 主数据类别
+     */
+    private Integer masterDataId;
+
+    /**
+     * 是否为主数据，0-是，1-否，默认0（2022-03-24新增）
+     */
+    private Integer masterDataFlag;
+
     public ResourceTableUpdateRequest() {
     }
 
-    public ResourceTableUpdateRequest(String id, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName, String datasourceId, List<String> desensitizeFields) {
+    public ResourceTableUpdateRequest(String id, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag) {
         this.id = id;
         this.name = name;
         this.source = source;
@@ -83,6 +93,8 @@ public class ResourceTableUpdateRequest {
         this.chineseName = chineseName;
         this.datasourceId = datasourceId;
         this.desensitizeFields = desensitizeFields;
+        this.masterDataId = masterDataId;
+        this.masterDataFlag = masterDataFlag;
     }
 
     public String getId() {
@@ -171,5 +183,21 @@ public class ResourceTableUpdateRequest {
 
     public void setDesensitizeFields(List<String> desensitizeFields) {
         this.desensitizeFields = desensitizeFields;
+    }
+
+    public Integer getMasterDataId() {
+        return masterDataId;
+    }
+
+    public void setMasterDataId(Integer masterDataId) {
+        this.masterDataId = masterDataId;
+    }
+
+    public Integer getMasterDataFlag() {
+        return masterDataFlag;
+    }
+
+    public void setMasterDataFlag(Integer masterDataFlag) {
+        this.masterDataFlag = masterDataFlag;
     }
 }

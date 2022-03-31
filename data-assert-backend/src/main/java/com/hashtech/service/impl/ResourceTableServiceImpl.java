@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
+import com.hashtech.entity.MasterDataEntity;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.entity.ThemeResourceEntity;
+import com.hashtech.feign.DataApiFeignClient;
 import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.result.ResourceTableResult;
@@ -25,6 +27,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -62,6 +65,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     private RomoteDataSourceService romoteDataSourceService;
     @Resource
     private ServeFeignClient serveFeignClient;
+    @Resource
+    private MasterDataService masterDataService;
+    @Autowired
+    private DataApiFeignClient dataApiFeignClient;
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
@@ -200,9 +207,26 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
             baseInfo.setType(datasource.getType());
             baseInfo.setDatabaseName(datasource.getName());
-            baseInfo.setDatasourceId(request.getDatasourceId());
+            if (StatusEnum.DISABLE.getCode().equals(datasource.getStatus()) || DelFalgEnum.HAS_DELETE.getDesc().equals(datasource.getDelFlag())){
+                baseInfo.setDatasourceId(null);
+            }
+            setMasterData(baseInfo, oldEntity);
         }
         return BusinessResult.success(baseInfo);
+    }
+
+    private void setMasterData(BaseInfo baseInfo, ResourceTableEntity oldEntity) {
+        baseInfo.setMasterDataFlag(MasterFlagEnum.NO.getCode());
+        baseInfo.setMasterDataId(null);
+        baseInfo.setMasterDataName(null);
+        MasterDataEntity masterDataEntity = masterDataService.getById(oldEntity.getMasterDataId());
+        if (Objects.nonNull(masterDataEntity)) {
+            if (MasterFlagEnum.YES.getCode().equals(oldEntity.getMasterDataFlag())){
+                baseInfo.setMasterDataFlag(MasterFlagEnum.YES.getCode());
+                baseInfo.setMasterDataId(masterDataEntity.getId());
+                baseInfo.setMasterDataName(masterDataEntity.getName());
+            }
+        }
     }
 
     @Override
@@ -254,17 +278,21 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         //变更资源表状态
         List<ResourceTableEntity> list = new ArrayList<>();
+        List<String> apiPathList = new ArrayList<>();
         for (String id : ids) {
-            ResourceTableEntity entity = new ResourceTableEntity();
+            ResourceTableEntity entity = getById(id);
             entity.setId(id);
             entity.setUpdateTime(new Date());
             entity.setUpdateBy(user.getUsername());
             entity.setDelFlag(DelFalgEnum.HAS_DELETE.getDesc());
             list.add(entity);
+            apiPathList.add(entity.getRequestUrl());
         }
         saveOrUpdateBatch(list);
         //变更资源表表设置状态
         tableSettingService.updateTableSettingState(ids, DelFalgEnum.HAS_DELETE.getDesc());
+        //批量删除数据服务对应API信息
+        dataApiFeignClient.deleteByPath(userId, apiPathList);
         return BusinessResult.success(true);
     }
 

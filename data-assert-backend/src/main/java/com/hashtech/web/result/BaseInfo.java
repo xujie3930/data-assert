@@ -81,6 +81,21 @@ public class BaseInfo {
     private String databaseName;
 
     /**
+     * 是否为主数据，0-是，1-否，默认1（2022-03-24新增）
+     */
+    private Integer masterDataFlag = 1;
+
+    /**
+     * 主数据类别id
+     */
+    private Integer masterDataId;
+
+    /**
+     * 主数据类别名称
+     */
+    private String masterDataName;
+
+    /**
      * 数据源id
      */
     private String datasourceId;
@@ -88,7 +103,7 @@ public class BaseInfo {
     public BaseInfo() {
     }
 
-    public BaseInfo(String id, String name, String chineseName, Integer externalState, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String themeId, String resourceId, Integer type, String databaseName, String datasourceId) {
+    public BaseInfo(String id, String name, String chineseName, Integer externalState, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String themeId, String resourceId, Integer type, String databaseName, Integer masterDataFlag, Integer masterDataId, String masterDataName, String datasourceId) {
         this.id = id;
         this.name = name;
         this.chineseName = chineseName;
@@ -105,6 +120,9 @@ public class BaseInfo {
         this.resourceId = resourceId;
         this.type = type;
         this.databaseName = databaseName;
+        this.masterDataFlag = masterDataFlag;
+        this.masterDataId = masterDataId;
+        this.masterDataName = masterDataName;
         this.datasourceId = datasourceId;
     }
 
@@ -242,5 +260,29 @@ public class BaseInfo {
 
     public void setDatasourceId(String datasourceId) {
         this.datasourceId = datasourceId;
+    }
+
+    public Integer getMasterDataFlag() {
+        return masterDataFlag;
+    }
+
+    public void setMasterDataFlag(Integer masterDataFlag) {
+        this.masterDataFlag = masterDataFlag;
+    }
+
+    public Integer getMasterDataId() {
+        return masterDataId;
+    }
+
+    public void setMasterDataId(Integer masterDataId) {
+        this.masterDataId = masterDataId;
+    }
+
+    public String getMasterDataName() {
+        return masterDataName;
+    }
+
+    public void setMasterDataName(String masterDataName) {
+        this.masterDataName = masterDataName;
     }
 }
