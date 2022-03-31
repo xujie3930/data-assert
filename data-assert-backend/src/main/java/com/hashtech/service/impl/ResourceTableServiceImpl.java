@@ -207,7 +207,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
             baseInfo.setType(datasource.getType());
             baseInfo.setDatabaseName(datasource.getName());
-            baseInfo.setDatasourceId(request.getDatasourceId());
+            if (StatusEnum.DISABLE.getCode().equals(datasource.getStatus()) || DelFalgEnum.HAS_DELETE.getDesc().equals(datasource.getDelFlag())){
+                baseInfo.setDatasourceId(null);
+            }
             setMasterData(baseInfo, oldEntity);
         }
         return BusinessResult.success(baseInfo);
