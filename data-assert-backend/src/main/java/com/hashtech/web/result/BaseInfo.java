@@ -81,9 +81,9 @@ public class BaseInfo {
     private String databaseName;
 
     /**
-     * 是否为主数据，0-是，1-否，默认0（2022-03-24新增）
+     * 是否为主数据，0-是，1-否，默认1（2022-03-24新增）
      */
-    private Integer masterDataFlag;
+    private Integer masterDataFlag = 1;
 
     /**
      * 主数据类别id
