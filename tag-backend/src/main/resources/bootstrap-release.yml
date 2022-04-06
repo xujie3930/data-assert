@@ -1,0 +1,48 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.234:8848
+        group: RELEASE
+  datasource:
+    url: "jdbc:mysql://192.168.0.112:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: 'jodp'
+    password: 'jodp@2018'
+
+  redis:
+    host: 192.168.0.125
+    port: 6379
+    timeout: 20000
+    #    cluster:
+    #      nodes: 192.168.0.32:7001,192.168.0.32:7002,192.168.0.32:7003,192.168.0.32:7004,192.168.0.32:7005
+    #      maxRedirects: 6
+    lettuce:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait: -1
+#    password: hash2018
+
+minio:
+  host: http://192.168.0.219:9000
+  accessKey: AKIAIOSFODNN7EXAMPLE
+  secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+  bucketName: jodp-release
+# swagger 登录认证
+knife4j:
+  basic:
+    enable: false
+    ## Basic认证用户名
+    username: admin
+    ## Basic认证密码l
+    password: admin123456
+  production: false #默认是false ,屏蔽所有Swagger的相关资源
+  enable: true #是否开启swagger
+logging:
+  #  file: ../logs/api-gateway/api-gateway.log
+  #  level:
+  #    root: info
+  config: classpath:logback/logback-dev.xml
+  level:
+    com.hashtech: debug

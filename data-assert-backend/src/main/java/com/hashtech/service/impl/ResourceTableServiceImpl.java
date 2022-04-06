@@ -72,6 +72,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request) {
         logger.info("request:{}", request);
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
@@ -113,7 +114,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         String resourceTableId = entity.getId();
         TableSettingEntity tableSettingEntity = new TableSettingEntity();
         tableSettingEntity.setResourceTableId(resourceTableId);
-        tableSettingEntity.setInterfaceName("请输入接口名称");
         tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
         return tableSettingEntity;
     }
