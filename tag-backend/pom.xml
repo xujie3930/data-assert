@@ -10,7 +10,7 @@
     <artifactId>tag-backend</artifactId>
 
     <packaging>jar</packaging>
-    <name>backend-${project.version}</name>
+    <name>tag-backend-${project.version}</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -184,6 +184,11 @@
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>6.1.5.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hashtech</groupId>
+            <artifactId>backend-common</artifactId>
+            <version>1.4.0</version>
         </dependency>
     </dependencies>
 

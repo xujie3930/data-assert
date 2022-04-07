@@ -7,10 +7,10 @@
         <version>1.4.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>backend</artifactId>
+    <artifactId>data-assert-backend</artifactId>
 
     <packaging>jar</packaging>
-    <name>backend-${project.version}</name>
+    <name>data-assert-backend-${project.version}</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -184,6 +184,12 @@
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>6.1.5.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hashtech</groupId>
+            <artifactId>backend-common</artifactId>
+            <version>1.4.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
