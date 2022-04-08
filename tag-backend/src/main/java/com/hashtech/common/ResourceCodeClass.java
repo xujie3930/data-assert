@@ -25,6 +25,8 @@ public class ResourceCodeClass {
         RESOURCE_CODE_70000006("70000006", "标签名称不能为空"),
         RESOURCE_CODE_70000007("70000007", "标签异常！"),
         RESOURCE_CODE_70000008("70000008", "输入包含特殊字符！"),
+        RESOURCE_CODE_70000009("70000009", "标签未停用，暂不能删除！"),
+        RESOURCE_CODE_70000010("70000010", "批量选中的标签中含有启用状态的标签，咱不能删除！"),
         ;
 
         public final String code;

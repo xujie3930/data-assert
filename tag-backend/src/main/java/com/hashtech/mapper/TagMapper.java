@@ -22,4 +22,6 @@ public interface TagMapper extends BaseMapper<TagEntity> {
     Boolean hasExistName(@Param("name") String name, @Param("id") String id);
 
     TagEntity findById(@Param("id")String id);
+
+    Long selectCountByStateAndIds(@Param("state") Integer state, @Param("ids") String[] ids);
 }

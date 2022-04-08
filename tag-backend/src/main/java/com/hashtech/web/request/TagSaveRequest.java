@@ -18,11 +18,11 @@ public class TagSaveRequest {
     private String code;
 
     @NotBlank(message = "70000006")
-    @Length(max = 50, message = "70000001")
+    @Length(max = 50, message = "70000002")
     private String name;
 
     //标签描述
-    @Length(max = 50, message = "70000002")
+    @Length(max = 200, message = "70000001")
     private String describe;
 
     //是否启用：0-否，1-是,默认1

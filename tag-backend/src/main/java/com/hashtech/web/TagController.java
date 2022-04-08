@@ -3,7 +3,9 @@ package com.hashtech.web;
 
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
+import com.hashtech.entity.TagEntity;
 import com.hashtech.service.TagService;
+import com.hashtech.web.request.TagChangeStateRequest;
 import com.hashtech.web.request.TagListRequest;
 import com.hashtech.web.request.TagSaveRequest;
 import com.hashtech.web.request.TagUpdateRequest;
@@ -54,5 +56,21 @@ public class TagController {
     BusinessResult<BusinessPageResult> getList(@RequestBody TagListRequest request) {
         return BusinessResult.success(tagService.getList(request));
     }
+
+    @PostMapping("/enOrDisable")
+    BusinessResult<Boolean> enOrDisable(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody TagChangeStateRequest request) {
+        return BusinessResult.success(tagService.enOrDisable(userId, request));
+    }
+
+    @PostMapping("/delete")
+    BusinessResult<Boolean> deleteTag(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody String[] ids) {
+        return BusinessResult.success(tagService.deleteTag(userId, ids));
+    }
+
+    @GetMapping("/detail")
+    BusinessResult<TagEntity> detailById(@RequestParam("id") String id) {
+        return BusinessResult.success(tagService.detailById(id));
+    }
+
 }
 

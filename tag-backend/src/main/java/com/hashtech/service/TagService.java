@@ -3,6 +3,7 @@ package com.hashtech.service;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.entity.TagEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.web.request.TagChangeStateRequest;
 import com.hashtech.web.request.TagListRequest;
 import com.hashtech.web.request.TagSaveRequest;
 import com.hashtech.web.request.TagUpdateRequest;
@@ -30,4 +31,10 @@ public interface TagService extends IService<TagEntity> {
     Boolean updateDef(String userId, TagUpdateRequest request);
 
     BusinessPageResult getList(TagListRequest request);
+
+    Boolean enOrDisable(String userId, TagChangeStateRequest request);
+
+    Boolean deleteTag(String userId, String[] ids);
+
+    TagEntity detailById(String id);
 }

@@ -4,14 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+//import com.hashtech.common.*;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.TagEntity;
+//import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.TagMapper;
 import com.hashtech.service.TagService;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.DateUtils;
 import com.hashtech.utils.RandomUtils;
+import com.hashtech.web.request.TagChangeStateRequest;
 import com.hashtech.web.request.TagListRequest;
 import com.hashtech.web.request.TagSaveRequest;
 import com.hashtech.web.request.TagUpdateRequest;
@@ -21,8 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * <p>
@@ -37,6 +39,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
 
     @Autowired
     private TagMapper tagMapper;
+//    @Autowired
+//    private OauthApiService oauthApiService;
     @Override
     public Boolean hasExistCode(String code) {
         boolean hasExistCode = BooleanUtils.isTrue(tagMapper.hasExistCode(code));
@@ -113,6 +117,58 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         return BusinessPageResult.build(page, request);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean enOrDisable(String userId, TagChangeStateRequest request) {
+        TagEntity entity = findById(request.getId());
+        if (Objects.isNull(entity)){
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000007.getCode());
+        }
+        //TODO:停用标签时，企业所打的标签也会删除该停用的标签
+        entity.setState(request.getState());
+        entity.setUpdateUserId(userId);
+        entity.setUpdateTime(new Date());
+        saveOrUpdate(entity);
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean deleteTag(String userId, String[] ids) {
+//        InternalUserInfoVO user = oauthApiService.getUserById(userId);
+        if (ids.length <= 0) {
+            return true;
+        }
+        Long delCount = tagMapper.selectCountByStateAndIds(TagStateEnum.ENABLE.getCode(), ids);
+        if (delCount > 0){
+            if (ids.length == 1){
+                throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000009.getCode());
+            }
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000010.getCode());
+        }
+        //变更资源表状态
+        List<TagEntity> list = new ArrayList<>();
+        for (String id : ids) {
+            TagEntity entity = findById(id);
+            if (Objects.isNull(entity)){
+                continue;
+            }
+            entity.setUpdateTime(new Date());
+            entity.setUpdateUserId(userId);
+//            entity.setUpdateBy(user.getUsername());
+            entity.setDelFlag(DelFalgStateEnum.HAS_DELETE.getCode());
+            list.add(entity);
+        }
+        saveOrUpdateBatch(list);
+        removeByIds(Arrays.asList(ids));
+        return true;
+    }
+
+    @Override
+    public TagEntity detailById(String id) {
+        return tagMapper.findById(id);
+    }
+
     private Wrapper<TagEntity> queryWrapper(TagListRequest request) {
         QueryWrapper<TagEntity> wrapper = new QueryWrapper<>();
         wrapper.eq(TagEntity.DEL_FLAG, DelFlagEnum.ENA_BLED.getCode());
@@ -131,8 +187,17 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
             Date endTime = DateUtils.parseDate(request.getLastUsedTimeEnd() + " 23:59:59");
             wrapper.ge(TagEntity.LAST_USED_TIME, startTime).le(TagEntity.LAST_USED_TIME, endTime);
         }
-        if (StringUtils.isNotBlank(request.getSort()) && "asc".equals(request.getSort())){
+        if ("updateTime".equals(request.getSortField()) && "asc".equals(request.getSort())){
             wrapper.orderByAsc(TagEntity.UPDATE_TIME);
+        }
+        if ("updateTime".equals(request.getSortField()) && "desc".equals(request.getSort())){
+            wrapper.orderByDesc(TagEntity.UPDATE_TIME);
+        }
+        if ("lastUsedTime".equals(request.getSortField()) && "asc".equals(request.getSort())){
+            wrapper.orderByAsc(TagEntity.LAST_USED_TIME);
+        }
+        if ("lastUsedTime".equals(request.getSortField()) && "desc".equals(request.getSort())){
+            wrapper.orderByDesc(TagEntity.LAST_USED_TIME);
         }
         return wrapper;
     }

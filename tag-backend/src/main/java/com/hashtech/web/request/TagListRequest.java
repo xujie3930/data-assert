@@ -28,16 +28,19 @@ public class TagListRequest extends BusinessBasePageForm {
 
     private String sort = "desc";
 
+    private String sortField;
+
     public TagListRequest() {
     }
 
-    public TagListRequest(String name, String updateBy, Integer state, String lastUsedTimeBegin, String lastUsedTimeEnd, String sort) {
+    public TagListRequest(String name, String updateBy, Integer state, String lastUsedTimeBegin, String lastUsedTimeEnd, String sort, String sortField) {
         this.name = name;
         this.updateBy = updateBy;
         this.state = state;
         this.lastUsedTimeBegin = lastUsedTimeBegin;
         this.lastUsedTimeEnd = lastUsedTimeEnd;
         this.sort = sort;
+        this.sortField = sortField;
     }
 
     public String getName() {
@@ -86,6 +89,14 @@ public class TagListRequest extends BusinessBasePageForm {
 
     public void setSort(String sort) {
         this.sort = sort;
+    }
+
+    public String getSortField() {
+        return sortField;
+    }
+
+    public void setSortField(String sortField) {
+        this.sortField = sortField;
     }
 }
 
