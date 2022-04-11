@@ -2,6 +2,7 @@ package com.hashtech.mapper;
 
 import com.hashtech.entity.CompanyTagEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>

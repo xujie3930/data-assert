@@ -37,4 +37,8 @@ public interface TagService extends IService<TagEntity> {
     Boolean deleteTag(String userId, String[] ids);
 
     TagEntity detailById(String id);
+
+    List<TagEntity> getListWithoutPaging();
+
+    void updateUsedTime();
 }

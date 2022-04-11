@@ -169,6 +169,16 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         return tagMapper.findById(id);
     }
 
+    @Override
+    public List<TagEntity> getListWithoutPaging() {
+        return tagMapper.getListWithoutPaging();
+    }
+
+    @Override
+    public void updateUsedTime() {
+        tagMapper.updateUsedTime();
+    }
+
     private Wrapper<TagEntity> queryWrapper(TagListRequest request) {
         QueryWrapper<TagEntity> wrapper = new QueryWrapper<>();
         wrapper.eq(TagEntity.DEL_FLAG, DelFlagEnum.ENA_BLED.getCode());

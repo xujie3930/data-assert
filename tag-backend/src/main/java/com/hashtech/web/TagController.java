@@ -12,6 +12,8 @@ import com.hashtech.web.request.TagUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * <p>
  * 标签表 前端控制器
@@ -55,6 +57,15 @@ public class TagController {
     @PostMapping("/list")
     BusinessResult<BusinessPageResult> getList(@RequestBody TagListRequest request) {
         return BusinessResult.success(tagService.getList(request));
+    }
+
+    /**
+     * 获取所有启用状态的标签
+     * @return
+     */
+    @GetMapping("/listWithoutPaging")
+    BusinessResult<List<TagEntity>> getListWithoutPaging() {
+        return BusinessResult.success(tagService.getListWithoutPaging());
     }
 
     @PostMapping("/enOrDisable")

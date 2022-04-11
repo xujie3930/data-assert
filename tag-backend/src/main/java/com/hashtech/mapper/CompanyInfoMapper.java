@@ -2,6 +2,7 @@ package com.hashtech.mapper;
 
 import com.hashtech.entity.CompanyInfoEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface CompanyInfoMapper extends BaseMapper<CompanyInfoEntity> {
 
+    Boolean hasExistUscc(@Param("uscc") String uscc);
 }

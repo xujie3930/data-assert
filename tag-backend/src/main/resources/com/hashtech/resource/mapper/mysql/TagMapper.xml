@@ -56,4 +56,17 @@
         </where>
     </select>
 
+    <select id="getListWithoutPaging"
+            resultType="com.hashtech.entity.TagEntity">
+        select *
+        from tag
+        where del_flag = 0 order by used_time desc
+    </select>
+
+    <update id="updateUsedTime">
+        update tag
+        <set>
+            used_time = used_time + 1
+        </set>
+    </update>
 </mapper>

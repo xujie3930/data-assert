@@ -3,7 +3,7 @@ cd `dirname $0`
 cd ..
 HOME=`pwd`
 
-export SERVER_CLASS=com.hashtech.DataAssertApplication
+export SERVER_CLASS=com.hashtech.TagApplication
 export PROFILE=$1
 
 if test -z "$SERVER_HEAP_SIZE"
