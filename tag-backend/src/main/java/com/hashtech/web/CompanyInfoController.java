@@ -8,12 +8,11 @@ import com.hashtech.common.BusinessResult;
 import com.hashtech.easyexcel.bean.CompanyInfoImportContent;
 import com.hashtech.easyexcel.listener.ExcelModelListener;
 import com.hashtech.service.CompanyInfoService;
+import com.hashtech.web.request.CompanySaveRequest;
+import com.hashtech.web.request.TagSaveRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
@@ -49,6 +48,16 @@ public class CompanyInfoController {
         InputStream inputStream = new ByteArrayInputStream(byteArr);
         EasyExcelFactory.readBySax(inputStream,sheet,new ExcelModelListener());
         return BusinessResult.success(true);
+    }
+
+    @GetMapping("/hasExistUscc")
+    public BusinessResult<Boolean> hasExistUscc(@RequestParam("uscc") String uscc) {
+        return BusinessResult.success(companyInfoService.hasExistUscc(uscc));
+    }
+
+    @PostMapping("/save")
+    BusinessResult<Boolean> saveDef(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody CompanySaveRequest request) {
+        return BusinessResult.success(companyInfoService.saveDef(userId, request));
     }
 }
 
