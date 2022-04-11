@@ -28,4 +28,6 @@ public interface TagMapper extends BaseMapper<TagEntity> {
     List<TagEntity> getListWithoutPaging();
 
     void updateUsedTime();
+
+    List<TagEntity> getByCompanyId(@Param("companyId") String id);
 }

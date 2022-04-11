@@ -179,6 +179,11 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         tagMapper.updateUsedTime();
     }
 
+    @Override
+    public List<TagEntity> getByCompanyId(String id) {
+        return tagMapper.getByCompanyId(id);
+    }
+
     private Wrapper<TagEntity> queryWrapper(TagListRequest request) {
         QueryWrapper<TagEntity> wrapper = new QueryWrapper<>();
         wrapper.eq(TagEntity.DEL_FLAG, DelFlagEnum.ENA_BLED.getCode());

@@ -1,9 +1,7 @@
 package com.hashtech.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
 import java.util.Date;
@@ -26,7 +24,10 @@ import lombok.EqualsAndHashCode;
 public class CompanyInfoEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    public static final String DEL_FLAG = "del_flag";
+    public static final String USCC = "uscc";
+    public static final String CORP_NM = "corp_nm";
+    public static final String ID = "id";
 
     /**
      * 主键id
@@ -237,6 +238,7 @@ public class CompanyInfoEntity implements Serializable {
     /**
      * 是否删除:0-否，1-删除
      */
+    @TableLogic
     private Integer delFlag;
 
     public CompanyInfoEntity() {

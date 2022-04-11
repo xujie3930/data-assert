@@ -9,6 +9,7 @@ import com.hashtech.web.request.TagSaveRequest;
 import com.hashtech.web.request.TagUpdateRequest;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -41,4 +42,6 @@ public interface TagService extends IService<TagEntity> {
     List<TagEntity> getListWithoutPaging();
 
     void updateUsedTime();
+
+    List<TagEntity> getByCompanyId(String id);
 }

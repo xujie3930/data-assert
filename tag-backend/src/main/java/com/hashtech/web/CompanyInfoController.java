@@ -4,11 +4,14 @@ package com.hashtech.web;
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.metadata.Sheet;
 import com.hashtech.common.AppException;
+import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.easyexcel.bean.CompanyInfoImportContent;
 import com.hashtech.easyexcel.listener.ExcelModelListener;
 import com.hashtech.service.CompanyInfoService;
+import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
+import com.hashtech.web.request.TagListRequest;
 import com.hashtech.web.request.TagSaveRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +61,16 @@ public class CompanyInfoController {
     @PostMapping("/save")
     BusinessResult<Boolean> saveDef(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody CompanySaveRequest request) {
         return BusinessResult.success(companyInfoService.saveDef(userId, request));
+    }
+
+    @PostMapping("/list")
+    BusinessResult<BusinessPageResult> getList(@RequestBody CompanyListRequest request) {
+        return BusinessResult.success(companyInfoService.getList(request));
+    }
+
+    @PostMapping("/delete")
+    BusinessResult<Boolean> deleteCompany(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody String[] ids) {
+        return BusinessResult.success(companyInfoService.deleteCompany(userId, ids));
     }
 }
 

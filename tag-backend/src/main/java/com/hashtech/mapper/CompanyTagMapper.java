@@ -4,6 +4,8 @@ import com.hashtech.entity.CompanyTagEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * 企业标签关联表 Mapper 接口
@@ -14,4 +16,5 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface CompanyTagMapper extends BaseMapper<CompanyTagEntity> {
 
+    List<CompanyTagEntity> getLitsByTagId(@Param("tagId") String tagId);
 }

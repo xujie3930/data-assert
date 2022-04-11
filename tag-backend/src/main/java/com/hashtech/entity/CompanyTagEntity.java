@@ -2,6 +2,7 @@ package com.hashtech.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import java.io.Serializable;
@@ -77,6 +78,7 @@ public class CompanyTagEntity implements Serializable {
     /**
      * 是否删除:0-否，1-删除
      */
+    @TableLogic
     private Integer delFlag;
 
 
