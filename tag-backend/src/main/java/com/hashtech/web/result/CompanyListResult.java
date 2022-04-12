@@ -1,4 +1,4 @@
-package com.hashtech.web.request.result;
+package com.hashtech.web.result;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -37,10 +37,12 @@ public class CompanyListResult {
 
     private String updateBy;
 
+    private String describe;
+
     public CompanyListResult() {
     }
 
-    public CompanyListResult(String id, String uscc, String corpNm, List<Map<String, String>> tagMap, Integer tagNum, Date updateTime, String updateBy) {
+    public CompanyListResult(String id, String uscc, String corpNm, List<Map<String, String>> tagMap, Integer tagNum, Date updateTime, String updateBy, String describe) {
         this.id = id;
         this.uscc = uscc;
         this.corpNm = corpNm;
@@ -48,6 +50,7 @@ public class CompanyListResult {
         this.tagNum = tagNum;
         this.updateTime = updateTime;
         this.updateBy = updateBy;
+        this.describe = describe;
     }
 
     public String getId() {
@@ -104,5 +107,13 @@ public class CompanyListResult {
 
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
+    }
+
+    public String getDescribe() {
+        return describe;
+    }
+
+    public void setDescribe(String describe) {
+        this.describe = describe;
     }
 }

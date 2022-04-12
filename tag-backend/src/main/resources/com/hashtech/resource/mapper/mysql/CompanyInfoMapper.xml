@@ -10,8 +10,25 @@
             <if test="uscc != null and uscc != '' ">
                 AND uscc = #{uscc}
             </if>
+            <if test="id != null and id != '' ">
+                AND id != #{id}
+            </if>
             AND del_flag = 0
         </where>
         limit 1
     </select>
+
+    <select id="findById"
+            resultType="com.hashtech.entity.CompanyInfoEntity">
+        select *
+        from company_info
+        where id = #{id}
+          and del_flag = 0
+    </select>
+
+    <update id="updateTagNumById">
+        update company_info
+        set tag_num = #{count}
+        where id = #{companyId}
+    </update>
 </mapper>

@@ -6,6 +6,7 @@ import com.hashtech.common.BusinessResult;
 import com.hashtech.entity.TagEntity;
 import com.hashtech.service.TagService;
 import com.hashtech.web.request.*;
+import com.hashtech.web.result.TagRelateResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,8 +72,8 @@ public class TagController {
     }
 
     @PostMapping("/delete")
-    BusinessResult<Boolean> deleteTag(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody String[] ids) {
-        return BusinessResult.success(tagService.deleteTag(userId, ids));
+    BusinessResult<Boolean> deleteTagDef(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody String[] ids) {
+        return BusinessResult.success(tagService.deleteDef(userId, ids));
     }
 
     @GetMapping("/detail")
@@ -81,7 +82,7 @@ public class TagController {
     }
 
     @PostMapping("/relate")
-    BusinessResult<Object> relate(@RequestBody CompanyListRequest request) {
+    BusinessResult<TagRelateResult> relate(@RequestBody CompanyListRequest request) {
         return BusinessResult.success(tagService.relate(request));
     }
 

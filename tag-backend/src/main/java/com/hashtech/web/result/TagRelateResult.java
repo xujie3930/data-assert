@@ -1,4 +1,4 @@
-package com.hashtech.web.request.result;
+package com.hashtech.web.result;
 
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.entity.TagEntity;

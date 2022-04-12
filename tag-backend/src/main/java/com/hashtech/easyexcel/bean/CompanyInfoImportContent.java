@@ -10,11 +10,11 @@ import com.alibaba.excel.metadata.BaseRowModel;
  **/
 public class CompanyInfoImportContent extends BaseRowModel {
 
-    @ExcelProperty("统一社会信用代码")
+    @ExcelProperty(index = 0, value = "统一社会信用代码")
     private String uscc;
-    @ExcelProperty("企业名称")
+    @ExcelProperty(index = 1, value = "企业名称")
     private String corpNm;
-    @ExcelProperty("企业描述")
+    @ExcelProperty(index = 2, value = "企业描述")
     private String describe;
 
     public String getUscc() {

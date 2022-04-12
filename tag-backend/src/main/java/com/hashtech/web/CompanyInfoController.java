@@ -1,23 +1,16 @@
 package com.hashtech.web;
 
 
-import com.alibaba.excel.EasyExcelFactory;
-import com.alibaba.excel.metadata.Sheet;
-import com.hashtech.common.AppException;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
-import com.hashtech.easyexcel.bean.CompanyInfoImportContent;
-import com.hashtech.easyexcel.listener.ExcelModelListener;
 import com.hashtech.service.CompanyInfoService;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
+import com.hashtech.web.request.CompanyUpdateRequest;
+import com.hashtech.web.result.CompanyListResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * <p>
@@ -34,24 +27,14 @@ public class CompanyInfoController {
     @Autowired
     private CompanyInfoService companyInfoService;
 
-    @PostMapping(value = {"/fileUpload","uploadFile"})
-    public BusinessResult<Boolean> uploadFile(@RequestParam(value = "file") MultipartFile file) {
-
-        Sheet sheet = new Sheet(1,1, CompanyInfoImportContent.class);
-        byte [] byteArr= new byte[0];
-        try {
-            byteArr = file.getBytes();
-        } catch (IOException e) {
-            throw new AppException("解析文件失败");
-        }
-        InputStream inputStream = new ByteArrayInputStream(byteArr);
-        EasyExcelFactory.readBySax(inputStream,sheet,new ExcelModelListener());
-        return BusinessResult.success(true);
+    @PostMapping(value = {"/uploadImport", "uploadFile"})
+    public BusinessResult<Boolean> uploadImport(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestPart("file") MultipartFile file, @RequestParam String[] ids) {
+        return BusinessResult.success(companyInfoService.uploadImport(userId, file, ids));
     }
 
     @GetMapping("/hasExistUscc")
     public BusinessResult<Boolean> hasExistUscc(@RequestParam("uscc") String uscc) {
-        return BusinessResult.success(companyInfoService.hasExistUscc(uscc));
+        return BusinessResult.success(companyInfoService.hasExistUscc(uscc, null));
     }
 
     @PostMapping("/save")
@@ -66,8 +49,18 @@ public class CompanyInfoController {
     }
 
     @PostMapping("/delete")
-    BusinessResult<Boolean> deleteCompany(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody String[] ids) {
-        return BusinessResult.success(companyInfoService.deleteCompany(userId, ids));
+    BusinessResult<Boolean> deleteCompanyDef(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody String[] ids) {
+        return BusinessResult.success(companyInfoService.deleteCompanyDef(userId, ids));
+    }
+
+    @PostMapping("/update")
+    BusinessResult<Boolean> updateDef(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody CompanyUpdateRequest request) {
+        return BusinessResult.success(companyInfoService.updateDef(userId, request));
+    }
+
+    @GetMapping("/detail")
+    BusinessResult<CompanyListResult> detailById(@RequestParam("id") String id) {
+        return BusinessResult.success(companyInfoService.detailById(id));
     }
 }
 

@@ -6,6 +6,68 @@
             resultType="com.hashtech.entity.CompanyTagEntity">
         select *
         from company_tag
-        where tag_id = #{tagId} AND del_flag = 0
+        where tag_id = #{tagId}
+          AND del_flag = 0
     </select>
+
+    <select id="findByTagIdAndCompanyId"
+            resultType="com.hashtech.entity.CompanyTagEntity">
+        select *
+        from company_tag
+        where tag_id = #{tagId}
+          AND company_info_id = #{companyInfoId}
+          AND del_flag = 0
+    </select>
+
+    <select id="getListByCompanyId"
+            resultType="com.hashtech.entity.CompanyTagEntity">
+        select *
+        from company_tag
+        where company_info_id = #{companyInfoId}
+          AND del_flag = 0
+    </select>
+
+    <select id="countByTagId"
+            resultType="Map">
+        select COUNT(*) as count, tag_id as tagId
+        from company_tag
+        where del_flag = 0
+        group by tag_id
+    </select>
+
+    <select id="countBycompanyInfoId"
+            resultType="Map">
+        select COUNT(*) as count, company_info_id as companyInfoId
+        from company_tag
+        where del_flag = 0
+        group by company_info_id
+    </select>
+
+    <update id="deleteCompanyTagByTagIds">
+        update company_tag
+        set update_user_id = #{userId},del_flag = 1
+        <where>
+            <if test="ids != null">
+                AND tag_id in
+                <foreach collection="ids" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            AND del_flag = 0
+        </where>
+    </update>
+
+    <update id="deleteCompanyTagByCompanyId">
+        update company_tag
+        set update_user_id = #{userId},del_flag = 1
+        <where>
+            <if test="ids != null">
+                AND company_info_id in
+                <foreach collection="ids" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            AND del_flag = 0
+        </where>
+    </update>
 </mapper>

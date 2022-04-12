@@ -1,7 +1,7 @@
 package com.hashtech.mapper;
 
-import com.hashtech.entity.CompanyInfoEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.hashtech.entity.CompanyInfoEntity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -14,5 +14,9 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface CompanyInfoMapper extends BaseMapper<CompanyInfoEntity> {
 
-    Boolean hasExistUscc(@Param("uscc") String uscc);
+    Boolean hasExistUscc(@Param("uscc") String uscc, @Param("id") String id);
+
+    CompanyInfoEntity findById(@Param("id") String id);
+
+    void updateTagNumById(@Param("count") Long count, @Param("companyId") String companyId);
 }

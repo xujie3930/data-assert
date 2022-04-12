@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
+import com.hashtech.easyexcel.bean.CompanyInfoImportContent;
 import com.hashtech.entity.CompanyInfoEntity;
 import com.hashtech.entity.CompanyTagEntity;
 import com.hashtech.entity.TagEntity;
@@ -14,9 +15,11 @@ import com.hashtech.mapper.CompanyInfoMapper;
 import com.hashtech.service.CompanyInfoService;
 import com.hashtech.service.CompanyTagService;
 import com.hashtech.service.TagService;
+import com.hashtech.utils.excel.ExcelUtils;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
-import com.hashtech.web.request.result.CompanyListResult;
+import com.hashtech.web.request.CompanyUpdateRequest;
+import com.hashtech.web.result.CompanyListResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,21 +54,23 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public Boolean saveDef(String userId, CompanySaveRequest request) {
+        if (hasExistUscc(request.getUscc(), null)) {
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000004.getCode());
+        }
         Date date = new Date();
         CompanyInfoEntity companyInfoEntity = saveCompanyInfo(userId, request, date);
         String companyInfoId = companyInfoEntity.getId();
-        if (!CollectionUtils.isEmpty(request.getTagIds())){
+        if (!CollectionUtils.isEmpty(request.getTagIds())) {
             for (String tagId : request.getTagIds()) {
-                saveCompanyTag(userId, date, companyInfoEntity, companyInfoId, tagId);
-                tagService.updateUsedTime();
+                saveCompanyTag(userId, date, companyInfoId, tagId);
             }
         }
         return true;
     }
 
     @Override
-    public Boolean hasExistUscc(String uscc) {
-        boolean hasExistUscc= BooleanUtils.isTrue(companyInfoMapper.hasExistUscc(uscc));
+    public Boolean hasExistUscc(String uscc, String id) {
+        boolean hasExistUscc = BooleanUtils.isTrue(companyInfoMapper.hasExistUscc(uscc, id));
         return hasExistUscc;
     }
 
@@ -108,15 +114,21 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean deleteCompany(String userId, String[] ids) {
+    public Boolean deleteCompanyDef(String userId, String[] ids) {
         if (ids.length <= 0) {
             return true;
         }
         //变更资源表状态
+        deleteCompany(userId, ids);
+        deleteCompanyTagByCompanyId(userId, Arrays.asList(ids));
+        return true;
+    }
+
+    private void deleteCompany(String userId, String[] ids) {
         List<CompanyInfoEntity> list = new ArrayList<>();
         for (String id : ids) {
             CompanyInfoEntity entity = getById(id);
-            if (Objects.isNull(entity)){
+            if (Objects.isNull(entity)) {
                 continue;
             }
             entity.setUpdateTime(new Date());
@@ -126,7 +138,101 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         }
         saveOrUpdateBatch(list);
         removeByIds(Arrays.asList(ids));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean updateDef(String userId, CompanyUpdateRequest request) {
+        if (hasExistUscc(request.getUscc(), request.getId())) {
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
+        }
+        CompanyInfoEntity companyInfoEntity = companyInfoMapper.findById(request.getId());
+        if (Objects.isNull(companyInfoEntity)) {
+            return true;
+        }
+        //更改企业
+        companyInfoEntity.setUscc(request.getUscc());
+        companyInfoEntity.setCorpNm(request.getCorpNm());
+        companyInfoEntity.setDescribe(request.getDescribe());
+        companyInfoEntity.setUpdateTime(new Date());
+        companyInfoEntity.setUpdateUserId(userId);
+        updateById(companyInfoEntity);
+        //去除旧标签，同时更新企业标签数量和标签被企业使用数量
+        List<CompanyTagEntity> oldCompanyTag = companyTagService.getListByCompanyId(request.getId());
+        List<String> oldTagIds = oldCompanyTag.stream().map(old -> old.getTagId()).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(request.getTagIds())) {
+            oldTagIds.removeAll(request.getTagIds());
+        }
+        for (String tagId : oldTagIds) {
+            deleteCompanyTag(userId, new Date(), request.getId(), tagId);
+        }
+        //更新标签
+        if (!CollectionUtils.isEmpty(request.getTagIds())) {
+            for (String tagId : request.getTagIds()) {
+                CompanyTagEntity companyTag = companyTagService.findByTagIdAndCompanyId(tagId, request.getId());
+                if (Objects.isNull(companyTag)) {
+                    saveCompanyTag(userId, new Date(), request.getId(), tagId);
+                } else {
+                    updateCompanyTag(userId, companyTag);
+                }
+            }
+        }
         return true;
+    }
+
+    private void deleteCompanyTag(String userId, Date date, String companyInfoId, String tagId) {
+        CompanyTagEntity companyTagEntity = companyTagService.findByTagIdAndCompanyId(tagId, companyInfoId);
+        companyTagEntity.setUpdateTime(date);
+        companyTagEntity.setUpdateUserId(userId);
+        companyTagEntity.setDelFlag(DelFalgStateEnum.HAS_DELETE.getCode());
+        companyTagService.updateById(companyTagEntity);
+    }
+
+    private void updateCompanyTag(String userId, CompanyTagEntity companyTag) {
+        companyTag.setUpdateTime(new Date());
+        companyTag.setUpdateUserId(userId);
+        companyTagService.updateById(companyTag);
+    }
+
+    @Override
+    public CompanyListResult detailById(String id) {
+        CompanyListResult result = new CompanyListResult();
+        CompanyInfoEntity companyInfo = getById(id);
+        if (Objects.isNull(companyInfo)) {
+            return result;
+        }
+        BeanCopyUtils.copyProperties(companyInfo, result);
+        List<TagEntity> tagListByCompanyId = tagService.getByCompanyId(id);
+        if (!CollectionUtils.isEmpty(tagListByCompanyId)) {
+            List<Map<String, String>> list = new LinkedList<>();
+            for (TagEntity tagEntity : tagListByCompanyId) {
+                Map<String, String> map = new HashMap<>();
+                map.put("tagId", tagEntity.getId());
+                map.put("tagName", tagEntity.getName());
+                list.add(map);
+            }
+            result.setTagMap(list);
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean uploadImport(String userId, MultipartFile file, String[] ids) {
+        List<CompanyInfoImportContent> importList = ExcelUtils.readExcelFileData(file, 1, 1, CompanyInfoImportContent.class);
+        for (CompanyInfoImportContent content : importList) {
+            saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), Arrays.asList(ids), content.getDescribe()));
+        }
+        return true;
+    }
+
+    @Override
+    public void updateTagNumById(Long count, String companyId) {
+        companyInfoMapper.updateTagNumById(count, companyId);
+    }
+
+    private void deleteCompanyTagByCompanyId(String userId, List<String> companyIds) {
+        companyTagService.deleteCompanyTagByCompanyId(userId, companyIds);
     }
 
     private Wrapper<CompanyInfoEntity> queryWrapper(CompanyListRequest request, List<String> companyIdList) {
@@ -163,14 +269,14 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         return companyInfoEntity;
     }
 
-    private void saveCompanyTag(String userId, Date date, CompanyInfoEntity companyInfoEntity, String companyInfoId, String tagId) {
+    private void saveCompanyTag(String userId, Date date, String companyInfoId, String tagId) {
         CompanyTagEntity companyTagEntity = new CompanyTagEntity();
         companyTagEntity.setTagId(tagId);
         companyTagEntity.setCompanyInfoId(companyInfoId);
-        companyInfoEntity.setCreateTime(date);
-        companyInfoEntity.setCreateUserId(userId);
-        companyInfoEntity.setUpdateTime(date);
-        companyInfoEntity.setUpdateUserId(userId);
+        companyTagEntity.setCreateTime(date);
+        companyTagEntity.setCreateUserId(userId);
+        companyTagEntity.setUpdateTime(date);
+        companyTagEntity.setUpdateUserId(userId);
         companyTagService.save(companyTagEntity);
     }
 }

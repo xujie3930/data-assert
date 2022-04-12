@@ -1,8 +1,7 @@
 package com.hashtech.mapper;
 
-import com.hashtech.entity.TagEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.hashtech.web.request.TagListRequest;
+import com.hashtech.entity.TagEntity;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -21,13 +20,13 @@ public interface TagMapper extends BaseMapper<TagEntity> {
 
     Boolean hasExistName(@Param("name") String name, @Param("id") String id);
 
-    TagEntity findById(@Param("id")String id);
+    TagEntity findById(@Param("id") String id);
 
     Long selectCountByStateAndIds(@Param("state") Integer state, @Param("ids") String[] ids);
 
     List<TagEntity> getListWithoutPaging();
 
-    void updateUsedTime();
-
     List<TagEntity> getByCompanyId(@Param("companyId") String id);
+
+    void updateUsedTimeById(@Param("count") Long count, @Param("tagId") String tagId);
 }

@@ -1,12 +1,12 @@
 package com.hashtech.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.entity.TagEntity;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.web.request.*;
+import com.hashtech.web.result.TagRelateResult;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -32,15 +32,15 @@ public interface TagService extends IService<TagEntity> {
 
     Boolean enOrDisable(String userId, TagChangeStateRequest request);
 
-    Boolean deleteTag(String userId, String[] ids);
+    Boolean deleteDef(String userId, String[] ids);
 
     TagEntity detailById(String id);
 
     List<TagEntity> getListWithoutPaging();
 
-    void updateUsedTime();
-
     List<TagEntity> getByCompanyId(String id);
 
-    Object relate(CompanyListRequest request);
+    TagRelateResult relate(CompanyListRequest request);
+
+    void updateUsedTimeById(Long count, String tagId);
 }

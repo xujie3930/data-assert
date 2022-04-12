@@ -4,12 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-//import com.hashtech.common.*;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
-import com.hashtech.entity.CompanyTagEntity;
 import com.hashtech.entity.TagEntity;
-//import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.TagMapper;
 import com.hashtech.service.CompanyInfoService;
 import com.hashtech.service.CompanyTagService;
@@ -18,7 +15,7 @@ import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.DateUtils;
 import com.hashtech.utils.RandomUtils;
 import com.hashtech.web.request.*;
-import com.hashtech.web.request.result.TagRelateResult;
+import com.hashtech.web.result.TagRelateResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -140,14 +136,26 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean deleteTag(String userId, String[] ids) {
+    public Boolean deleteDef(String userId, String[] ids) {
 //        InternalUserInfoVO user = oauthApiService.getUserById(userId);
         if (ids.length <= 0) {
             return true;
         }
+        //删除标签
+        deleteTag(userId, ids);
+        //删除标签企业
+        deleteCompanyTagByTagIds(userId, Arrays.asList(ids));
+        return true;
+    }
+
+    private void deleteCompanyTagByTagIds(String userId, List<String> ids) {
+        companyTagService.deleteCompanyTagByTagIds(userId, ids);
+    }
+
+    private void deleteTag(String userId, String[] ids) {
         Long delCount = tagMapper.selectCountByStateAndIds(TagStateEnum.ENABLE.getCode(), ids);
-        if (delCount > 0){
-            if (ids.length == 1){
+        if (delCount > 0) {
+            if (ids.length == 1) {
                 throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000009.getCode());
             }
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000010.getCode());
@@ -162,12 +170,10 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
             entity.setUpdateTime(new Date());
             entity.setUpdateUserId(userId);
 //            entity.setUpdateBy(user.getUsername());
-            entity.setDelFlag(DelFalgStateEnum.HAS_DELETE.getCode());
             list.add(entity);
         }
         saveOrUpdateBatch(list);
         removeByIds(Arrays.asList(ids));
-        return true;
     }
 
     @Override
@@ -181,11 +187,6 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     }
 
     @Override
-    public void updateUsedTime() {
-        tagMapper.updateUsedTime();
-    }
-
-    @Override
     public List<TagEntity> getByCompanyId(String id) {
         return tagMapper.getByCompanyId(id);
     }
@@ -194,7 +195,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     public TagRelateResult relate(CompanyListRequest request) {
         TagRelateResult result = new TagRelateResult();
         TagEntity tagEntity = findById(request.getTagId());
-        if (Objects.isNull(tagEntity)){
+        if (Objects.isNull(tagEntity)) {
             return result;
         }
         result.setTagEntity(tagEntity);
@@ -204,14 +205,19 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         return result;
     }
 
+    @Override
+    public void updateUsedTimeById(Long count, String tagId) {
+        tagMapper.updateUsedTimeById(count, tagId);
+    }
+
     private Wrapper<TagEntity> queryWrapper(TagListRequest request) {
         QueryWrapper<TagEntity> wrapper = new QueryWrapper<>();
         wrapper.eq(TagEntity.DEL_FLAG, DelFlagEnum.ENA_BLED.getCode());
         wrapper.orderByDesc(TagEntity.UPDATE_TIME);
-        if (StringUtils.isNotBlank(request.getName())){
+        if (StringUtils.isNotBlank(request.getName())) {
             wrapper.like(TagEntity.NAME, request.getName());
         }
-        if (StringUtils.isNotBlank(request.getUpdateBy())){
+        if (StringUtils.isNotBlank(request.getUpdateBy())) {
             wrapper.like(TagEntity.UPDATE_BY, request.getUpdateBy());
         }
         if (null != request.getState()){

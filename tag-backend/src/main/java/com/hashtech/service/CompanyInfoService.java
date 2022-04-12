@@ -1,14 +1,13 @@
 package com.hashtech.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.entity.CompanyInfoEntity;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
-import com.hashtech.web.request.TagSaveRequest;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
-import java.util.List;
+import com.hashtech.web.request.CompanyUpdateRequest;
+import com.hashtech.web.result.CompanyListResult;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -22,9 +21,17 @@ public interface CompanyInfoService extends IService<CompanyInfoEntity> {
 
     Boolean saveDef(String userId, CompanySaveRequest request);
 
-    Boolean hasExistUscc(String uscc);
+    Boolean hasExistUscc(String uscc, String id);
 
     BusinessPageResult getList(CompanyListRequest request);
 
-    Boolean deleteCompany(String userId, String[] ids);
+    Boolean deleteCompanyDef(String userId, String[] ids);
+
+    Boolean updateDef(String userId, CompanyUpdateRequest request);
+
+    CompanyListResult detailById(String id);
+
+    Boolean uploadImport(String userId, MultipartFile file, String[] ids);
+
+    void updateTagNumById(Long count, String companyId);
 }
