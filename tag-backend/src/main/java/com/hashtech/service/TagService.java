@@ -3,10 +3,7 @@ package com.hashtech.service;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.entity.TagEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.hashtech.web.request.TagChangeStateRequest;
-import com.hashtech.web.request.TagListRequest;
-import com.hashtech.web.request.TagSaveRequest;
-import com.hashtech.web.request.TagUpdateRequest;
+import com.hashtech.web.request.*;
 
 import java.util.List;
 import java.util.Map;
@@ -44,4 +41,6 @@ public interface TagService extends IService<TagEntity> {
     void updateUsedTime();
 
     List<TagEntity> getByCompanyId(String id);
+
+    Object relate(CompanyListRequest request);
 }

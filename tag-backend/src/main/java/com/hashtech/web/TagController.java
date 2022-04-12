@@ -5,10 +5,7 @@ import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.entity.TagEntity;
 import com.hashtech.service.TagService;
-import com.hashtech.web.request.TagChangeStateRequest;
-import com.hashtech.web.request.TagListRequest;
-import com.hashtech.web.request.TagSaveRequest;
-import com.hashtech.web.request.TagUpdateRequest;
+import com.hashtech.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,6 +78,11 @@ public class TagController {
     @GetMapping("/detail")
     BusinessResult<TagEntity> detailById(@RequestParam("id") String id) {
         return BusinessResult.success(tagService.detailById(id));
+    }
+
+    @PostMapping("/relate")
+    BusinessResult<Object> relate(@RequestBody CompanyListRequest request) {
+        return BusinessResult.success(tagService.relate(request));
     }
 
 }

@@ -7,17 +7,18 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 //import com.hashtech.common.*;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
+import com.hashtech.entity.CompanyTagEntity;
 import com.hashtech.entity.TagEntity;
 //import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.TagMapper;
+import com.hashtech.service.CompanyInfoService;
+import com.hashtech.service.CompanyTagService;
 import com.hashtech.service.TagService;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.DateUtils;
 import com.hashtech.utils.RandomUtils;
-import com.hashtech.web.request.TagChangeStateRequest;
-import com.hashtech.web.request.TagListRequest;
-import com.hashtech.web.request.TagSaveRequest;
-import com.hashtech.web.request.TagUpdateRequest;
+import com.hashtech.web.request.*;
+import com.hashtech.web.request.result.TagRelateResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -39,6 +41,10 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
 
     @Autowired
     private TagMapper tagMapper;
+    @Autowired
+    private CompanyTagService companyTagService;
+    @Autowired
+    private CompanyInfoService companyInfoService;
 //    @Autowired
 //    private OauthApiService oauthApiService;
     @Override
@@ -182,6 +188,20 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     @Override
     public List<TagEntity> getByCompanyId(String id) {
         return tagMapper.getByCompanyId(id);
+    }
+
+    @Override
+    public TagRelateResult relate(CompanyListRequest request) {
+        TagRelateResult result = new TagRelateResult();
+        TagEntity tagEntity = findById(request.getTagId());
+        if (Objects.isNull(tagEntity)){
+            return result;
+        }
+        result.setTagEntity(tagEntity);
+        request.setTagNum("desc");
+        BusinessPageResult pageResult = companyInfoService.getList(request);
+        result.setBusinessPageResult(pageResult);
+        return result;
     }
 
     private Wrapper<TagEntity> queryWrapper(TagListRequest request) {

@@ -20,13 +20,19 @@ public class CompanyListRequest extends BusinessBasePageForm {
     //关联标签id
     private String tagId;
 
+    private String tagNum;
+
+    private String updateTime;
+
     public CompanyListRequest() {
     }
 
-    public CompanyListRequest(String uscc, String corpNm, String tagId) {
+    public CompanyListRequest(String uscc, String corpNm, String tagId, String tagNum, String updateTime) {
         this.uscc = uscc;
         this.corpNm = corpNm;
         this.tagId = tagId;
+        this.tagNum = tagNum;
+        this.updateTime = updateTime;
     }
 
     public String getUscc() {
@@ -51,6 +57,22 @@ public class CompanyListRequest extends BusinessBasePageForm {
 
     public void setTagId(String tagId) {
         this.tagId = tagId;
+    }
+
+    public String getTagNum() {
+        return tagNum;
+    }
+
+    public void setTagNum(String tagNum) {
+        this.tagNum = tagNum;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
     }
 }
 

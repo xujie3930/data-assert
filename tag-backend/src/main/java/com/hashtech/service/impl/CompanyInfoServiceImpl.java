@@ -141,6 +141,12 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         if (!CollectionUtils.isEmpty(companyIdList)){
             wrapper.in(CompanyInfoEntity.ID, companyIdList);
         }
+        if (StringUtils.isNotBlank(request.getUpdateTime()) && "desc".equals(request.getUpdateTime())){
+            wrapper.orderByDesc(CompanyInfoEntity.UPDATE_TIME);
+        }
+        if (StringUtils.isNotBlank(request.getTagNum()) && "desc".equals(request.getTagNum())){
+            wrapper.orderByDesc(CompanyInfoEntity.TAG_NUM);
+        }
         return wrapper;
     }
 

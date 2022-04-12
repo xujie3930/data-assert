@@ -11,15 +11,11 @@ import com.hashtech.easyexcel.listener.ExcelModelListener;
 import com.hashtech.service.CompanyInfoService;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
-import com.hashtech.web.request.TagListRequest;
-import com.hashtech.web.request.TagSaveRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -65,6 +61,7 @@ public class CompanyInfoController {
 
     @PostMapping("/list")
     BusinessResult<BusinessPageResult> getList(@RequestBody CompanyListRequest request) {
+        request.setUpdateTime("desc");
         return BusinessResult.success(companyInfoService.getList(request));
     }
 

@@ -28,6 +28,8 @@ public class CompanyInfoEntity implements Serializable {
     public static final String USCC = "uscc";
     public static final String CORP_NM = "corp_nm";
     public static final String ID = "id";
+    public static final String TAG_NUM = "tag_num";
+    public static final String UPDATE_TIME = "update_time";
 
     /**
      * 主键id
