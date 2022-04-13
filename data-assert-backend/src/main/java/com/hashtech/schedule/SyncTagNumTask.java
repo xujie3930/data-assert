@@ -28,7 +28,7 @@ public class SyncTagNumTask {
     @Autowired
     private TagService tagService;
 
-    @Scheduled(cron = "0 */10 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     public void syncTagNum() throws InterruptedException {
         System.out.println("开始执行更新任务");
         long startTime = System.currentTimeMillis();

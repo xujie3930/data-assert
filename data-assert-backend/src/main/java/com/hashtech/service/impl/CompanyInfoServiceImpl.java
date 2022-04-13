@@ -308,5 +308,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyTagEntity.setUpdateUserId(user.getUserId());
         companyTagEntity.setUpdateBy(user.getUsername());
         companyTagService.save(companyTagEntity);
+        TagEntity tagEntity = tagService.detailById(tagId);
+        tagEntity.setLastUsedTime(date);
+        tagService.updateById(tagEntity);
     }
 }
