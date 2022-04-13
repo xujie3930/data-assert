@@ -10,7 +10,6 @@
 
     <modules>
         <module>data-assert-backend</module>
-        <module>tag-backend</module>
         <module>backend-common</module>
     </modules>
 

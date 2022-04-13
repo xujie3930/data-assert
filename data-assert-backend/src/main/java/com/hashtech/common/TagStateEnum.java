@@ -6,24 +6,23 @@ import lombok.Getter;
  * @author xujie
  * @since 2022-04-08
  */
-@Getter
-public enum DelFalgStateEnum {
-    NOT_DELETE(0, "N"),
-    HAS_DELETE(1, "Y"),
+public enum TagStateEnum {
+    DISABLE(0, "停用"),
+    ENABLE(1, "启用"),
     ;
     private Integer code;
     private String desc;
 
-    DelFalgStateEnum() {
+    TagStateEnum() {
     }
 
-    DelFalgStateEnum(Integer code, String desc) {
+    TagStateEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
     }
 
-    public static DelFalgStateEnum find(Integer code) {
-        for (DelFalgStateEnum value : DelFalgStateEnum.values()) {
+    public static TagStateEnum find(Integer code) {
+        for (TagStateEnum value : TagStateEnum.values()) {
             if (value.code.equals(code)) {
                 return value;
             }

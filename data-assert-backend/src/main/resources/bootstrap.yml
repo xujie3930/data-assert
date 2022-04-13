@@ -3,7 +3,7 @@ spring:
     async:
       request-timeout: 10000
   profiles:
-    active: dev
+    active: local
   servlet:
     multipart:
       max-file-size: 30MB
