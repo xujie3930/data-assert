@@ -41,8 +41,8 @@ minio:
   accessKey: AKIAIOSFODNN7EXAMPLE
   secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
   bucketName: test
-#  servlet:
-#    context-path: /dataresource
+  servlet:
+    context-path: /dataresource
 system:
   errorCode: 500
 #mybatis-plus
