@@ -100,14 +100,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             CompanyListResult companyListResult = BeanCopyUtils.copyProperties(record, new CompanyListResult());
             List<TagEntity> tagListByCompanyId = tagService.getByCompanyId(record.getId());
             if (!CollectionUtils.isEmpty(tagListByCompanyId)) {
-                List<Map<String, String>> list = new LinkedList<>();
-                for (TagEntity tagEntity : tagListByCompanyId) {
-                    Map<String, String> map = new HashMap<>();
-                    map.put("tagId", tagEntity.getId());
-                    map.put("tagName", tagEntity.getName());
-                    list.add(map);
-                }
-                companyListResult.setTagMap(list);
+                List<String> tagIdList = tagListByCompanyId.stream().map(o -> o.getId()).collect(Collectors.toList());
+                companyListResult.setTagMap(tagIdList);
             }
             companyListResults.add(companyListResult);
         }
@@ -216,14 +210,10 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         BeanCopyUtils.copyProperties(companyInfo, result);
         List<TagEntity> tagListByCompanyId = tagService.getByCompanyId(id);
         if (!CollectionUtils.isEmpty(tagListByCompanyId)) {
-            List<Map<String, String>> list = new LinkedList<>();
-            for (TagEntity tagEntity : tagListByCompanyId) {
-                Map<String, String> map = new HashMap<>();
-                map.put("tagId", tagEntity.getId());
-                map.put("tagName", tagEntity.getName());
-                list.add(map);
+            if (!CollectionUtils.isEmpty(tagListByCompanyId)) {
+                List<String> tagIdList = tagListByCompanyId.stream().map(o -> o.getId()).collect(Collectors.toList());
+                result.setTagMap(tagIdList);
             }
-            result.setTagMap(list);
         }
         return result;
     }
