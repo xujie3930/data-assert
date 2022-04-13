@@ -230,10 +230,17 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean uploadImport(String userId, MultipartFile file, String[] ids) {
+    public Boolean uploadImport(String userId, MultipartFile file, String ids) {
+        List<String> tadIdList = new ArrayList<>();
+        if (StringUtils.isNotBlank(ids)){
+            //根据前端传值做匹配
+            ids = ids.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "");
+            String[] idsArr = ids.split(",");
+            tadIdList = Arrays.asList(idsArr);
+        }
         List<CompanyInfoImportContent> importList = ExcelUtils.readExcelFileData(file, 1, 1, CompanyInfoImportContent.class);
         for (CompanyInfoImportContent content : importList) {
-            saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), Arrays.asList(ids), content.getDescribe()));
+            saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), tadIdList, content.getDescribe()));
         }
         return true;
     }

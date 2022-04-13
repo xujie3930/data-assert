@@ -31,7 +31,7 @@ public interface CompanyInfoService extends IService<CompanyInfoEntity> {
 
     CompanyListResult detailById(String id);
 
-    Boolean uploadImport(String userId, MultipartFile file, String[] ids);
+    Boolean uploadImport(String userId, MultipartFile file, String ids);
 
     void updateTagNumById(Long count, String companyId);
 }

@@ -28,7 +28,7 @@ public class CompanyInfoController {
     private CompanyInfoService companyInfoService;
 
     @PostMapping(value = {"/uploadImport", "uploadFile"})
-    public BusinessResult<Boolean> uploadImport(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestPart("file") MultipartFile file, @RequestParam("ids") String[] ids) {
+    public BusinessResult<Boolean> uploadImport(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestPart("file") MultipartFile file, @RequestParam(value = "ids", required = false) String ids) {
         return BusinessResult.success(companyInfoService.uploadImport(userId, file, ids));
     }
 
