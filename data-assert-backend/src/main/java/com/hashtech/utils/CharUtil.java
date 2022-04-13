@@ -60,6 +60,14 @@ public class CharUtil {
         return m.find();
     }
 
+    //统一社会信用代码校验
+    public static boolean isUnifiedSocial(String str) {
+        String regEx = "[A-Z0-9]{18}";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(str);
+        return m.find();
+    }
+
     // 只能判断部分CJK字符（CJK统一汉字）
     public static boolean isChineseByREG(String str) {
         if (str == null) {

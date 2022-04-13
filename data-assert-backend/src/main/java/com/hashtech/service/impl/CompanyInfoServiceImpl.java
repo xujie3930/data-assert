@@ -16,6 +16,7 @@ import com.hashtech.mapper.CompanyInfoMapper;
 import com.hashtech.service.CompanyInfoService;
 import com.hashtech.service.CompanyTagService;
 import com.hashtech.service.TagService;
+import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.excel.ExcelUtils;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
@@ -59,7 +60,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     public Boolean saveDef(String userId, CompanySaveRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         if (hasExistUscc(request.getUscc(), null)) {
-            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000004.getCode());
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
         }
         Date date = new Date();
         CompanyInfoEntity companyInfoEntity = saveCompanyInfo(user, request, date);
@@ -158,6 +159,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             return true;
         }
         //更改企业
+        checkUnifiedSocial(request.getUscc());
         companyInfoEntity.setUscc(request.getUscc());
         companyInfoEntity.setCorpNm(request.getCorpNm());
         companyInfoEntity.setDescribe(request.getDescribe());
@@ -269,6 +271,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @NotNull
     private CompanyInfoEntity saveCompanyInfo(InternalUserInfoVO user, CompanySaveRequest request, Date date) {
+        checkUnifiedSocial(request.getUscc());
         CompanyInfoEntity companyInfoEntity = BeanCopyUtils.copyProperties(request, new CompanyInfoEntity());
         companyInfoEntity.setCreateTime(date);
         companyInfoEntity.setCreateUserId(user.getUserId());
@@ -279,6 +282,12 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyInfoEntity.setTagNum(request.getTagIds().size());
         save(companyInfoEntity);
         return companyInfoEntity;
+    }
+
+    private void checkUnifiedSocial(String uscc) {
+        if (!CharUtil.isUnifiedSocial(uscc)){
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000017.getCode());
+        }
     }
 
     private void saveCompanyTag(InternalUserInfoVO user, Date date, String companyInfoId, String tagId) {
