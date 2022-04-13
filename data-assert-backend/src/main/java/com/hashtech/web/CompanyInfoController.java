@@ -84,7 +84,7 @@ public class CompanyInfoController {
             byte[] bytes = ResourceUtil.readBytes(filePath);
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/pdf");
-            response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode("操作指南.pdf","utf-8")  );
+            response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode("企业模板.xlsx","utf-8")  );
             outputStream.write(bytes,0,bytes.length);
             outputStream.flush();
             System.out.println("下载成功");
