@@ -144,8 +144,15 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         //停用标签时，企业所打的标签也会删除该停用的标签
         List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getId());
         if (!CollectionUtils.isEmpty(companyTagList)){
-
+            Date date = new Date();
+            for (CompanyTagEntity companyTagEntity : companyTagList) {
+                companyTagEntity.setUpdateTime(date);
+                companyTagEntity.setUpdateUserId(userId);
+                companyTagEntity.setUpdateBy(user.getUsername());
+                companyTagEntity.setDelFlag(DelFalgStateEnum.HAS_DELETE.getCode());
+            }
         }
+        companyTagService.saveOrUpdateBatch(companyTagList);
         return true;
     }
 
