@@ -10,7 +10,6 @@
 
     <modules>
         <module>data-assert-backend</module>
-        <module>backend-common</module>
     </modules>
 
     <properties>
@@ -68,11 +67,6 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus-starter.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.hashtech</groupId>
-                <artifactId>backend-common</artifactId>
-                <version>1.4.0</version>
             </dependency>
 
         </dependencies>
