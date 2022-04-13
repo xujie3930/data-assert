@@ -62,7 +62,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000004.getCode());
         }
         Date date = new Date();
-        CompanyInfoEntity companyInfoEntity = saveCompanyInfo(userId, request, date);
+        CompanyInfoEntity companyInfoEntity = saveCompanyInfo(user, request, date);
         String companyInfoId = companyInfoEntity.getId();
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
             for (String tagId : request.getTagIds()) {
@@ -268,12 +268,14 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
 
     @NotNull
-    private CompanyInfoEntity saveCompanyInfo(String userId, CompanySaveRequest request, Date date) {
+    private CompanyInfoEntity saveCompanyInfo(InternalUserInfoVO user, CompanySaveRequest request, Date date) {
         CompanyInfoEntity companyInfoEntity = BeanCopyUtils.copyProperties(request, new CompanyInfoEntity());
         companyInfoEntity.setCreateTime(date);
-        companyInfoEntity.setCreateUserId(userId);
+        companyInfoEntity.setCreateUserId(user.getUserId());
+        companyInfoEntity.setCreateBy(user.getUsername());
         companyInfoEntity.setUpdateTime(date);
-        companyInfoEntity.setUpdateUserId(userId);
+        companyInfoEntity.setUpdateUserId(user.getUserId());
+        companyInfoEntity.setUpdateBy(user.getUsername());
         companyInfoEntity.setTagNum(request.getTagIds().size());
         save(companyInfoEntity);
         return companyInfoEntity;
