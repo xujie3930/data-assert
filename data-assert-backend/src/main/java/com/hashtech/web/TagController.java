@@ -32,6 +32,7 @@ public class TagController {
     public BusinessResult<String> getTagCode(@RequestParam(value = "len", defaultValue = "8") Integer len) {
         return BusinessResult.success(tagService.getTagCode(len));
     }
+
     @GetMapping("/hasExistCode")
     public BusinessResult<Boolean> hasExistCode(@RequestParam("code") String code) {
         return BusinessResult.success(tagService.hasExistCode(code));
@@ -59,6 +60,7 @@ public class TagController {
 
     /**
      * 获取所有启用状态的标签
+     *
      * @return
      */
     @GetMapping("/listWithoutPaging")

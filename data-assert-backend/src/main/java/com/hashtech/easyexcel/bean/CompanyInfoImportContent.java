@@ -17,6 +17,15 @@ public class CompanyInfoImportContent extends BaseRowModel {
     @ExcelProperty(index = 2, value = "企业描述")
     private String describe;
 
+    public CompanyInfoImportContent() {
+    }
+
+    public CompanyInfoImportContent(String uscc, String corpNm, String describe) {
+        this.uscc = uscc;
+        this.corpNm = corpNm;
+        this.describe = describe;
+    }
+
     public String getUscc() {
         return uscc;
     }
@@ -38,15 +47,6 @@ public class CompanyInfoImportContent extends BaseRowModel {
     }
 
     public void setDescribe(String describe) {
-        this.describe = describe;
-    }
-
-    public CompanyInfoImportContent() {
-    }
-
-    public CompanyInfoImportContent(String uscc, String corpNm, String describe) {
-        this.uscc = uscc;
-        this.corpNm = corpNm;
         this.describe = describe;
     }
 }

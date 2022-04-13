@@ -18,6 +18,20 @@ public class ApiParamSaveResult {
 
     private Integer isResponse;
 
+    public ApiParamSaveResult() {
+    }
+
+    public ApiParamSaveResult(String id, String fieldName, String tableName, String fieldType, Integer required, String desc, Integer isRequest, Integer isResponse) {
+        this.id = id;
+        this.fieldName = fieldName;
+        this.tableName = tableName;
+        this.fieldType = fieldType;
+        this.required = required;
+        this.desc = desc;
+        this.isRequest = isRequest;
+        this.isResponse = isResponse;
+    }
+
     public String getId() {
         return id;
     }
@@ -79,20 +93,6 @@ public class ApiParamSaveResult {
     }
 
     public void setIsResponse(Integer isResponse) {
-        this.isResponse = isResponse;
-    }
-
-    public ApiParamSaveResult() {
-    }
-
-    public ApiParamSaveResult(String id, String fieldName, String tableName, String fieldType, Integer required, String desc, Integer isRequest, Integer isResponse) {
-        this.id = id;
-        this.fieldName = fieldName;
-        this.tableName = tableName;
-        this.fieldType = fieldType;
-        this.required = required;
-        this.desc = desc;
-        this.isRequest = isRequest;
         this.isResponse = isResponse;
     }
 }

@@ -1,7 +1,5 @@
 package com.hashtech.common;
 
-import lombok.Getter;
-
 /**
  * @author xujie
  * @since 2022-04-08

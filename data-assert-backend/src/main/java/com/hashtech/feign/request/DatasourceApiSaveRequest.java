@@ -18,6 +18,24 @@ public class DatasourceApiSaveRequest {
     private DatasourceApiGenerateSaveRequest apiGenerateSaveRequest;
     private List<DatasourceApiParamSaveRequest> apiParamSaveRequestList;
 
+    public DatasourceApiSaveRequest() {
+    }
+
+    public DatasourceApiSaveRequest(String id, Integer saveType, Integer type, String name, String requestType, String responseType, String path, String apiGroupId, String desc, Integer apiVersion, DatasourceApiGenerateSaveRequest apiGenerateSaveRequest, List<DatasourceApiParamSaveRequest> apiParamSaveRequestList) {
+        this.id = id;
+        this.saveType = saveType;
+        this.type = type;
+        this.name = name;
+        this.requestType = requestType;
+        this.responseType = responseType;
+        this.path = path;
+        this.apiGroupId = apiGroupId;
+        this.desc = desc;
+        this.apiVersion = apiVersion;
+        this.apiGenerateSaveRequest = apiGenerateSaveRequest;
+        this.apiParamSaveRequestList = apiParamSaveRequestList;
+    }
+
     public String getId() {
         return id;
     }
@@ -111,24 +129,6 @@ public class DatasourceApiSaveRequest {
     }
 
     public void setApiParamSaveRequestList(List<DatasourceApiParamSaveRequest> apiParamSaveRequestList) {
-        this.apiParamSaveRequestList = apiParamSaveRequestList;
-    }
-
-    public DatasourceApiSaveRequest() {
-    }
-
-    public DatasourceApiSaveRequest(String id, Integer saveType, Integer type, String name, String requestType, String responseType, String path, String apiGroupId, String desc, Integer apiVersion, DatasourceApiGenerateSaveRequest apiGenerateSaveRequest, List<DatasourceApiParamSaveRequest> apiParamSaveRequestList) {
-        this.id = id;
-        this.saveType = saveType;
-        this.type = type;
-        this.name = name;
-        this.requestType = requestType;
-        this.responseType = responseType;
-        this.path = path;
-        this.apiGroupId = apiGroupId;
-        this.desc = desc;
-        this.apiVersion = apiVersion;
-        this.apiGenerateSaveRequest = apiGenerateSaveRequest;
         this.apiParamSaveRequestList = apiParamSaveRequestList;
     }
 }

@@ -1,10 +1,6 @@
 package com.hashtech.utils;
 
 
-import com.hashtech.common.AppException;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.apache.commons.lang.StringUtils;
-
 /**
  * @author xujie
  * @description 校验输入字符串合法性

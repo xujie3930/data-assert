@@ -1,10 +1,10 @@
 package com.hashtech.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.entity.MasterDataEntity;
 import com.hashtech.mapper.MasterDataMapper;
 import com.hashtech.service.MasterDataService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

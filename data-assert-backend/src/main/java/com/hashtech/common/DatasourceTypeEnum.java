@@ -17,6 +17,13 @@ public enum DatasourceTypeEnum {
     private final String desc;
     private final String driver;
 
+    DatasourceTypeEnum(Integer category, Integer type, String desc, String driver) {
+        this.category = category;
+        this.type = type;
+        this.desc = desc;
+        this.driver = driver;
+    }
+
     public static DatasourceTypeEnum findDatasourceTypeByType(Integer type) {
         DatasourceTypeEnum result = DatasourceTypeEnum.DEFAULT;
         if (Objects.nonNull(type)) {
@@ -44,12 +51,5 @@ public enum DatasourceTypeEnum {
 
     public String getDriver() {
         return driver;
-    }
-
-    DatasourceTypeEnum(Integer category, Integer type, String desc, String driver) {
-        this.category = category;
-        this.type = type;
-        this.desc = desc;
-        this.driver = driver;
     }
 }

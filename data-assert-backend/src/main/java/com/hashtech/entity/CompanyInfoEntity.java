@@ -20,14 +20,13 @@ import java.util.Date;
 @TableName("company_info")
 public class CompanyInfoEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     public static final String DEL_FLAG = "del_flag";
     public static final String USCC = "uscc";
     public static final String CORP_NM = "corp_nm";
     public static final String ID = "id";
     public static final String TAG_NUM = "tag_num";
     public static final String UPDATE_TIME = "update_time";
-
+    private static final long serialVersionUID = 1L;
     /**
      * 主键id
      */

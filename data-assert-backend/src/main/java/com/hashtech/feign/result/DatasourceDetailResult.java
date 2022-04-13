@@ -1,13 +1,9 @@
 package com.hashtech.feign.result;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * <p>
@@ -105,6 +101,29 @@ public class DatasourceDetailResult implements Serializable {
      * 备注
      */
     private String remark;
+
+    public DatasourceDetailResult() {
+    }
+
+    public DatasourceDetailResult(String id, String spaceId, Integer category, Integer type, String name, String uri, Integer status, String delFlag, Date lastSyncTime, Integer lastSyncStatus, String descriptor, Date createTime, String createBy, Date updateTime, String updateBy, Integer showPassword, String remark) {
+        this.id = id;
+        this.spaceId = spaceId;
+        this.category = category;
+        this.type = type;
+        this.name = name;
+        this.uri = uri;
+        this.status = status;
+        this.delFlag = delFlag;
+        this.lastSyncTime = lastSyncTime;
+        this.lastSyncStatus = lastSyncStatus;
+        this.descriptor = descriptor;
+        this.createTime = createTime;
+        this.createBy = createBy;
+        this.updateTime = updateTime;
+        this.updateBy = updateBy;
+        this.showPassword = showPassword;
+        this.remark = remark;
+    }
 
     public String getId() {
         return id;
@@ -239,29 +258,6 @@ public class DatasourceDetailResult implements Serializable {
     }
 
     public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public DatasourceDetailResult() {
-    }
-
-    public DatasourceDetailResult(String id, String spaceId, Integer category, Integer type, String name, String uri, Integer status, String delFlag, Date lastSyncTime, Integer lastSyncStatus, String descriptor, Date createTime, String createBy, Date updateTime, String updateBy, Integer showPassword, String remark) {
-        this.id = id;
-        this.spaceId = spaceId;
-        this.category = category;
-        this.type = type;
-        this.name = name;
-        this.uri = uri;
-        this.status = status;
-        this.delFlag = delFlag;
-        this.lastSyncTime = lastSyncTime;
-        this.lastSyncStatus = lastSyncStatus;
-        this.descriptor = descriptor;
-        this.createTime = createTime;
-        this.createBy = createBy;
-        this.updateTime = updateTime;
-        this.updateBy = updateBy;
-        this.showPassword = showPassword;
         this.remark = remark;
     }
 }

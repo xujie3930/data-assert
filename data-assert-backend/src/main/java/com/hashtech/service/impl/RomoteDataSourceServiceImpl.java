@@ -26,6 +26,7 @@ import java.util.Objects;
 public class RomoteDataSourceServiceImpl implements RomoteDataSourceService {
     @Autowired
     private DatasourceFeignClient datasourceFeignClient;
+
     @Override
     public BusinessResult<List<Map<String, Object>>> getDataSourcesList(DataSourcesListRequest request) {
         request.setStatus(StatusEnum.ENABLE.getCode());
@@ -39,11 +40,11 @@ public class RomoteDataSourceServiceImpl implements RomoteDataSourceService {
 
     @Override
     public DatasourceDetailResult getDatasourceDetail(String datasourceId) {
-        if (StringUtils.isBlank(datasourceId)){
+        if (StringUtils.isBlank(datasourceId)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000037.getCode());
         }
         BusinessResult<DatasourceDetailResult> datasourceResult = datasourceFeignClient.info(datasourceId);
-        if (!datasourceResult.isSuccess() || Objects.isNull(datasourceResult.getData())){
+        if (!datasourceResult.isSuccess() || Objects.isNull(datasourceResult.getData())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.getCode());
         }
         return datasourceResult.getData();

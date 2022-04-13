@@ -81,9 +81,9 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @Override
     public BusinessPageResult<CompanyListResult> getList(CompanyListRequest request) {
         List<String> companyIdList = new ArrayList<>();
-        if (null != request.getTagId()){
+        if (null != request.getTagId()) {
             List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
-            if (!CollectionUtils.isEmpty(companyTagList)){
+            if (!CollectionUtils.isEmpty(companyTagList)) {
                 companyIdList = companyTagList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
             }
         }
@@ -98,7 +98,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         for (CompanyInfoEntity record : records) {
             CompanyListResult companyListResult = BeanCopyUtils.copyProperties(record, new CompanyListResult());
             List<TagEntity> tagListByCompanyId = tagService.getByCompanyId(record.getId());
-            if (!CollectionUtils.isEmpty(tagListByCompanyId)){
+            if (!CollectionUtils.isEmpty(tagListByCompanyId)) {
                 List<Map<String, String>> list = new LinkedList<>();
                 for (TagEntity tagEntity : tagListByCompanyId) {
                     Map<String, String> map = new HashMap<>();
@@ -254,13 +254,13 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         if (!StringUtils.isBlank(request.getCorpNm())) {
             wrapper.like(CompanyInfoEntity.CORP_NM, request.getCorpNm());
         }
-        if (!CollectionUtils.isEmpty(companyIdList)){
+        if (!CollectionUtils.isEmpty(companyIdList)) {
             wrapper.in(CompanyInfoEntity.ID, companyIdList);
         }
-        if (StringUtils.isNotBlank(request.getUpdateTime()) && "desc".equals(request.getUpdateTime())){
+        if (StringUtils.isNotBlank(request.getUpdateTime()) && "desc".equals(request.getUpdateTime())) {
             wrapper.orderByDesc(CompanyInfoEntity.UPDATE_TIME);
         }
-        if (StringUtils.isNotBlank(request.getTagNum()) && "desc".equals(request.getTagNum())){
+        if (StringUtils.isNotBlank(request.getTagNum()) && "desc".equals(request.getTagNum())) {
             wrapper.orderByDesc(CompanyInfoEntity.TAG_NUM);
         }
         return wrapper;

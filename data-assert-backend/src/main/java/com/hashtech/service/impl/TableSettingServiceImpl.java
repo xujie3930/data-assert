@@ -60,6 +60,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private static final Logger LOGGER = LoggerFactory.getLogger(TableSettingServiceImpl.class);
     private static final int MAX_IMUM = 10000;
     private static final String INTERFACE_PATH = "/resource/table/getResourceData/";
+    private static final String DEFAULT_RESP_INFO = "*";
     @Resource
     private TableSettingMapper tableSettingMapper;
     @Resource
@@ -72,7 +73,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private RomoteDataSourceService romoteDataSourceService;
     @Value("${server.port}")
     private int serverPort;
-    private static final String DEFAULT_RESP_INFO = "*";
     @Resource
     private ResourceTableMapper resourceTableMapper;
     @Resource
@@ -96,9 +96,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
         List<Structure> structureList = tableSettingService.getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
         result.setStructureList(structureList);
-        if(StringUtils.isEmpty(tableSettingEntity.getRespInfo()) || DEFAULT_RESP_INFO.equals(tableSettingEntity.getRespInfo())){//所有字段
+        if (StringUtils.isEmpty(tableSettingEntity.getRespInfo()) || DEFAULT_RESP_INFO.equals(tableSettingEntity.getRespInfo())) {//所有字段
             result.setOutParamInfo(structureList);
-        }else{
+        } else {
             List<String> resps = Arrays.asList(tableSettingEntity.getRespInfo().split(","));
             List<Structure> respInfoList = structureList.stream()
                     .filter((Structure s) -> resps.contains(s.getFieldEnglishName()))
@@ -127,7 +127,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         List<String> reqParamList = Arrays.asList(reqParamStr.split(","));
         for (Structure structure : structureList) {
             for (String reqParam : reqParamList) {
-                if(reqParam.equals(structure.getFieldEnglishName())){
+                if (reqParam.equals(structure.getFieldEnglishName())) {
                     structure.setReqParam(StateEnum.YES.ordinal());
                     break;
                 }
@@ -140,7 +140,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         for (Structure structure : structureList) {
             structure.setResParam(StateEnum.NO.ordinal());
             for (String respParam : respParamList) {
-                if(respParam.equals(structure.getFieldEnglishName())) {
+                if (respParam.equals(structure.getFieldEnglishName())) {
                     structure.setResParam(StateEnum.YES.ordinal());
                     break;
                 }
@@ -173,7 +173,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //这里组装参数,调用数据服务
         DatasourceApiSaveRequest dataApiRequest = getDatasourceApiSaveRequest(request, resourceTableEntity, entity);
         BusinessResult<ApiSaveResult> result = dataApiFeignClient.createAndPublish(userId, dataApiRequest);
-        if (!result.isSuccess() || Objects.isNull(result.getData())){
+        if (!result.isSuccess() || Objects.isNull(result.getData())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000039.getCode());
         }
         //数据服务获取接口地址
@@ -209,12 +209,12 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             save.setFieldName(fieldName);
             save.setFieldType(structure.getType());
             //看请求参数
-            if (params.contains(fieldName)){
+            if (params.contains(fieldName)) {
                 save.setRequired(0);
                 save.setIsRequest(0);
             }
             save.setDesc(structure.getFieldChineseName());
-            if (resps.contains(fieldName)){
+            if (resps.contains(fieldName)) {
                 save.setIsResponse(0);
             }
             paramList.add(save);
@@ -248,7 +248,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         String uri = datasource.getUri();
         Integer type = datasource.getType();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, type);
-        if(conn == null){
+        if (conn == null) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
         }
         try {
@@ -272,7 +272,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             e.printStackTrace();
             LOGGER.error("表基本信息接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        }finally {
+        } finally {
             DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return baseInfo;
@@ -323,7 +323,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
-        if(conn == null){
+        if (conn == null) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
         }
         try {
@@ -375,11 +375,11 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         return getDataBySql(request, pagingData, pageNum, "");
     }
 
-    private BusinessPageResult<Object> getDataBySql(ResourceTablePreposeRequest request, String sql, int pageNum, String desensitizeFields){
+    private BusinessPageResult<Object> getDataBySql(ResourceTablePreposeRequest request, String sql, int pageNum, String desensitizeFields) {
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
-        if(conn == null){
+        if (conn == null) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
         }
         BusinessPageResult result = null;
@@ -402,7 +402,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 //这里按前端要求返回pageCount
                 result.setPageCount(getPageCountByMaxImum(dataSize, request.getPageSize()));
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("采样数据接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
@@ -419,7 +419,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
         TableSettingEntity tableSettingEntity = null;
         ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
-        if (!Objects.isNull(resourceTableEntity)){
+        if (!Objects.isNull(resourceTableEntity)) {
             tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
         }
         String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
@@ -439,23 +439,23 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         String fields = DEFAULT_RESP_INFO;
         if (!Objects.isNull(resourceTableEntity)) {
             TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
-            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())){
+            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getRespInfo())) {
                 fields = tableSettingEntity.getRespInfo();
             }
         }
         String[] fieldArr = null;
-        if(!DEFAULT_RESP_INFO.equals(fields)){
+        if (!DEFAULT_RESP_INFO.equals(fields)) {
             fieldArr = fields.split(",");
         }
         try {
             ResultSet rs = conn.getMetaData().getColumns(conn.getCatalog(), null, tableName, "%");
-            while(rs.next()) {
-                if(null == fieldArr && DEFAULT_RESP_INFO.equals(fields)) {
+            while (rs.next()) {
+                if (null == fieldArr && DEFAULT_RESP_INFO.equals(fields)) {
                     columnNameList.add(rs.getString(12));
                     fieldSb.append(rs.getString(4)).append(",");
-                }else{
+                } else {
                     for (String field : fieldArr) {
-                        if(rs.getString(4).equals(field)){
+                        if (rs.getString(4).equals(field)) {
                             columnNameList.add(rs.getString(12));
                             fieldSb.append(rs.getString(4)).append(",");
                         }

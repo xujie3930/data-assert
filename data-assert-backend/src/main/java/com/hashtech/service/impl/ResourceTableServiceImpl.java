@@ -135,11 +135,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = getById(request.getId());
             BusinessResult<String[]> serveResult = serveFeignClient.getOpenDirIds(entity.getResourceId());
-            if (!serveResult.isSuccess()){
+            if (!serveResult.isSuccess()) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
             }
             Set<String> openResourceIds = new HashSet<>(Arrays.asList(serveResult.getData()));
-            if (openResourceIds.contains(entity.getId())){
+            if (openResourceIds.contains(entity.getId())) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000040.getCode());
             }
             BeanCopyUtils.copyProperties(request, entity);
@@ -182,11 +182,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         //接口详情
         if (!StringUtils.isBlank(request.getId())) {
             ResourceTableEntity entity = getById(request.getId());
-            if (Objects.isNull(entity)){
+            if (Objects.isNull(entity)) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
             }
             //对接开放平台，如果删除了的话，那个data返回为空
-            if (DelFalgEnum.HAS_DELETE.getDesc().equals(entity.getDelFlag())){
+            if (DelFalgEnum.HAS_DELETE.getDesc().equals(entity.getDelFlag())) {
                 return BusinessResult.success(null);
             }
             preposeRequest.setDatasourceId(entity.getDatasourceId());
@@ -207,7 +207,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
             baseInfo.setType(datasource.getType());
             baseInfo.setDatabaseName(datasource.getName());
-            if (StatusEnum.DISABLE.getCode().equals(datasource.getStatus()) || DelFalgEnum.HAS_DELETE.getDesc().equals(datasource.getDelFlag())){
+            if (StatusEnum.DISABLE.getCode().equals(datasource.getStatus()) || DelFalgEnum.HAS_DELETE.getDesc().equals(datasource.getDelFlag())) {
                 baseInfo.setDatasourceId(null);
             }
             setMasterData(baseInfo, oldEntity);
@@ -221,7 +221,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         baseInfo.setMasterDataName(null);
         MasterDataEntity masterDataEntity = masterDataService.getById(oldEntity.getMasterDataId());
         if (Objects.nonNull(masterDataEntity)) {
-            if (MasterFlagEnum.YES.getCode().equals(oldEntity.getMasterDataFlag())){
+            if (MasterFlagEnum.YES.getCode().equals(oldEntity.getMasterDataFlag())) {
                 baseInfo.setMasterDataFlag(MasterFlagEnum.YES.getCode());
                 baseInfo.setMasterDataId(masterDataEntity.getId());
                 baseInfo.setMasterDataName(masterDataEntity.getName());
@@ -234,13 +234,13 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         List<Structure> structureList = tableSettingService.getStructureList(request);
         //若该资源表，存储了脱敏字段
         ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(request);
-        if (!Objects.isNull(resourceTableEntity)){
+        if (!Objects.isNull(resourceTableEntity)) {
             TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
-            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getDesensitizeFields())){
+            if (!Objects.isNull(tableSettingEntity) && StringUtils.isNotBlank(tableSettingEntity.getDesensitizeFields())) {
                 String[] arr = tableSettingEntity.getDesensitizeFields().split(",");
                 Set<String> set = new HashSet<>(Arrays.asList(arr));
                 for (Structure structure : structureList) {
-                    if (set.contains(structure.getFieldEnglishName())){
+                    if (set.contains(structure.getFieldEnglishName())) {
                         structure.setDesensitize(StateEnum.YES.ordinal());
                     }
                 }
@@ -265,7 +265,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         Set<String> resourceIds = new HashSet<>(Arrays.asList(ids));
         String resourceId = getById(ids[0]).getResourceId();
         BusinessResult<String[]> result = serveFeignClient.getOpenDirIds(resourceId);
-        if (!result.isSuccess()){
+        if (!result.isSuccess()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
         }
         Set<String> openResourceIds = new HashSet<>(Arrays.asList(result.getData()));
@@ -364,7 +364,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 //        }
 //        return BooleanUtils.isTrue(resourceTableMapper.hasExitExternalStateByResourceIds(resourceIds, StatusEnum.ENABLE.getCode()));
         BusinessResult<Map<String, List<String>>> result = serveFeignClient.getOpenTopicAndClassifyIds();
-        if (!result.isSuccess() || CollectionUtils.isEmpty(result.getData())){
+        if (!result.isSuccess() || CollectionUtils.isEmpty(result.getData())) {
             return true;
         }
         Map<String, List<String>> map = result.getData();
@@ -372,7 +372,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         List<String> openTopicIds = map.get("topicIds");
         //所有在开放平台开放的资源分类
         List<String> openResourceIds = map.get("classifyIds");
-        if (openTopicIds.contains(request.getThemeId()) || openResourceIds.contains(request.getResourceId())){
+        if (openTopicIds.contains(request.getThemeId()) || openResourceIds.contains(request.getResourceId())) {
             return false;
         }
         return true;
@@ -382,22 +382,22 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     public ResourceTableResult getByResourceTableId(String resourceTableId) {
         ResourceTableResult result = new ResourceTableResult();
         ResourceTableEntity resourceTable = resourceTableMapper.getByResourceTableId(resourceTableId);
-        if (Objects.isNull(resourceTable)){
+        if (Objects.isNull(resourceTable)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
         result.setTableName(resourceTable.getName());
         result.setDatasourceId(resourceTable.getDatasourceId());
         TableSettingEntity tableSetting = tableSettingMapper.getByResourceTableId(resourceTable.getId());
         result.setDesensitizeFields(tableSetting.getDesensitizeFields());
-        if (Objects.isNull(resourceTable)){
+        if (Objects.isNull(resourceTable)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
-        if (StringUtils.isNotBlank(tableSetting.getParamInfo())){
+        if (StringUtils.isNotBlank(tableSetting.getParamInfo())) {
             String[] split = tableSetting.getParamInfo().split(",");
-            List<String> paramList= Stream.of(split).collect(Collectors.toList());
+            List<String> paramList = Stream.of(split).collect(Collectors.toList());
             result.setParams(paramList);
         }
-        if (StringUtils.isNotBlank(tableSetting.getRespInfo())){
+        if (StringUtils.isNotBlank(tableSetting.getRespInfo())) {
             String[] respInfoArr = tableSetting.getRespInfo().split(",");
             List<String> respInfoList = Stream.of(respInfoArr).collect(Collectors.toList());
             result.setResps(respInfoList);
@@ -466,9 +466,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     //将object转换为list
-    private <T> List<T> castList(Object obj, Class<T> clazz){
+    private <T> List<T> castList(Object obj, Class<T> clazz) {
         List<T> resultList = new LinkedList<>();
-        if(obj instanceof Map<?, ?>){
+        if (obj instanceof Map<?, ?>) {
             for (Object o : ((Map) obj).keySet()) {
                 resultList.add(clazz.cast(((Map) obj).get(o)));
             }

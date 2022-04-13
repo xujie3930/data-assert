@@ -77,8 +77,6 @@ public interface DatasourceSync {
         return null;
     }
 
-    String getDatabaseName(String uri);
-
     static Connection getConn(Integer type, String uri, String username, String password) throws AppException {
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         Connection connection = null;
@@ -92,4 +90,6 @@ public interface DatasourceSync {
         }
         return connection;
     }
+
+    String getDatabaseName(String uri);
 }

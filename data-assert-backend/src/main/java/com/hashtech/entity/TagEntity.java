@@ -21,15 +21,13 @@ import java.util.Date;
 @TableName("tag")
 public class TagEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     public static final String DEL_FLAG = "del_flag";
     public static final String NAME = "name";
     public static final String UPDATE_BY = "update_by";
     public static final String STATE = "state";
     public static final String LAST_USED_TIME = "last_used_time";
     public static final String UPDATE_TIME = "update_time";
-
+    private static final long serialVersionUID = 1L;
     /**
      * 主键id
      */
@@ -106,6 +104,26 @@ public class TagEntity implements Serializable {
      */
     @TableLogic
     private Integer delFlag;
+
+    public TagEntity() {
+    }
+
+    public TagEntity(String id, String code, String name, String describe, Integer state, Integer usedTime, Date lastUsedTime, Date createTime, String createUserId, String createBy, Date updateTime, String updateUserId, String updateBy, Integer delFlag) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+        this.describe = describe;
+        this.state = state;
+        this.usedTime = usedTime;
+        this.lastUsedTime = lastUsedTime;
+        this.createTime = createTime;
+        this.createUserId = createUserId;
+        this.createBy = createBy;
+        this.updateTime = updateTime;
+        this.updateUserId = updateUserId;
+        this.updateBy = updateBy;
+        this.delFlag = delFlag;
+    }
 
     public String getId() {
         return id;
@@ -216,26 +234,6 @@ public class TagEntity implements Serializable {
     }
 
     public void setDelFlag(Integer delFlag) {
-        this.delFlag = delFlag;
-    }
-
-    public TagEntity() {
-    }
-
-    public TagEntity(String id, String code, String name, String describe, Integer state, Integer usedTime, Date lastUsedTime, Date createTime, String createUserId, String createBy, Date updateTime, String updateUserId, String updateBy, Integer delFlag) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-        this.describe = describe;
-        this.state = state;
-        this.usedTime = usedTime;
-        this.lastUsedTime = lastUsedTime;
-        this.createTime = createTime;
-        this.createUserId = createUserId;
-        this.createBy = createBy;
-        this.updateTime = updateTime;
-        this.updateUserId = updateUserId;
-        this.updateBy = updateBy;
         this.delFlag = delFlag;
     }
 }

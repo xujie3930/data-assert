@@ -47,6 +47,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     private CompanyInfoService companyInfoService;
     @Autowired
     private OauthApiService oauthApiService;
+
     @Override
     public Boolean hasExistCode(String code) {
         boolean hasExistCode = BooleanUtils.isTrue(tagMapper.hasExistCode(code));
@@ -66,10 +67,10 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         checkLegalName(request.getName());
         Date date = new Date();
-        if (hasExistCode(request.getCode())){
+        if (hasExistCode(request.getCode())) {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000003.getCode());
         }
-        if (hasExistName(request.getName(), null)){
+        if (hasExistName(request.getName(), null)) {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000004.getCode());
         }
         TagEntity tagEntity = BeanCopyUtils.copyProperties(request, new TagEntity());
@@ -88,7 +89,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     @Override
     public String getTagCode(Integer len) {
         String code = RandomUtils.getRandomWithNumber(len);
-        while (hasExistCode(code)){
+        while (hasExistCode(code)) {
             code = RandomUtils.getRandomWithNumber(len);
         }
         return code;
@@ -102,10 +103,10 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         checkLegalName(request.getName());
         Date date = new Date();
         TagEntity tagEntity = findById(request.getId());
-        if (Objects.isNull(tagEntity)){
+        if (Objects.isNull(tagEntity)) {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000007.getCode());
         }
-        if (hasExistName(request.getName(), request.getId())){
+        if (hasExistName(request.getName(), request.getId())) {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000004.getCode());
         }
         tagEntity.setName(request.getName());
@@ -133,7 +134,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     public Boolean enOrDisable(String userId, TagChangeStateRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         TagEntity entity = findById(request.getId());
-        if (Objects.isNull(entity)){
+        if (Objects.isNull(entity)) {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000007.getCode());
         }
         entity.setState(request.getState());
@@ -143,7 +144,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         saveOrUpdate(entity);
         //停用标签时，企业所打的标签也会删除该停用的标签
         List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getId());
-        if (!CollectionUtils.isEmpty(companyTagList)){
+        if (!CollectionUtils.isEmpty(companyTagList)) {
             Date date = new Date();
             for (CompanyTagEntity companyTagEntity : companyTagList) {
                 companyTagEntity.setUpdateTime(date);
@@ -186,7 +187,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         List<TagEntity> list = new ArrayList<>();
         for (String id : ids) {
             TagEntity entity = findById(id);
-            if (Objects.isNull(entity)){
+            if (Objects.isNull(entity)) {
                 continue;
             }
             entity.setUpdateTime(new Date());
@@ -242,24 +243,24 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         if (StringUtils.isNotBlank(request.getUpdateBy())) {
             wrapper.like(TagEntity.UPDATE_BY, request.getUpdateBy());
         }
-        if (null != request.getState()){
+        if (null != request.getState()) {
             wrapper.eq(TagEntity.STATE, request.getState());
         }
-        if (StringUtils.isNotBlank(request.getLastUsedTimeBegin()) && StringUtils.isNotBlank(request.getLastUsedTimeEnd())){
+        if (StringUtils.isNotBlank(request.getLastUsedTimeBegin()) && StringUtils.isNotBlank(request.getLastUsedTimeEnd())) {
             Date startTime = DateUtils.parseDate(request.getLastUsedTimeBegin() + " 00:00:00");
             Date endTime = DateUtils.parseDate(request.getLastUsedTimeEnd() + " 23:59:59");
             wrapper.ge(TagEntity.LAST_USED_TIME, startTime).le(TagEntity.LAST_USED_TIME, endTime);
         }
-        if ("updateTime".equals(request.getSortField()) && "asc".equals(request.getSort())){
+        if ("updateTime".equals(request.getSortField()) && "asc".equals(request.getSort())) {
             wrapper.orderByAsc(TagEntity.UPDATE_TIME);
         }
-        if ("updateTime".equals(request.getSortField()) && "desc".equals(request.getSort())){
+        if ("updateTime".equals(request.getSortField()) && "desc".equals(request.getSort())) {
             wrapper.orderByDesc(TagEntity.UPDATE_TIME);
         }
-        if ("lastUsedTime".equals(request.getSortField()) && "asc".equals(request.getSort())){
+        if ("lastUsedTime".equals(request.getSortField()) && "asc".equals(request.getSort())) {
             wrapper.orderByAsc(TagEntity.LAST_USED_TIME);
         }
-        if ("lastUsedTime".equals(request.getSortField()) && "desc".equals(request.getSort())){
+        if ("lastUsedTime".equals(request.getSortField()) && "desc".equals(request.getSort())) {
             wrapper.orderByDesc(TagEntity.LAST_USED_TIME);
         }
         return wrapper;

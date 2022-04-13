@@ -8,6 +8,17 @@ public class DatasourceApiGenerateSaveRequest {
     private String sql;
     private String tableName;
 
+    public DatasourceApiGenerateSaveRequest() {
+    }
+
+    public DatasourceApiGenerateSaveRequest(String id, Integer model, String datasourceId, String sql, String tableName) {
+        this.id = id;
+        this.model = model;
+        this.datasourceId = datasourceId;
+        this.sql = sql;
+        this.tableName = tableName;
+    }
+
     public String getId() {
         return id;
     }
@@ -45,17 +56,6 @@ public class DatasourceApiGenerateSaveRequest {
     }
 
     public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public DatasourceApiGenerateSaveRequest() {
-    }
-
-    public DatasourceApiGenerateSaveRequest(String id, Integer model, String datasourceId, String sql, String tableName) {
-        this.id = id;
-        this.model = model;
-        this.datasourceId = datasourceId;
-        this.sql = sql;
         this.tableName = tableName;
     }
 }

@@ -22,23 +22,23 @@ import java.util.List;
  **/
 public class ExcelModelListener extends AnalysisEventListener<CompanyInfoImportContent> {
 
-    //    @Resource
-//    private CompanyInfoService companyInfoService;
-    @Resource
-    private ApplicationContext applicationContext;
-    CompanyInfoService companyInfoService;
-    @PostConstruct
-    public CompanyInfoService init(){
-        companyInfoService = applicationContext.getBean(CompanyInfoService.class);
-        return companyInfoService;
-    }
-//    private CompanyInfoService companyInfoService = applicationContext.getBean(CompanyInfoService.class);
-
     /**
      * 每隔5条存储数据库，实际使用中能够3000条，而后清理list ，方便内存回收
      */
     private static final int BATCH_COUNT = 5;
+    CompanyInfoService companyInfoService;
     List<CompanyInfoImportContent> list = new ArrayList<>();
+//    private CompanyInfoService companyInfoService = applicationContext.getBean(CompanyInfoService.class);
+    //    @Resource
+//    private CompanyInfoService companyInfoService;
+    @Resource
+    private ApplicationContext applicationContext;
+
+    @PostConstruct
+    public CompanyInfoService init() {
+        companyInfoService = applicationContext.getBean(CompanyInfoService.class);
+        return companyInfoService;
+    }
 
     @Override
     public void invoke(CompanyInfoImportContent data, AnalysisContext context) {
@@ -53,8 +53,8 @@ public class ExcelModelListener extends AnalysisEventListener<CompanyInfoImportC
 
     private void saveToCompanyInfoTable(List<CompanyInfoImportContent> list) {
 
-        WebApplicationContext context= ContextLoader.getCurrentWebApplicationContext();
-        CompanyInfoService companyInfoService = (CompanyInfoService)context.getBean("CompanyInfoService");
+        WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+        CompanyInfoService companyInfoService = (CompanyInfoService) context.getBean("CompanyInfoService");
         List<CompanyInfoEntity> companyInfoEntityList = BeanCopyUtils.copy(list, CompanyInfoEntity.class);
         companyInfoService.saveBatch(companyInfoEntityList);
     }

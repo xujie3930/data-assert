@@ -12,6 +12,17 @@ public class ApiGenerateSaveResult {
 
     private String tableName;
 
+    public ApiGenerateSaveResult() {
+    }
+
+    public ApiGenerateSaveResult(String id, Integer model, String sql, String datasourceId, String tableName) {
+        this.id = id;
+        this.model = model;
+        this.sql = sql;
+        this.datasourceId = datasourceId;
+        this.tableName = tableName;
+    }
+
     public String getId() {
         return id;
     }
@@ -49,17 +60,6 @@ public class ApiGenerateSaveResult {
     }
 
     public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public ApiGenerateSaveResult() {
-    }
-
-    public ApiGenerateSaveResult(String id, Integer model, String sql, String datasourceId, String tableName) {
-        this.id = id;
-        this.model = model;
-        this.sql = sql;
-        this.datasourceId = datasourceId;
         this.tableName = tableName;
     }
 }

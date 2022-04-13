@@ -35,7 +35,9 @@
             resultType="com.hashtech.entity.TagEntity">
         select *
         from tag
-        where id = #{id} AND del_flag = 0 limit 1
+        where id = #{id}
+          AND del_flag = 0
+        limit 1
     </select>
 
     <select id="selectCountByStateAndIds"
@@ -60,7 +62,9 @@
             resultType="com.hashtech.entity.TagEntity">
         select *
         from tag
-        where del_flag = 0 and state = 1 order by used_time desc
+        where del_flag = 0
+          and state = 1
+        order by used_time desc
     </select>
 
     <update id="increaseUsedTime">
@@ -78,8 +82,12 @@
     <select id="getByCompanyId"
             resultType="com.hashtech.entity.TagEntity">
         select t.*
-        from tag t, company_tag c
-        where t.id = c.tag_id and c.company_info_id = #{companyId} and t.del_flag = 0 order by t.used_time desc
+        from tag t,
+             company_tag c
+        where t.id = c.tag_id
+          and c.company_info_id = #{companyId}
+          and t.del_flag = 0
+        order by t.used_time desc
     </select>
 
     <update id="updateUsedTimeById">

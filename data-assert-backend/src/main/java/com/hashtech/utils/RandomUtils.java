@@ -35,8 +35,8 @@ public class RandomUtils {
         for (int i = 0; i < length; i++) {
 
             int number = random.nextInt(str.length());
-            if (i == 0){
-                while (number == 0){
+            if (i == 0) {
+                while (number == 0) {
                     number = random.nextInt(str.length());
                 }
             }
