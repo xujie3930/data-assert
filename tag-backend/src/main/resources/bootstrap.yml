@@ -9,7 +9,7 @@ spring:
       max-file-size: 30MB
       max-request-size: 50MB
   application:
-    name: companyTag
+    name: company-tag
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
   http:
@@ -41,8 +41,7 @@ minio:
   accessKey: AKIAIOSFODNN7EXAMPLE
   secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
   bucketName: test
-#  servlet:
-#    context-path: /dataresource
+
 system:
   errorCode: 500
 #mybatis-plus
