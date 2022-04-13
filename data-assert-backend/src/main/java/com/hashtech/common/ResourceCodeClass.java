@@ -34,6 +34,7 @@ public class ResourceCodeClass {
         RESOURCE_CODE_70000015("70000015", "企业描述在200字以内！"),
         RESOURCE_CODE_70000016("70000016", "该统一社会信用代码已存在！"),
         RESOURCE_CODE_70000017("70000017", "统一社会信用代码只支持18位阿拉伯数字或大写英文字母！"),
+        RESOURCE_CODE_70000018("70000018", "模板下载失败！"),
         ;
 
         public final String code;

@@ -1,16 +1,27 @@
 package com.hashtech.web;
 
 
+import cn.hutool.core.io.resource.ResourceUtil;
+import com.hashtech.common.AppException;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
+import com.hashtech.common.ResourceCodeClass;
 import com.hashtech.service.CompanyInfoService;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
 import com.hashtech.web.request.CompanyUpdateRequest;
 import com.hashtech.web.result.CompanyListResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import org.springframework.core.io.ResourceLoader;
 
 /**
  * <p>
@@ -26,6 +37,10 @@ public class CompanyInfoController {
 
     @Autowired
     private CompanyInfoService companyInfoService;
+    @Value("${template.path}")
+    private String filePath;
+    @Autowired
+    ResourceLoader resourceLoader;
 
     @PostMapping(value = {"/uploadImport", "uploadFile"})
     public BusinessResult<Boolean> uploadImport(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestPart("file") MultipartFile file, @RequestParam(value = "ids", required = false) String ids) {
@@ -61,6 +76,22 @@ public class CompanyInfoController {
     @GetMapping("/detail")
     BusinessResult<CompanyListResult> detailById(@RequestParam("id") String id) {
         return BusinessResult.success(companyInfoService.detailById(id));
+    }
+
+    @GetMapping("/template/download")
+    public void downloadGuide(HttpServletResponse response){
+        try(ServletOutputStream outputStream = response.getOutputStream()){
+            byte[] bytes = ResourceUtil.readBytes(filePath);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode("操作指南.pdf","utf-8")  );
+            outputStream.write(bytes,0,bytes.length);
+            outputStream.flush();
+            System.out.println("下载成功");
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000018.getCode());
+        }
     }
 }
 

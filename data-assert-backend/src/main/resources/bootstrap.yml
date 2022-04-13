@@ -72,3 +72,6 @@ sequence:
   type: snowflake
   generate: random
 ###sequence 服务 ###
+
+template:
+  path: template/company.xlsx
