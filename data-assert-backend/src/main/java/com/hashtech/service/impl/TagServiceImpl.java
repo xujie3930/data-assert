@@ -6,10 +6,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
+import com.hashtech.entity.CompanyTagEntity;
 import com.hashtech.entity.TagEntity;
+import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.TagMapper;
 import com.hashtech.service.CompanyInfoService;
 import com.hashtech.service.CompanyTagService;
+import com.hashtech.service.OauthApiService;
 import com.hashtech.service.TagService;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.DateUtils;
@@ -21,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -41,8 +45,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     private CompanyTagService companyTagService;
     @Autowired
     private CompanyInfoService companyInfoService;
-//    @Autowired
-//    private OauthApiService oauthApiService;
+    @Autowired
+    private OauthApiService oauthApiService;
     @Override
     public Boolean hasExistCode(String code) {
         boolean hasExistCode = BooleanUtils.isTrue(tagMapper.hasExistCode(code));
@@ -59,6 +63,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public Boolean saveDef(String userId, TagSaveRequest request) {
+        InternalUserInfoVO user = oauthApiService.getUserById(userId);
         checkLegalName(request.getName());
         Date date = new Date();
         if (hasExistCode(request.getCode())){
@@ -69,7 +74,9 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         }
         TagEntity tagEntity = BeanCopyUtils.copyProperties(request, new TagEntity());
         tagEntity.setCreateUserId(userId);
+        tagEntity.setCreateBy(user.getUsername());
         tagEntity.setUpdateUserId(userId);
+        tagEntity.setUpdateBy(user.getUsername());
         tagEntity.setCreateTime(date);
         tagEntity.setUpdateTime(date);
         //TODO:后续统计企业的标签数量，有必要时候改为redis的sortsSets
@@ -91,6 +98,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     @BusinessParamsValidate(argsIndexs = {1})
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateDef(String userId, TagUpdateRequest request) {
+        InternalUserInfoVO user = oauthApiService.getUserById(userId);
         checkLegalName(request.getName());
         Date date = new Date();
         TagEntity tagEntity = findById(request.getId());
@@ -105,6 +113,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         tagEntity.setState(request.getState());
         tagEntity.setUpdateUserId(userId);
         tagEntity.setUpdateTime(date);
+        tagEntity.setUpdateBy(user.getUsername());
         saveOrUpdate(tagEntity);
         return true;
     }
@@ -122,37 +131,43 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean enOrDisable(String userId, TagChangeStateRequest request) {
+        InternalUserInfoVO user = oauthApiService.getUserById(userId);
         TagEntity entity = findById(request.getId());
         if (Objects.isNull(entity)){
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000007.getCode());
         }
-        //TODO:停用标签时，企业所打的标签也会删除该停用的标签
         entity.setState(request.getState());
         entity.setUpdateUserId(userId);
         entity.setUpdateTime(new Date());
+        entity.setUpdateBy(user.getUsername());
         saveOrUpdate(entity);
+        //停用标签时，企业所打的标签也会删除该停用的标签
+        List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getId());
+        if (!CollectionUtils.isEmpty(companyTagList)){
+
+        }
         return true;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteDef(String userId, String[] ids) {
-//        InternalUserInfoVO user = oauthApiService.getUserById(userId);
+        InternalUserInfoVO user = oauthApiService.getUserById(userId);
         if (ids.length <= 0) {
             return true;
         }
         //删除标签
-        deleteTag(userId, ids);
+        deleteTag(user, ids);
         //删除标签企业
-        deleteCompanyTagByTagIds(userId, Arrays.asList(ids));
+        deleteCompanyTagByTagIds(user, Arrays.asList(ids));
         return true;
     }
 
-    private void deleteCompanyTagByTagIds(String userId, List<String> ids) {
-        companyTagService.deleteCompanyTagByTagIds(userId, ids);
+    private void deleteCompanyTagByTagIds(InternalUserInfoVO user, List<String> ids) {
+        companyTagService.deleteCompanyTagByTagIds(user.getUserId(), ids);
     }
 
-    private void deleteTag(String userId, String[] ids) {
+    private void deleteTag(InternalUserInfoVO user, String[] ids) {
         Long delCount = tagMapper.selectCountByStateAndIds(TagStateEnum.ENABLE.getCode(), ids);
         if (delCount > 0) {
             if (ids.length == 1) {
@@ -168,8 +183,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
                 continue;
             }
             entity.setUpdateTime(new Date());
-            entity.setUpdateUserId(userId);
-//            entity.setUpdateBy(user.getUsername());
+            entity.setUpdateUserId(user.getUserId());
+            entity.setUpdateBy(user.getUsername());
             list.add(entity);
         }
         saveOrUpdateBatch(list);
