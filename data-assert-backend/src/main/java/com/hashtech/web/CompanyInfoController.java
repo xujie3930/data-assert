@@ -13,15 +13,13 @@ import com.hashtech.web.request.CompanyUpdateRequest;
 import com.hashtech.web.result.CompanyListResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
 import java.net.URLEncoder;
-import org.springframework.core.io.ResourceLoader;
 
 /**
  * <p>
@@ -83,11 +81,10 @@ public class CompanyInfoController {
         try(ServletOutputStream outputStream = response.getOutputStream()){
             byte[] bytes = ResourceUtil.readBytes(filePath);
             response.setCharacterEncoding("utf-8");
-            response.setContentType("application/xlsx");
+            response.setContentType("application/vnd.ms-excel");
             response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode("企业模板.xlsx","utf-8")  );
             outputStream.write(bytes,0,bytes.length);
             outputStream.flush();
-            System.out.println("下载成功");
         }catch (Exception e){
             e.printStackTrace();
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000018.getCode());
