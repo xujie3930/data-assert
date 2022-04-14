@@ -8,10 +8,10 @@ import java.util.Map;
 
 /**
  * @author xujie
- * @description 企业列表返回
+ * @description 企业详情返回
  * @create 2022-04-11 15:56
  **/
-public class CompanyListResult {
+public class CompanyDetailResult {
 
     private String id;
 
@@ -26,7 +26,7 @@ public class CompanyListResult {
     private String corpNm;
 
     //关联标签
-    private List<Map<String, String>> tagMap;
+    private List<String> tagMap;
 
     //关联标签数量
     private Integer tagNum;
@@ -39,10 +39,10 @@ public class CompanyListResult {
 
     private String describe;
 
-    public CompanyListResult() {
+    public CompanyDetailResult() {
     }
 
-    public CompanyListResult(String id, String uscc, String corpNm, List<Map<String, String>> tagMap, Integer tagNum, Date updateTime, String updateBy, String describe) {
+    public CompanyDetailResult(String id, String uscc, String corpNm, List<String> tagMap, Integer tagNum, Date updateTime, String updateBy, String describe) {
         this.id = id;
         this.uscc = uscc;
         this.corpNm = corpNm;
@@ -77,11 +77,11 @@ public class CompanyListResult {
         this.corpNm = corpNm;
     }
 
-    public List<Map<String, String>> getTagMap() {
+    public List<String> getTagMap() {
         return tagMap;
     }
 
-    public void setTagMap(List<Map<String, String>> tagMap) {
+    public void setTagMap(List<String> tagMap) {
         this.tagMap = tagMap;
     }
 

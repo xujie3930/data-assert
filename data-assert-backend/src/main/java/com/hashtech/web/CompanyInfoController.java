@@ -10,6 +10,7 @@ import com.hashtech.service.CompanyInfoService;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
 import com.hashtech.web.request.CompanyUpdateRequest;
+import com.hashtech.web.result.CompanyDetailResult;
 import com.hashtech.web.result.CompanyListResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +73,7 @@ public class CompanyInfoController {
     }
 
     @GetMapping("/detail")
-    BusinessResult<CompanyListResult> detailById(@RequestParam("id") String id) {
+    BusinessResult<CompanyDetailResult> detailById(@RequestParam("id") String id) {
         return BusinessResult.success(companyInfoService.detailById(id));
     }
 
@@ -81,7 +82,7 @@ public class CompanyInfoController {
         try(ServletOutputStream outputStream = response.getOutputStream()){
             byte[] bytes = ResourceUtil.readBytes(filePath);
             response.setCharacterEncoding("utf-8");
-            response.setContentType("application/vnd.ms-excel");
+            response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode("企业模板.xlsx","utf-8")  );
             outputStream.write(bytes,0,bytes.length);
             outputStream.flush();

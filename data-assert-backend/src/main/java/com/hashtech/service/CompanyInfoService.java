@@ -6,6 +6,7 @@ import com.hashtech.entity.CompanyInfoEntity;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
 import com.hashtech.web.request.CompanyUpdateRequest;
+import com.hashtech.web.result.CompanyDetailResult;
 import com.hashtech.web.result.CompanyListResult;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +30,7 @@ public interface CompanyInfoService extends IService<CompanyInfoEntity> {
 
     Boolean updateDef(String userId, CompanyUpdateRequest request);
 
-    CompanyListResult detailById(String id);
+    CompanyDetailResult detailById(String id);
 
     Boolean uploadImport(String userId, MultipartFile file, String ids);
 
