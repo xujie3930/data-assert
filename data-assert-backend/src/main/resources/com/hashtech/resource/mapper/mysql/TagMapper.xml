@@ -87,6 +87,7 @@
         where t.id = c.tag_id
           and c.company_info_id = #{companyId}
           and t.del_flag = 0
+          and c.del_flag = 0
         order by t.used_time desc
     </select>
 

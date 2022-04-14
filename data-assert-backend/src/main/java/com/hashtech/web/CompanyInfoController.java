@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
@@ -78,15 +79,28 @@ public class CompanyInfoController {
     }
 
     @GetMapping("/template/download")
-    public void downloadGuide(HttpServletResponse response){
-        try(ServletOutputStream outputStream = response.getOutputStream()){
+    public void downloadGuide(HttpServletResponse response) {
+//        try(ServletOutputStream outputStream = response.getOutputStream()){
+//            byte[] bytes = ResourceUtil.readBytes(filePath);
+//            response.setCharacterEncoding("utf-8");
+//            response.setContentType("application/octet-stream");
+//            response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode("企业模板.xlsx","utf-8")  );
+//            outputStream.write(bytes,0,bytes.length);
+//            outputStream.flush();
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000018.getCode());
+//        }
+
+        try (ServletOutputStream outputStream = response.getOutputStream()) {
             byte[] bytes = ResourceUtil.readBytes(filePath);
-            response.setCharacterEncoding("utf-8");
+            response.setHeader("content-type", "application/octet-stream");
             response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode("企业模板.xlsx","utf-8")  );
-            outputStream.write(bytes,0,bytes.length);
+            response.setCharacterEncoding("utf-8");
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("企业模板.xlsx", "UTF-8") + ".xlsx");
+            outputStream.write(bytes, 0, bytes.length);
             outputStream.flush();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000018.getCode());
         }
