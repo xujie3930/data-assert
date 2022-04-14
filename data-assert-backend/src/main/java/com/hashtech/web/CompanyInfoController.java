@@ -39,13 +39,6 @@ public class CompanyInfoController {
     private CompanyInfoService companyInfoService;
     @Value("${template.path}")
     private String filePath;
-    @Autowired
-    ResourceLoader resourceLoader;
-
-    @PostMapping(value = {"/uploadImport", "uploadFile"})
-    public BusinessResult<Boolean> uploadImport(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestPart("file") MultipartFile file, @RequestParam(value = "ids", required = false) String ids) {
-        return BusinessResult.success(companyInfoService.uploadImport(userId, file, ids));
-    }
 
     @GetMapping("/hasExistUscc")
     public BusinessResult<Boolean> hasExistUscc(@RequestParam("uscc") String uscc) {

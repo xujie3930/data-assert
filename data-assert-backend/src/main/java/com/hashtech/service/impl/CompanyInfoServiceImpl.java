@@ -26,6 +26,7 @@ import com.hashtech.web.result.CompanyListResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -235,22 +236,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         return result;
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Boolean uploadImport(String userId, MultipartFile file, String ids) {
-        List<String> tadIdList = new ArrayList<>();
-        if (StringUtils.isNotBlank(ids)){
-            //根据前端传值做匹配
-            ids = ids.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "");
-            String[] idsArr = ids.split(",");
-            tadIdList = Arrays.asList(idsArr);
-        }
-        List<CompanyInfoImportContent> importList = ExcelUtils.readExcelFileData(file, 1, 1, CompanyInfoImportContent.class);
-        for (CompanyInfoImportContent content : importList) {
-            saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), tadIdList, content.getDescribe()));
-        }
-        return true;
-    }
 
     @Override
     public void updateTagNumById(Long count, String companyId) {
