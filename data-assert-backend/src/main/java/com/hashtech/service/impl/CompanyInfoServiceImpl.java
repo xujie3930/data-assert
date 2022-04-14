@@ -83,7 +83,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @Override
     public BusinessPageResult<CompanyListResult> getList(CompanyListRequest request) {
         List<String> companyIdList = new ArrayList<>();
-        if (null != request.getTagId()) {
+        if (StringUtils.isNotBlank(request.getTagId())) {
             List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
             if (!CollectionUtils.isEmpty(companyTagList)) {
                 companyIdList = companyTagList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
