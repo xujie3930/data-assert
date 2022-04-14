@@ -53,7 +53,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     private CompanyInfoMapper companyInfoMapper;
     @Autowired
     private OauthApiServiceImpl oauthApiService;
-    private static final String NULL_COMPANY_ID = "0";
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
@@ -82,7 +81,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @Override
     public BusinessPageResult<CompanyListResult> getList(CompanyListRequest request) {
-        List<String> companyIdList = Arrays.asList(NULL_COMPANY_ID);
+        List<String> companyIdList = new ArrayList<>();
         if (null != request.getTagId()) {
             List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
             if (!CollectionUtils.isEmpty(companyTagList)) {
@@ -239,6 +238,15 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @Override
     public void updateTagNumById(Long count, String companyId) {
         companyInfoMapper.updateTagNumById(count, companyId);
+    }
+
+    @Override
+    public BusinessPageResult getRelateList(CompanyListRequest request) {
+        List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
+        if (CollectionUtils.isEmpty(companyTagList)) {
+            return BusinessPageResult.build(Collections.emptyList(), request, 0);
+        }
+        return getList(request);
     }
 
     private void deleteCompanyTagByCompanyId(InternalUserInfoVO user, List<String> companyIds) {

@@ -34,4 +34,6 @@ public interface CompanyInfoService extends IService<CompanyInfoEntity> {
     Boolean uploadImport(String userId, MultipartFile file, String ids);
 
     void updateTagNumById(Long count, String companyId);
+
+    BusinessPageResult getRelateList(CompanyListRequest request);
 }

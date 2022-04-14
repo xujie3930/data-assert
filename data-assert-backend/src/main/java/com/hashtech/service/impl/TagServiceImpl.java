@@ -223,7 +223,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         }
         result.setTagEntity(tagEntity);
         request.setTagNum("desc");
-        BusinessPageResult pageResult = companyInfoService.getList(request);
+        BusinessPageResult pageResult = companyInfoService.getRelateList(request);
         result.setBusinessPageResult(pageResult);
         return result;
     }
