@@ -70,6 +70,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             for (String tagId : request.getTagIds()) {
                 saveCompanyTag(user, date, companyInfoId, tagId);
             }
+            companyInfoEntity.setTagNum(request.getTagIds().size());
+            updateById(companyInfoEntity);
         }
         return true;
     }
@@ -190,6 +192,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
                 }
             }
         }
+        companyInfoEntity.setTagNum(request.getTagIds().size());
+        updateById(companyInfoEntity);
         return true;
     }
 
@@ -200,6 +204,10 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyTagEntity.setUpdateBy(user.getUsername());
         companyTagEntity.setDelFlag(DelFalgStateEnum.HAS_DELETE.getCode());
         companyTagService.updateById(companyTagEntity);
+        //标签关联企业数量-1
+        TagEntity tagEntity = tagService.detailById(tagId);
+        tagEntity.setUsedTime(tagEntity.getUsedTime() - 1);
+        tagService.updateById(tagEntity);
     }
 
     private void updateCompanyTag(InternalUserInfoVO user, CompanyTagEntity companyTag) {
@@ -260,6 +268,14 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     private void deleteCompanyTagByCompanyId(InternalUserInfoVO user, List<String> companyIds) {
         companyTagService.deleteCompanyTagByCompanyId(user.getUserId(), companyIds);
+        //所有
+        for (String companyId : companyIds) {
+            List<CompanyTagEntity> companyTagList = companyTagService.getListByCompanyId(companyId);
+            List<String> tagIds = companyTagList.stream().map(old -> old.getTagId()).collect(Collectors.toList());
+            for (String tagId : tagIds) {
+                deleteCompanyTag(user, new Date(), tagId, tagId);
+            }
+        }
     }
 
     private Wrapper<CompanyInfoEntity> queryWrapper(CompanyListRequest request, List<String> companyIdList) {
@@ -318,6 +334,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyTagService.save(companyTagEntity);
         TagEntity tagEntity = tagService.detailById(tagId);
         tagEntity.setLastUsedTime(date);
+        //改标签使用次数+1
+        tagEntity.setUsedTime(tagEntity.getUsedTime() + 1);
         tagService.updateById(tagEntity);
     }
 }
