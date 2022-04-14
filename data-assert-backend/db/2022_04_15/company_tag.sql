@@ -15,6 +15,7 @@ Date: 2022-04-12 18:55:48
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+use daas;
 -- ----------------------------
 -- Table structure for company_info
 -- ----------------------------
