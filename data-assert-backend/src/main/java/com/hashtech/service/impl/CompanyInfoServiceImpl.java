@@ -87,6 +87,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
             if (!CollectionUtils.isEmpty(companyTagList)) {
                 companyIdList = companyTagList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
+            }else {
+                return BusinessPageResult.build(Collections.emptyList(), request, 0);
             }
         }
         Wrapper<CompanyInfoEntity> wrapper = queryWrapper(request, companyIdList);
