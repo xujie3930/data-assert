@@ -35,6 +35,7 @@ public class ResourceCodeClass {
         RESOURCE_CODE_70000016("70000016", "该统一社会信用代码已存在！"),
         RESOURCE_CODE_70000017("70000017", "输入错误，请按照统一社会信用代码规则填写！"),
         RESOURCE_CODE_70000018("70000018", "模板下载失败！"),
+        RESOURCE_CODE_70000019("70000019", "该标签已被使用，请取消后再进行停用操作！"),
         ;
 
         public final String code;

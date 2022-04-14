@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -144,13 +145,10 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         saveOrUpdate(entity);
         //停用标签时，企业所打的标签也会删除该停用的标签
         List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getId());
-        if (!CollectionUtils.isEmpty(companyTagList)) {
-            Date date = new Date();
-            for (CompanyTagEntity companyTagEntity : companyTagList) {
-                companyTagEntity.setUpdateTime(date);
-                companyTagEntity.setUpdateUserId(userId);
-                companyTagEntity.setUpdateBy(user.getUsername());
-                companyTagEntity.setDelFlag(DelFalgStateEnum.HAS_DELETE.getCode());
+        if (TagStateEnum.DISABLE.equals(request.getState())){
+            List<String> enAbleTagIds = companyTagList.stream().map(c -> c.getTagId()).collect(Collectors.toList());
+            if (enAbleTagIds.contains(request.getId())){
+                throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000019.getCode());
             }
         }
         companyTagService.saveOrUpdateBatch(companyTagList);
