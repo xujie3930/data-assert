@@ -97,7 +97,7 @@ public class CompanyInfoController {
             response.setHeader("content-type", "application/octet-stream");
             response.setContentType("application/octet-stream");
             response.setCharacterEncoding("utf-8");
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("企业模板", "UTF-8") + ".xlsx");
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("companyTemplate", "UTF-8") + ".xlsx");
             outputStream.write(bytes, 0, bytes.length);
             outputStream.flush();
         } catch (Exception e) {
