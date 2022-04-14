@@ -144,14 +144,13 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         entity.setUpdateBy(user.getUsername());
         saveOrUpdate(entity);
         //停用标签时，企业所打的标签也会删除该停用的标签
-        List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getId());
         if (TagStateEnum.DISABLE.getCode().equals(request.getState())){
+            List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getId());
             List<String> enAbleTagIds = companyTagList.stream().map(c -> c.getTagId()).collect(Collectors.toList());
             if (enAbleTagIds.contains(request.getId())){
                 throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000019.getCode());
             }
         }
-        companyTagService.saveOrUpdateBatch(companyTagList);
         return true;
     }
 
