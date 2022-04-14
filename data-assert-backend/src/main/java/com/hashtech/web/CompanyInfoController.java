@@ -83,7 +83,7 @@ public class CompanyInfoController {
         try(ServletOutputStream outputStream = response.getOutputStream()){
             byte[] bytes = ResourceUtil.readBytes(filePath);
             response.setCharacterEncoding("utf-8");
-            response.setContentType("application/pdf");
+            response.setContentType("application/xlsx");
             response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode("企业模板.xlsx","utf-8")  );
             outputStream.write(bytes,0,bytes.length);
             outputStream.flush();
