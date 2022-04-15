@@ -1,5 +1,7 @@
 package com.hashtech.service.impl;
 
+import com.hashtech.common.AppException;
+import com.hashtech.common.ResourceCodeClass;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.easyexcel.bean.CompanyInfoImportContent;
 import com.hashtech.service.CompanyInfoService;
@@ -40,7 +42,12 @@ public class UploadImportServiceImpl implements UploadImportService {
             String[] idsArr = ids.split(",");
             tadIdList = Arrays.asList(idsArr);
         }
-        List<CompanyInfoImportContent> importList = ExcelUtils.readExcelFileData(file, 1, 1, CompanyInfoImportContent.class);
+        List<CompanyInfoImportContent> importList = null;
+        try {
+            importList = ExcelUtils.readExcelFileData(file, 1, 1, CompanyInfoImportContent.class);
+        } catch (Exception e) {
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000020.getCode());
+        }
         for (CompanyInfoImportContent content : importList) {
             ((CompanyInfoServiceImpl)applicationContext.getBean("companyInfoServiceImpl")).saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), tadIdList, content.getDescribe()));
         }
