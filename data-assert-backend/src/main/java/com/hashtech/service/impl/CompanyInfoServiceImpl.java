@@ -134,8 +134,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         }
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         //变更资源表状态
-        deleteCompany(user, ids);
         deleteCompanyTagByCompanyId(user, Arrays.asList(ids));
+        deleteCompany(user, ids);
         return true;
     }
 
@@ -258,13 +258,17 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     }
 
     private void deleteCompanyTagByCompanyId(InternalUserInfoVO user, List<String> companyIds) {
-        companyTagService.deleteCompanyTagByCompanyId(user.getUserId(), companyIds);
-        //所有
         for (String companyId : companyIds) {
             List<CompanyTagEntity> companyTagList = companyTagService.getListByCompanyId(companyId);
+            if (CollectionUtils.isEmpty(companyTagList)){
+                return;
+            }
             List<String> tagIds = companyTagList.stream().map(old -> old.getTagId()).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(tagIds)){
+                return;
+            }
             for (String tagId : tagIds) {
-                deleteCompanyTag(user, new Date(), tagId, tagId);
+                deleteCompanyTag(user, new Date(), companyId, tagId);
             }
         }
     }
