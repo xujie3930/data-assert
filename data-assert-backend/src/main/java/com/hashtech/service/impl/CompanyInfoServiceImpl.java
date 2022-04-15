@@ -69,6 +69,9 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         String companyInfoId = companyInfoEntity.getId();
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
             for (String tagId : request.getTagIds()) {
+                if (StringUtils.isBlank(tagId)){
+                    continue;
+                }
                 saveCompanyTag(user, date, companyInfoId, tagId);
             }
             companyInfoEntity.setTagNum(request.getTagIds().size());
@@ -185,6 +188,9 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         //更新标签
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
             for (String tagId : request.getTagIds()) {
+                if (StringUtils.isBlank(tagId)){
+                    continue;
+                }
                 CompanyTagEntity companyTag = companyTagService.findByTagIdAndCompanyId(tagId, request.getId());
                 if (Objects.isNull(companyTag)) {
                     saveCompanyTag(user, new Date(), request.getId(), tagId);
