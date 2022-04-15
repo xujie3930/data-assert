@@ -74,7 +74,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
                 }
                 saveCompanyTag(user, date, companyInfoId, tagId);
             }
-            companyInfoEntity.setTagNum(request.getTagIds().size());
+            companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
             updateById(companyInfoEntity);
         }
         return true;
@@ -199,7 +199,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
                 }
             }
         }
-        companyInfoEntity.setTagNum(request.getTagIds().size());
+        companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
         updateById(companyInfoEntity);
         return true;
     }
@@ -301,7 +301,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyInfoEntity.setUpdateTime(date);
         companyInfoEntity.setUpdateUserId(user.getUserId());
         companyInfoEntity.setUpdateBy(user.getUsername());
-        companyInfoEntity.setTagNum(request.getTagIds().size());
+        companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
         save(companyInfoEntity);
         return companyInfoEntity;
     }
