@@ -67,14 +67,16 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         Date date = new Date();
         CompanyInfoEntity companyInfoEntity = saveCompanyInfo(user, request, date);
         String companyInfoId = companyInfoEntity.getId();
+        Integer tagNum = 0;
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
             for (String tagId : request.getTagIds()) {
                 if (StringUtils.isBlank(tagId)){
                     continue;
                 }
+                tagNum ++;
                 saveCompanyTag(user, date, companyInfoId, tagId);
             }
-            companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
+            companyInfoEntity.setTagNum(tagNum);
             updateById(companyInfoEntity);
         }
         return true;
