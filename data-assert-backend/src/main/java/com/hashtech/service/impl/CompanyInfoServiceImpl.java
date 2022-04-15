@@ -70,7 +70,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         Integer tagNum = 0;
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
             for (String tagId : request.getTagIds()) {
-                if (StringUtils.isBlank(tagId)){
+                if (StringUtils.isBlank(tagId) || "null".equals(tagId)){
                     continue;
                 }
                 tagNum ++;

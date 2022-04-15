@@ -27,8 +27,6 @@ import java.util.List;
 public class UploadImportServiceImpl implements UploadImportService {
 
     @Autowired
-    private CompanyInfoService companyInfoService;
-    @Autowired
     private ApplicationContext applicationContext;
 
     @Override
@@ -38,7 +36,7 @@ public class UploadImportServiceImpl implements UploadImportService {
         List<String> tadIdList = new ArrayList<>();
         if (StringUtils.isNotBlank(ids)){
             //根据前端传值做匹配
-            ids = ids.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "");
+            ids = ids.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "").replace("null", "");
             String[] idsArr = ids.split(",");
             tadIdList = Arrays.asList(idsArr);
         }
