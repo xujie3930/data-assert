@@ -53,7 +53,7 @@ public class UploadImportServiceImpl implements UploadImportService {
             //是重复数据不影响上传
             try {
                 ((CompanyInfoServiceImpl)applicationContext.getBean("companyInfoServiceImpl")).saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), tadIdList, content.getDescribe()));
-            } catch (Exception e) {
+            } catch (BeansException e) {
                 continue;
             }
         }
