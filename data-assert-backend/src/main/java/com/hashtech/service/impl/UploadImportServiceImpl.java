@@ -33,6 +33,7 @@ public class UploadImportServiceImpl implements UploadImportService {
     private ApplicationContext applicationContext;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @BusinessParamsValidate
     public Boolean uploadImport(String userId, MultipartFile file, String ids) {
         List<String> tadIdList = new ArrayList<>();
