@@ -10,6 +10,7 @@ import com.hashtech.utils.excel.ExcelUtils;
 import com.hashtech.web.request.CompanySaveRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.aop.framework.AopContext;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,12 @@ public class UploadImportServiceImpl implements UploadImportService {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000020.getCode());
         }
         for (CompanyInfoImportContent content : importList) {
-            ((CompanyInfoServiceImpl)applicationContext.getBean("companyInfoServiceImpl")).saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), tadIdList, content.getDescribe()));
+            //是重复数据不影响上传
+            try {
+                ((CompanyInfoServiceImpl)applicationContext.getBean("companyInfoServiceImpl")).saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), tadIdList, content.getDescribe()));
+            } catch (BeansException e) {
+                continue;
+            }
         }
         return true;
     }
