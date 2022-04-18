@@ -279,20 +279,17 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         //变更资源表状态
         List<ResourceTableEntity> list = new ArrayList<>();
         List<String> apiPathList = new ArrayList<>();
+        List<String> idList = new ArrayList<>();
         for (String id : ids) {
             ResourceTableEntity entity = getById(id);
-            entity.setId(id);
-            entity.setUpdateTime(new Date());
-            entity.setUpdateBy(user.getUsername());
-            entity.setDelFlag(DelFalgEnum.HAS_DELETE.getDesc());
-            list.add(entity);
             apiPathList.add(entity.getRequestUrl());
+            idList.add(id);
         }
-        saveOrUpdateBatch(list);
         //变更资源表表设置状态
         tableSettingService.updateTableSettingState(ids, DelFalgEnum.HAS_DELETE.getDesc());
         //批量删除数据服务对应API信息
         dataApiFeignClient.deleteByPath(userId, apiPathList);
+        removeByIds(idList);
         return BusinessResult.success(true);
     }
 
