@@ -90,7 +90,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (ThemeResourceServiceImpl.getThemeParentId().equals(resourceEntity.getParentId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000022.getCode());
         }
-//        checkHasExitResourceTable(request.getName(), request.getDatasourceId(), null);
+        checkHasExitResourceTable(request.getName(), request.getDatasourceId(), null);
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), null));
         BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getDatasourceId(), request.getName()));
         ResourceTableEntity entity = getResourceTableEntitySave(user, request, baseInfo, resourceEntity);
