@@ -1,18 +1,12 @@
 package com.hashtech.factory.impl;
 
+import com.hashtech.common.BusinessPageResult;
 import com.hashtech.factory.DatasourceSync;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.result.BaseInfo;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author xujie
@@ -37,6 +31,11 @@ public class OracleDatasource implements DatasourceSync {
 
     @Override
     public BaseInfo getBaseInfoByType(ResourceTablePreposeRequest request, BaseInfo baseInfo, DatasourceDetailResult datasource, Connection conn, String tableEnglishName) throws Exception{
+        return null;
+    }
+
+    @Override
+    public BusinessPageResult getSampleList(Connection conn, ResourceTablePreposeRequest request, DatasourceDetailResult datasource) throws Exception {
         return null;
     }
 }

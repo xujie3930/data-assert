@@ -1,12 +1,14 @@
 package com.hashtech.factory;
 
 import com.hashtech.common.AppException;
+import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.DatasourceTypeEnum;
 import com.hashtech.common.ResourceCodeBean;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.utils.sm4.SM4Utils;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.result.BaseInfo;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ public interface DatasourceSync {
     String DATASOURCEINFO = "datasourceInfo";
     //整个数据库的表数量
     String TABLESCOUNT = "tablesCount";
+    static final int MAX_IMUM = 10000;
 
     /**
      * 根据uri获取jdbc连接
@@ -110,7 +113,23 @@ public interface DatasourceSync {
         return connection;
     }
 
+    default Long getPageCountByMaxImum(Long total, int pageSize) {
+        if (total == 0L) {
+            return 0L;
+        } else if (total % (long) pageSize > 0L) {
+            return Math.min((total / (long) pageSize + 1L), (MAX_IMUM / pageSize + 1L));
+        } else {
+            return Math.min((total / (long) pageSize), MAX_IMUM / pageSize);
+        }
+    }
+
+    default String getFilelds(String fields){
+        return StringUtils.isBlank(fields)? " * " : fields;
+    }
+
     String getDatabaseName(String uri);
 
     BaseInfo getBaseInfoByType(ResourceTablePreposeRequest request, BaseInfo baseInfo, DatasourceDetailResult datasource, Connection conn, String tableEnglishName) throws Exception;
+
+    BusinessPageResult getSampleList(Connection conn, ResourceTablePreposeRequest request, DatasourceDetailResult datasource) throws Exception;
 }

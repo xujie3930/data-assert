@@ -1,9 +1,12 @@
 package com.hashtech.factory.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.StateEnum;
 import com.hashtech.factory.DatasourceSync;
 import com.hashtech.feign.result.DatasourceDetailResult;
+import com.hashtech.utils.ResultSetToListUtils;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
@@ -57,6 +60,35 @@ public class PostgreDatasource implements DatasourceSync {
             baseInfo.setColumnsCount(structureList.size());
         }
         return baseInfo;
+    }
+
+    @Override
+    public BusinessPageResult getSampleList(Connection conn, ResourceTablePreposeRequest request, DatasourceDetailResult datasource) throws Exception {
+        int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
+        int index = (pageNum - 1) * request.getPageSize();
+        String sql = new StringBuilder("select").append(getFilelds(request.getFields())).append(" from ").append(request.getTableName())
+                .append(" limit ").append(request.getPageSize()).append(" offset ").append(index).toString();
+        BusinessPageResult result = null;
+        Long dataSize = 0L;
+        Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        //TODO:select count(*)大表有性能问题
+        String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
+        ResultSet countRs = stmt.executeQuery(getCountSql);
+        if (countRs.next()) {
+            //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
+            dataSize = countRs.getLong(1);
+        }
+        ResultSet pagingRs = stmt.executeQuery(sql);
+        if (pagingRs.next()) {
+            List list = ResultSetToListUtils.convertList(pagingRs, request.getDesensitizeFields());
+            Page<Object> page = new Page<>(pageNum, request.getPageSize());
+            page.setTotal(dataSize);
+            result = BusinessPageResult.build(page.setRecords(list), request);
+            //这里按前端要求返回pageCount
+            result.setPageCount(getPageCountByMaxImum(dataSize, request.getPageSize()));
+        }
+        return result;
     }
 
     public List<Structure> getStructureListLocal(Connection conn, String tableName) {

@@ -317,41 +317,16 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     @Override
     public BusinessPageResult<Object> getSampleList(ResourceTablePreposeRequest request) throws AppException {
         //只展示前10000条数据
-        int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
-        int index = (pageNum - 1) * request.getPageSize();
-        String pagingData = new StringBuilder("select * from ").append(request.getTableName())
-//                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
-                .append(" limit ").append("4").toString();
-        return getDataBySql(request, pagingData, pageNum, "");
-    }
-
-    private BusinessPageResult<Object> getDataBySql(ResourceTablePreposeRequest request, String sql, int pageNum, String desensitizeFields) {
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
         Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
         if (conn == null) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
         }
+        DatasourceSync factory = DatasourceFactory.getDatasource(datasource.getType());
         BusinessPageResult result = null;
-        Long dataSize = 0L;
         try {
-            Statement stmt = conn.createStatement();
-            //TODO:select count(*)大表有性能问题
-            String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
-            ResultSet countRs = stmt.executeQuery(getCountSql);
-            if (countRs.next()) {
-                //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
-                dataSize = countRs.getLong(1);
-            }
-            ResultSet pagingRs = stmt.executeQuery(sql);
-            if (pagingRs.next()) {
-                List list = ResultSetToListUtils.convertList(pagingRs, desensitizeFields);
-                Page<Object> page = new Page<>(pageNum, request.getPageSize());
-                page.setTotal(dataSize);
-                result = BusinessPageResult.build(page.setRecords(list), request);
-                //这里按前端要求返回pageCount
-                result.setPageCount(getPageCountByMaxImum(dataSize, request.getPageSize()));
-            }
+            result = factory.getSampleList(conn, request, datasource);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("采样数据接口异常：", e);
@@ -365,16 +340,16 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     @Override
     public BusinessPageResult<Object> getResourceDataList(ResourceTablePreposeRequest request, String fields) throws AppException {
         //只展示前10000条数据
-        int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
-
-        TableSettingEntity tableSettingEntity = null;
         ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(request.getTableName(), request.getDatasourceId()));
         if (!Objects.isNull(resourceTableEntity)) {
-            tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+            TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());
+            request.setDesensitizeFields(null == tableSettingEntity ? "" : tableSettingEntity.getDesensitizeFields());
         }
-        String pagingData = new StringBuilder("select ").append(fields).append(" from ").append(request.getTableName())
-                .append(" limit 10").toString();
-        return getDataBySql(request, pagingData, pageNum, null == tableSettingEntity ? "" : tableSettingEntity.getDesensitizeFields());
+        request.setFields(fields);
+        //只支持前10条数据
+        request.setPageNum(1);
+        request.setPageSize(10);
+        return getSampleList(request);
     }
 
     @Override
@@ -423,16 +398,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return tableFieldsBO;
-    }
-
-    private Long getPageCountByMaxImum(Long total, int pageSize) {
-        if (total == 0L) {
-            return 0L;
-        } else if (total % (long) pageSize > 0L) {
-            return Math.min((total / (long) pageSize + 1L), (MAX_IMUM / pageSize + 1L));
-        } else {
-            return Math.min((total / (long) pageSize), MAX_IMUM / pageSize);
-        }
     }
 
     @Override
