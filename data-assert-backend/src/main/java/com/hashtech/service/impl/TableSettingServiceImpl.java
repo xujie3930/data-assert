@@ -6,6 +6,8 @@ import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.factory.DatasourceFactory;
+import com.hashtech.factory.DatasourceSync;
 import com.hashtech.feign.DataApiFeignClient;
 import com.hashtech.feign.DatasourceFeignClient;
 import com.hashtech.feign.request.DatasourceApiGenerateSaveRequest;
@@ -16,10 +18,7 @@ import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
-import com.hashtech.service.OauthApiService;
-import com.hashtech.service.ResourceTableService;
-import com.hashtech.service.RomoteDataSourceService;
-import com.hashtech.service.TableSettingService;
+import com.hashtech.service.*;
 import com.hashtech.service.bo.TableFieldsBO;
 import com.hashtech.utils.*;
 import com.hashtech.web.request.*;
@@ -38,11 +37,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
@@ -253,21 +250,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         }
         try {
             String tableEnglishName = request.getTableName();
-            String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
-            baseInfo.setDescriptor(tableChineseName);
-            baseInfo.setChineseName(tableChineseName);
-            baseInfo.setName(tableEnglishName);
-            //TODO:select count(*)大表有性能问题
-            String getCountSql = new StringBuilder("select COUNT(*) from ").append(request.getTableName()).toString();
-            Statement stmt = conn.createStatement();
-            ResultSet countRs = stmt.executeQuery(getCountSql);
-            if (countRs.next()) {
-                //rs结果集第一个参数即为记录数，且其结果集中只有一个参数
-                baseInfo.setDataSize(countRs.getLong(1));
-            }
-            //获取表结构没有性能问题
-            List<Structure> structureList = getStructureListLocal(conn, request.getTableName());
-            baseInfo.setColumnsCount(structureList.size());
+            DatasourceSync factory = DatasourceFactory.getDatasource(type);
+            baseInfo = factory.getBaseInfoByType(request, baseInfo, datasource, conn, tableEnglishName);
+            return baseInfo;
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("表基本信息接口异常：", e);
@@ -275,42 +260,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         } finally {
             DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
-        return baseInfo;
-    }
-
-    private List<Structure> getStructureListLocal(Connection conn, String tableName) {
-        List<Structure> structureList = new LinkedList<>();
-        try {
-            DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet tableResultSet = metaData.getTables(null, null, tableName,
-                    new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
-            while (tableResultSet.next()) {
-                String tableEnglishName = tableName;
-                String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
-                ResultSet columnResultSet = metaData.getColumns(null, "%", tableEnglishName, "%");
-                while (columnResultSet.next()) {
-                    Structure structure = new Structure();
-                    // 字段名称
-                    String columnName = columnResultSet.getString("COLUMN_NAME");
-                    structure.setFieldEnglishName(columnName);
-                    // 数据类型
-                    String columnType = columnResultSet.getString("TYPE_NAME");
-                    structure.setType(columnType.toLowerCase());
-                    // 描述
-                    String remarks = columnResultSet.getString("REMARKS");
-                    structure.setFieldChineseName(remarks);
-                    structure.setTableEnglishName(tableEnglishName);
-                    structure.setTableChineseName(tableChineseName);
-                    structure.setDesensitize(StateEnum.NO.ordinal());
-                    structure.setReqParam(StateEnum.NO.ordinal());
-                    structure.setResParam(StateEnum.YES.ordinal());
-                    structureList.add(structure);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return structureList;
     }
 
     @Override
@@ -332,7 +281,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
             while (tableResultSet.next()) {
                 String tableEnglishName = request.getTableName();
-                String tableChineseName = JdbcUtils.getCommentByTableName(tableEnglishName, conn);
+                String tableChineseName = tableResultSet.getString("REMARKS");
                 baseInfo.setDescriptor(tableChineseName);
                 baseInfo.setName(tableEnglishName);
                 ResultSet columnResultSet = metaData.getColumns(null, "%", tableEnglishName, "%");
@@ -371,7 +320,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
         int index = (pageNum - 1) * request.getPageSize();
         String pagingData = new StringBuilder("select * from ").append(request.getTableName())
-                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
+//                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
+                .append(" limit ").append("4").toString();
         return getDataBySql(request, pagingData, pageNum, "");
     }
 

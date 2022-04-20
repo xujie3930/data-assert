@@ -17,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Properties;
 import java.util.Vector;
 
 @Slf4j
@@ -233,15 +234,31 @@ public class DBConnectionManager {
         private Connection newConnection() {
             Connection con = null;
             try {
-                if (user == null) {
-                    con = DriverManager.getConnection(URL);
-                } else {
-                    con = DriverManager.getConnection(URL, user, password);
+                Properties props =new Properties();
+                Class.forName(driver);
+                props.setProperty("remarks", "true"); //设置可以获取remarks信息
+                props.setProperty("useInformationSchema", "true");//设置可以获取tables remarks信息
+                if (user != null) {
+                    props.setProperty("user", user);
+                    props.setProperty("password", password);
                 }
-            } catch (SQLException e) {
+                con = DriverManager.getConnection(URL, props);
+            } catch (Exception e) {
                 return null;
             }
             return con;
+        }
+
+        /**
+         * 根据uri获取jdbc连接
+         *
+         * @param uri
+         * @return
+         */
+        private String geturi(String uri) {
+            //根据uri获取jdbc连接
+            //jdbc:postgresql://127.0.0.1:5432/数据库名
+            return uri.substring(0, uri.indexOf(SEPARATOR));
         }
     }
 }

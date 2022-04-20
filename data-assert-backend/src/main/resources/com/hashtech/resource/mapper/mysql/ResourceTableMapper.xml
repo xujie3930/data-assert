@@ -157,6 +157,9 @@
             <if test="name != null and name != '' ">
                 AND name = #{name}
             </if>
+            <if test="datasourceId != null and datasourceId != '' ">
+                AND datasource_id = #{datasourceId}
+            </if>
             <if test="id != null and id != '' ">
                 AND id != #{id}
             </if>

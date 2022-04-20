@@ -78,10 +78,15 @@ public class ResourceTableUpdateRequest {
      */
     private Integer masterDataFlag;
 
+    /**
+     * 数据源类型：1-mysql,2-oracle,3-postgre
+     */
+    private Integer type;
+
     public ResourceTableUpdateRequest() {
     }
 
-    public ResourceTableUpdateRequest(String id, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag) {
+    public ResourceTableUpdateRequest(String id, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag, Integer type) {
         this.id = id;
         this.name = name;
         this.source = source;
@@ -95,6 +100,7 @@ public class ResourceTableUpdateRequest {
         this.desensitizeFields = desensitizeFields;
         this.masterDataId = masterDataId;
         this.masterDataFlag = masterDataFlag;
+        this.type = type;
     }
 
     public String getId() {
@@ -199,5 +205,13 @@ public class ResourceTableUpdateRequest {
 
     public void setMasterDataFlag(Integer masterDataFlag) {
         this.masterDataFlag = masterDataFlag;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

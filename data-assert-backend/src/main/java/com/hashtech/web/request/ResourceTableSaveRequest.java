@@ -97,10 +97,15 @@ public class ResourceTableSaveRequest {
      */
     private Integer masterDataFlag;
 
+    /**
+     * 数据源类型：1-mysql,2-oracle,3-postgre
+     */
+    private Integer type;
+
     public ResourceTableSaveRequest() {
     }
 
-    public ResourceTableSaveRequest(String id, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag) {
+    public ResourceTableSaveRequest(String id, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag, Integer type) {
         this.id = id;
         this.state = state;
         this.name = name;
@@ -119,6 +124,7 @@ public class ResourceTableSaveRequest {
         this.desensitizeFields = desensitizeFields;
         this.masterDataId = masterDataId;
         this.masterDataFlag = masterDataFlag;
+        this.type = type;
     }
 
     public String getId() {
@@ -263,6 +269,14 @@ public class ResourceTableSaveRequest {
 
     public void setMasterDataFlag(Integer masterDataFlag) {
         this.masterDataFlag = masterDataFlag;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     @Override

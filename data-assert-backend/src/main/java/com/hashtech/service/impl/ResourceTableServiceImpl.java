@@ -20,6 +20,7 @@ import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.*;
 import com.hashtech.service.bo.TableFieldsBO;
 import com.hashtech.utils.CharUtil;
+import com.hashtech.utils.DBConnectionManager;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
@@ -33,6 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,7 +90,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (ThemeResourceServiceImpl.getThemeParentId().equals(resourceEntity.getParentId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000022.getCode());
         }
-        checkHasExitResourceTable(request.getName(), null);
+//        checkHasExitResourceTable(request.getName(), request.getDatasourceId(), null);
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), null));
         BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(request.getDatasourceId(), request.getName()));
         ResourceTableEntity entity = getResourceTableEntitySave(user, request, baseInfo, resourceEntity);
@@ -102,8 +107,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
     }
 
-    private Boolean checkHasExitResourceTable(String name, String id) {
-        boolean hasExit = BooleanUtils.isTrue(resourceTableMapper.checkHasExitResourceTableInAll(name, id));
+    private Boolean checkHasExitResourceTable(String name, String datasourceId, String id) {
+        boolean hasExit = BooleanUtils.isTrue(resourceTableMapper.checkHasExitResourceTableInAll(name, datasourceId, id));
         if (hasExit) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000031.getCode());
         }
@@ -129,7 +134,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
-        checkHasExitResourceTable(request.getName(), resourceTableEntity.getId());
+        checkHasExitResourceTable(request.getName(), request.getDatasourceId(), resourceTableEntity.getId());
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), request.getId()));
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
@@ -258,7 +263,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteResourceTable(String userId, String[] ids) {
-        InternalUserInfoVO user = oauthApiService.getUserById(userId);
         if (ids.length <= 0) {
             return BusinessResult.success(true);
         }
@@ -277,7 +281,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000018.getCode());
         }
         //变更资源表状态
-        List<ResourceTableEntity> list = new ArrayList<>();
         List<String> apiPathList = new ArrayList<>();
         List<String> idList = new ArrayList<>();
         for (String id : ids) {
