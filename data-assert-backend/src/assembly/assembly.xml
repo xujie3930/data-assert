@@ -55,6 +55,14 @@
             <lineEnding>unix</lineEnding>
         </fileSet>
 
+        <fileSet>
+            <directory>src/main/resources/lib</directory>
+            <includes>
+                <include>*</include>
+            </includes>
+            <outputDirectory>lib</outputDirectory>
+        </fileSet>
+
     </fileSets>
 
 
