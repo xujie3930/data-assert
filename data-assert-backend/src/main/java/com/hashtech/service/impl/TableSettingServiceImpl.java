@@ -195,6 +195,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         apiGenerateSaveRequest.setModel(0);
         apiGenerateSaveRequest.setDatasourceId(resourceTableEntity.getDatasourceId());
         apiGenerateSaveRequest.setTableName(resourceTableEntity.getName());
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(resourceTableEntity.getDatasourceId());
+        apiGenerateSaveRequest.setDatabaseType(datasource.getType());
         dataApiRequest.setApiGenerateSaveRequest(apiGenerateSaveRequest);
         List<Structure> structureList = getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
         Set<String> params = new HashSet<>(Arrays.asList(request.getParamInfo()));

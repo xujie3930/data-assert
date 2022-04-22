@@ -238,6 +238,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     public BusinessResult<List<Structure>> getResourceTableStructureList(ResourceTableNameRequest request) {
         List<Structure> structureList = tableSettingService.getStructureList(request);
         //若该资源表，存储了脱敏字段
+        DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
+        request.setType(datasource.getType());
         ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(request);
         if (!Objects.isNull(resourceTableEntity)) {
             TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(resourceTableEntity.getId());

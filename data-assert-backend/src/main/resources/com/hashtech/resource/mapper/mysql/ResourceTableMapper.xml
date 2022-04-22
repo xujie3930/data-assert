@@ -211,6 +211,9 @@
             <if test="request.tableName !=null and request.tableName != '' ">
                 and name=#{request.tableName}
             </if>
+            <if test="request.type !=null and request.type != '' ">
+                and type=#{request.tableName}
+            </if>
             and del_flag='N'
         </where>
     </select>
