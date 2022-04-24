@@ -64,7 +64,7 @@ public class MysqlDatasource implements DatasourceSync {
         int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
         int index = (pageNum - 1) * request.getPageSize();
         String sql = new StringBuilder("select").append(getFilelds(request.getFields())).append(" from ").append(request.getTableName())
-                .append(" limit ").append(index).append(" , ").append(request.getPageSize()).toString();
+                .append(" limit ").append(index).append(" , ").append(Math.min((MAX_IMUM - index), request.getPageSize())).toString();
         BusinessPageResult result = null;
         Long dataSize = 0L;
         Statement stmt = conn.createStatement();

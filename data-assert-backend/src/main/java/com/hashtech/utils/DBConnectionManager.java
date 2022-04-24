@@ -243,10 +243,33 @@ public class DBConnectionManager {
                     props.setProperty("password", password);
                 }
                 con = DriverManager.getConnection(URL, props);
+                if (URL.contains("schema=")){
+                    String schema = getSchema(URL);
+                    con.setSchema(schema);
+                }
             } catch (Exception e) {
                 return null;
             }
             return con;
+        }
+
+        /**
+         * 获取表空间
+         * @param uri
+         * @return
+         */
+        public String getSchema(String uri) {
+            if (!uri.contains("schema=")){
+                return null;
+            }
+            //根据uri获取username
+            int index = uri.indexOf("schema=") + "schema=".length();
+            String temp = uri.substring(index);
+            if (!uri.substring(index).contains(SEPARATOR)) {
+                return temp;
+            } else {
+                return temp.substring(0, temp.indexOf(SEPARATOR));
+            }
         }
 
         /**

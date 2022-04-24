@@ -116,7 +116,7 @@ public interface DatasourceSync {
     default Long getPageCountByMaxImum(Long total, int pageSize) {
         if (total == 0L) {
             return 0L;
-        } else if (total % (long) pageSize > 0L) {
+        } else if (MAX_IMUM % (long) pageSize > 0L) {
             return Math.min((total / (long) pageSize + 1L), (MAX_IMUM / pageSize + 1L));
         } else {
             return Math.min((total / (long) pageSize), MAX_IMUM / pageSize);
