@@ -115,7 +115,7 @@ public class DBConnectionManager {
         //数据库连接信息
         //jdbc:mysql://192.168.0.193:3306/t02?useSSL=false&useUnicode=true&characterEncoding=utf8
         // |username=root|password=92Z2cSfUPcbIJxiedl07og==
-        String url = getUri(uri);
+        String url = uri;
         String username = getUsername(uri);
         String password = getPassword(uri);
         String poolName = uri;
