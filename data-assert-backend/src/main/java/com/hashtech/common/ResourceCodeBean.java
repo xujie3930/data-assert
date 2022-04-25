@@ -10,6 +10,14 @@ import org.apache.commons.lang3.StringUtils;
 public class ResourceCodeBean {
 
     public enum ResourceCode {
+        //数据服务错误码
+        RESOURCE_CODE_20000001("20000001", "API Path不能为空，只能由字母组成，长度为16！"),
+        RESOURCE_CODE_20000002("20000002", "API 名称不能为空，只能由字母、数字、下划线组成，长度不能超过50！"),
+        RESOURCE_CODE_20000003("20000003", "API 名称已存在！"),
+        RESOURCE_CODE_20000004("20000004", "请先勾选返回参数！"),
+        RESOURCE_CODE_20000005("20000005", "API Path已存在！"),
+
+
         RESOURCE_CODE_10000000("10000000", "非法请求参数"),
         RESOURCE_CODE_10000001("10000001", "请求参数错误"),
         RESOURCE_CODE_10000002("10000002", "接口返回异常"),

@@ -171,7 +171,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         DatasourceApiSaveRequest dataApiRequest = getDatasourceApiSaveRequest(request, resourceTableEntity, entity);
         BusinessResult<ApiSaveResult> result = dataApiFeignClient.createAndPublish(userId, dataApiRequest);
         if (!result.isSuccess() || Objects.isNull(result.getData())) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000039.getCode());
+            throw new AppException(result.getReturnCode());
         }
         //数据服务获取接口地址
         entity.setExplainInfo(result.getData().getDesc());
