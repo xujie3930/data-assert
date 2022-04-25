@@ -10,6 +10,7 @@ import com.hashtech.utils.ResultSetToListUtils;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
+import org.apache.commons.lang.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -67,7 +68,7 @@ public class PostgreDatasource implements DatasourceSync {
     public BusinessPageResult getSampleList(Connection conn, ResourceTablePreposeRequest request, DatasourceDetailResult datasource) throws Exception {
         int pageNum = Math.min(request.getPageNum(), MAX_IMUM / request.getPageSize());
         int index = (pageNum - 1) * request.getPageSize();
-        String sql = new StringBuilder("select").append(getFilelds(request.getFields())).append(" from ").append(request.getTableName())
+        String sql = new StringBuilder("select ").append(getFilelds(request.getFields())).append(" from ").append(request.getTableName())
                 .append(" limit ").append(Math.min(MAX_IMUM - index, request.getPageSize())).append(" offset ").append(index).toString();
         BusinessPageResult result = null;
         Long dataSize = 0L;
@@ -132,4 +133,24 @@ public class PostgreDatasource implements DatasourceSync {
         return structureList;
     }
 
+    @Override
+    public String getFilelds(String fields){
+        if (StringUtils.isBlank(fields)){
+            return " * ";
+        }
+        //对字段做处理
+        //HTBH,AZRXM,AZRSFZ,AZFWDD,FWDJ,FWZJ,GLFWQQH
+        //pg数据库需要对所有返回字符按字段加上""
+        String[] split = fields.split(",");
+        StringBuilder builder = new StringBuilder();
+        for (String key : split) {
+            if (key.contains("\"") || (key.contains("(") && key.contains(")"))){
+                builder.append(key).append(",");
+            }else {
+                builder.append("\"" + key + "\"" + ",");
+            }
+        }
+        String s = builder.toString();
+        return s.substring(0, s.length() -1);
+    }
 }
