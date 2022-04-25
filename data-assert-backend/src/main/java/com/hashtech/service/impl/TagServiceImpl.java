@@ -233,7 +233,9 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     private Wrapper<TagEntity> queryWrapper(TagListRequest request) {
         QueryWrapper<TagEntity> wrapper = new QueryWrapper<>();
         wrapper.eq(TagEntity.DEL_FLAG, DelFlagEnum.ENA_BLED.getCode());
-        wrapper.orderByDesc(TagEntity.UPDATE_TIME);
+        if (StringUtils.isBlank(request.getSortField())){
+            wrapper.orderByDesc(TagEntity.UPDATE_TIME);
+        }
         if (StringUtils.isNotBlank(request.getName())) {
             wrapper.like(TagEntity.NAME, request.getName());
         }
