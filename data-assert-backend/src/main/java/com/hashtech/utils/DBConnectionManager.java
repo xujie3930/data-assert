@@ -28,7 +28,8 @@ public class DBConnectionManager {
     static private DBConnectionManager instance;
     static private int clients;
     private final Vector drivers = new Vector();
-    private final int defaultConn = 50;
+    //TODO：复现生产问题,连接数设置为1
+    private final int defaultConn = 1;
     private Hashtable pools = new Hashtable();
 
     private DBConnectionManager() {
@@ -186,7 +187,8 @@ public class DBConnectionManager {
             this.URL = URL;
             this.user = user;
             this.password = password;
-            if (maxConn <= 1) {
+            //TODO：连接数设置为1
+            if (maxConn < 1) {
                 throw new IllegalArgumentException("maxConn must > 1");
             }
             this.maxConn = maxConn;

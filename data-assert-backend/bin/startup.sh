@@ -26,7 +26,7 @@ if [[ -f "${SERVER_PID}" ]]; then
     fi
 fi
 
-nohup java $SERVER_JAVA_OPTS  -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Duser.timezone=Asia/Shanghai -cp $HOME/conf:$HOME/lib/* $SERVER_CLASS --spring.profiles.active=$PROFILE 2>&1 > $HOME/bin/nohup.out &
+nohup java $SERVER_JAVA_OPTS  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/data -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Duser.timezone=Asia/Shanghai -cp $HOME/conf:$HOME/lib/* $SERVER_CLASS --spring.profiles.active=$PROFILE 2>&1 > $HOME/bin/nohup.out &
 
 pid=$!
 if [[ -z "${pid}" ]]; then
