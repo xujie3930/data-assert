@@ -92,6 +92,11 @@ public class PostgreDatasource implements DatasourceSync {
         return result;
     }
 
+    @Override
+    public String getUri(String uri) {
+        return uri;
+    }
+
     public List<Structure> getStructureListLocal(Connection conn, String tableName) {
         List<Structure> structureList = new LinkedList<>();
         try {

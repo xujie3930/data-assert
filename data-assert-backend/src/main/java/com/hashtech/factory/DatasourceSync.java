@@ -25,6 +25,8 @@ public interface DatasourceSync {
     //整个数据库的表数量
     String TABLESCOUNT = "tablesCount";
     static final int MAX_IMUM = 10000;
+    static final String SPLIT_URL_FLAG = "?";
+    static final String SQL_CHARACTER = "useSSL=false&useUnicode=true&characterEncoding=utf8";
 
     /**
      * 根据uri获取jdbc连接
@@ -132,4 +134,6 @@ public interface DatasourceSync {
     BaseInfo getBaseInfoByType(ResourceTablePreposeRequest request, BaseInfo baseInfo, DatasourceDetailResult datasource, Connection conn, String tableEnglishName) throws Exception;
 
     BusinessPageResult getSampleList(Connection conn, ResourceTablePreposeRequest request, DatasourceDetailResult datasource) throws Exception;
+
+    String getUri(String uri);
 }
