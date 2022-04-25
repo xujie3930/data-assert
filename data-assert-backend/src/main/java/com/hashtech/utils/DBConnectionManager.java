@@ -28,8 +28,8 @@ public class DBConnectionManager {
     static private DBConnectionManager instance;
     static private int clients;
     private final Vector drivers = new Vector();
-    //TODO：复现生产问题,连接数设置为1
-    private final int defaultConn = 1;
+    //TODO：复现生产问题,连接数设置为3
+    private final int defaultConn = 3;
     private Hashtable pools = new Hashtable();
 
     private DBConnectionManager() {
