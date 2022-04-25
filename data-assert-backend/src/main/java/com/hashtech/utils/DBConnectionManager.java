@@ -173,8 +173,7 @@ public class DBConnectionManager {
             this.URL = URL;
             this.user = user;
             this.password = password;
-            //TODO：连接数设置为1
-            if (maxConn < 1) {
+            if (maxConn <= 1) {
                 throw new IllegalArgumentException("maxConn must > 1");
             }
             this.maxConn = maxConn;
