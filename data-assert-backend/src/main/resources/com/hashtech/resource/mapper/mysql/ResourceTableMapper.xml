@@ -212,7 +212,7 @@
                 and name=#{request.tableName}
             </if>
             <if test="request.type !=null and request.type != '' ">
-                and type=#{request.tableName}
+                and type=#{request.type}
             </if>
             and del_flag='N'
         </where>
