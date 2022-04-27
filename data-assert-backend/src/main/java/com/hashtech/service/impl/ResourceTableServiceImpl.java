@@ -467,6 +467,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         return result;
     }
 
+    @Override
+    public void updateThemIdByResourceId(String themeId, String resourceId) {
+        resourceTableMapper.updateThemIdByResourceId(themeId, resourceId);
+    }
+
     //将object转换为list
     private <T> List<T> castList(Object obj, Class<T> clazz) {
         List<T> resultList = new LinkedList<>();

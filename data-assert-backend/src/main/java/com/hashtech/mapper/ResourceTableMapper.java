@@ -42,4 +42,6 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     Boolean checkTableHasExist(@Param("chineseName") String chineseName, @Param("id") String id);
 
     ResourceTableEntity getByDatasourceIdAndName(@Param("request") ResourceTableNameRequest request);
+
+    void updateThemIdByResourceId(@Param("themeId") String themeId, @Param("resourceId") String resourceId);
 }
