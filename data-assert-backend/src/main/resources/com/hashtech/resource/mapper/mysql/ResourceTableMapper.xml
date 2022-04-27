@@ -157,6 +157,9 @@
             <if test="name != null and name != '' ">
                 AND name = #{name}
             </if>
+            <if test="datasourceId != null and datasourceId != '' ">
+                AND datasource_id = #{datasourceId}
+            </if>
             <if test="id != null and id != '' ">
                 AND id != #{id}
             </if>
@@ -207,6 +210,9 @@
             </if>
             <if test="request.tableName !=null and request.tableName != '' ">
                 and name=#{request.tableName}
+            </if>
+            <if test="request.type !=null and request.type != '' ">
+                and type=#{request.type}
             </if>
             and del_flag='N'
         </where>

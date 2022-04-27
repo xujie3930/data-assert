@@ -1,15 +1,12 @@
 package com.hashtech.service;
 
-import com.hashtech.common.AppException;
 import com.hashtech.common.BusinessResult;
-import com.hashtech.common.ResourceCodeBean;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.web.request.DataSourcesListRequest;
 import com.hashtech.web.request.TableNameListRequest;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -19,7 +16,7 @@ import java.util.Objects;
  * @author xujie
  * @since 2021-12-01
  */
-public interface RomoteDataSourceService{
+public interface RomoteDataSourceService {
 
     BusinessResult<List<Map<String, Object>>> getDataSourcesList(DataSourcesListRequest request);
 

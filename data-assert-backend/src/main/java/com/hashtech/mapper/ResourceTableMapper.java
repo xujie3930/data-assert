@@ -37,7 +37,7 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
 
     Boolean hasExitSerialNum(@Param("serialNum") String serialNum, @Param("id") String id);
 
-    Boolean checkHasExitResourceTableInAll(@Param("name") String name, @Param("id") String id);
+    Boolean checkHasExitResourceTableInAll(@Param("name") String name, @Param("datasourceId") String datasourceId, @Param("id") String id);
 
     Boolean checkTableHasExist(@Param("chineseName") String chineseName, @Param("id") String id);
 

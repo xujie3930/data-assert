@@ -12,6 +12,18 @@ public class DatasourceApiParamSaveRequest {
     //是否为返回参数【0--是，1--否】
     private Integer isResponse = 1;
 
+    public DatasourceApiParamSaveRequest() {
+    }
+
+    public DatasourceApiParamSaveRequest(String fieldName, String fieldType, Integer required, String desc, Integer isRequest, Integer isResponse) {
+        this.fieldName = fieldName;
+        this.fieldType = fieldType;
+        this.required = required;
+        this.desc = desc;
+        this.isRequest = isRequest;
+        this.isResponse = isResponse;
+    }
+
     public String getFieldName() {
         return fieldName;
     }
@@ -57,18 +69,6 @@ public class DatasourceApiParamSaveRequest {
     }
 
     public void setIsResponse(Integer isResponse) {
-        this.isResponse = isResponse;
-    }
-
-    public DatasourceApiParamSaveRequest() {
-    }
-
-    public DatasourceApiParamSaveRequest(String fieldName, String fieldType, Integer required, String desc, Integer isRequest, Integer isResponse) {
-        this.fieldName = fieldName;
-        this.fieldType = fieldType;
-        this.required = required;
-        this.desc = desc;
-        this.isRequest = isRequest;
         this.isResponse = isResponse;
     }
 }

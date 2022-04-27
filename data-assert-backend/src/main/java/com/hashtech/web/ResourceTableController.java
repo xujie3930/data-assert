@@ -85,7 +85,7 @@ public class ResourceTableController {
     }
 
     @PostMapping("/dataPreview")
-    Map<String, Object> dataPreview(@RequestBody ResourceDataPreviewRequest request){
+    Map<String, Object> dataPreview(@RequestBody ResourceDataPreviewRequest request) {
         return resourceTableService.dataPreview(request);
     }
 

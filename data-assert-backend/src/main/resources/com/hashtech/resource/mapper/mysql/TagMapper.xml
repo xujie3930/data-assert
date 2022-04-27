@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hashtech.mapper.TagMapper">
+
+    <select id="hasExistCode"
+            resultType="java.lang.Boolean">
+        select 1
+        from tag
+        <where>
+            <if test="code != null and code != '' ">
+                AND code = #{code}
+            </if>
+            AND del_flag = 0
+        </where>
+        limit 1
+    </select>
+
+    <select id="hasExistName"
+            resultType="java.lang.Boolean">
+        select 1
+        from tag
+        <where>
+            <if test="name != null and name != '' ">
+                AND name = #{name}
+            </if>
+            <if test="id != null and id != '' ">
+                AND id != #{id}
+            </if>
+            AND del_flag = 0
+        </where>
+        limit 1
+    </select>
+
+    <select id="findById"
+            resultType="com.hashtech.entity.TagEntity">
+        select *
+        from tag
+        where id = #{id}
+          AND del_flag = 0
+        limit 1
+    </select>
+
+    <select id="selectCountByStateAndIds"
+            resultType="java.lang.Long">
+        select count(*)
+        from tag
+        <where>
+            <if test="state !=null">
+                AND state=#{state}
+            </if>
+            <if test="ids != null and ids.length != 0">
+                AND id in
+                <foreach collection="ids" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            AND del_flag = 0
+        </where>
+    </select>
+
+    <select id="getListWithoutPaging"
+            resultType="com.hashtech.entity.TagEntity">
+        select *
+        from tag
+        where del_flag = 0
+          and state = 1
+        order by used_time desc
+    </select>
+
+    <update id="increaseUsedTime">
+        update tag
+        set used_time = used_time + 1
+        where id = #{tagId}
+    </update>
+
+    <update id="reduceUsedTime">
+        update tag
+        set used_time = used_time - 1
+        where id = #{tagId}
+    </update>
+
+    <select id="getByCompanyId"
+            resultType="com.hashtech.entity.TagEntity">
+        select t.*
+        from tag t,
+             company_tag c
+        where t.id = c.tag_id
+          and c.company_info_id = #{companyId}
+          and t.del_flag = 0
+          and c.del_flag = 0
+        order by t.used_time desc
+    </select>
+
+    <update id="updateUsedTimeById">
+        update tag
+        set used_time = #{count}
+        where id = #{tagId}
+    </update>
+</mapper>

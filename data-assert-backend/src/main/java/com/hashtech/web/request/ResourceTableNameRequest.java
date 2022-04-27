@@ -18,12 +18,20 @@ public class ResourceTableNameRequest {
      */
     private String datasourceId;
 
+    private Integer type;
+
     public ResourceTableNameRequest() {
     }
 
     public ResourceTableNameRequest(String tableName, String datasourceId) {
         this.tableName = tableName;
         this.datasourceId = datasourceId;
+    }
+
+    public ResourceTableNameRequest(String tableName, String datasourceId, Integer type) {
+        this.tableName = tableName;
+        this.datasourceId = datasourceId;
+        this.type = type;
     }
 
     public String getTableName() {
@@ -40,5 +48,13 @@ public class ResourceTableNameRequest {
 
     public void setDatasourceId(String datasourceId) {
         this.datasourceId = datasourceId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

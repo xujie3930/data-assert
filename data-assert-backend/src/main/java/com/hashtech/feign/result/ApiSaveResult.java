@@ -9,6 +9,16 @@ public class ApiSaveResult {
     private ApiGenerateSaveResult apiGenerateSaveRequest;
     private List<ApiParamSaveResult> apiParamSaveRequestList;
 
+    public ApiSaveResult() {
+    }
+
+    public ApiSaveResult(String id, String desc, ApiGenerateSaveResult apiGenerateSaveRequest, List<ApiParamSaveResult> apiParamSaveRequestList) {
+        this.id = id;
+        this.desc = desc;
+        this.apiGenerateSaveRequest = apiGenerateSaveRequest;
+        this.apiParamSaveRequestList = apiParamSaveRequestList;
+    }
+
     public String getId() {
         return id;
     }
@@ -38,16 +48,6 @@ public class ApiSaveResult {
     }
 
     public void setApiParamSaveRequestList(List<ApiParamSaveResult> apiParamSaveRequestList) {
-        this.apiParamSaveRequestList = apiParamSaveRequestList;
-    }
-
-    public ApiSaveResult() {
-    }
-
-    public ApiSaveResult(String id, String desc, ApiGenerateSaveResult apiGenerateSaveRequest, List<ApiParamSaveResult> apiParamSaveRequestList) {
-        this.id = id;
-        this.desc = desc;
-        this.apiGenerateSaveRequest = apiGenerateSaveRequest;
         this.apiParamSaveRequestList = apiParamSaveRequestList;
     }
 }

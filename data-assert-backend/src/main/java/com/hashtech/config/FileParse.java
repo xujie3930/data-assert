@@ -14,14 +14,13 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 
 @Component
 public class FileParse {
     private static final String DIR = "backend";
-    private Logger log = LoggerFactory.getLogger(this.getClass());
     private static final String PREFIX = "data:image/svg+xml;base64,";
     private static final String POSTFIX = ".svg";
+    private Logger log = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private MinioClient minioClient;
     @Value("${minio.bucketName}")

@@ -1,9 +1,14 @@
-package com.hashtech.service;
+package com.hashtech.factory;
 
 import com.hashtech.common.AppException;
+import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.DatasourceTypeEnum;
 import com.hashtech.common.ResourceCodeBean;
+import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.utils.sm4.SM4Utils;
+import com.hashtech.web.request.ResourceTablePreposeRequest;
+import com.hashtech.web.result.BaseInfo;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +24,9 @@ public interface DatasourceSync {
     String DATASOURCEINFO = "datasourceInfo";
     //整个数据库的表数量
     String TABLESCOUNT = "tablesCount";
+    static final int MAX_IMUM = 10000;
+    static final String SPLIT_URL_FLAG = "?";
+    static final String SQL_CHARACTER = "useSSL=false&useUnicode=true&characterEncoding=utf8";
 
     /**
      * 根据uri获取jdbc连接
@@ -42,6 +50,22 @@ public interface DatasourceSync {
         String temp = uri.substring(uri.indexOf("username=") + "username=".length());
         String username = temp.substring(0, temp.indexOf(SEPARATOR));
         return username;
+    }
+
+    /**
+     * 获取表空间
+     * @param uri
+     * @return
+     */
+    static String getSchema(String uri) {
+        //根据uri获取username
+        int index = uri.indexOf("schema=") + "schema=".length();
+        String temp = uri.substring(index);
+        if (!uri.substring(index).contains(SEPARATOR)) {
+            return temp;
+        } else {
+            return temp.substring(0, temp.indexOf(SEPARATOR));
+        }
     }
 
     /**
@@ -77,8 +101,6 @@ public interface DatasourceSync {
         return null;
     }
 
-    String getDatabaseName(String uri);
-
     static Connection getConn(Integer type, String uri, String username, String password) throws AppException {
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         Connection connection = null;
@@ -92,4 +114,26 @@ public interface DatasourceSync {
         }
         return connection;
     }
+
+    default Long getPageCountByMaxImum(Long total, int pageSize) {
+        if (total == 0L) {
+            return 0L;
+        } else if (MAX_IMUM % (long) pageSize > 0L) {
+            return Math.min((total / (long) pageSize + 1L), (MAX_IMUM / pageSize + 1L));
+        } else {
+            return Math.min((total / (long) pageSize), MAX_IMUM / pageSize);
+        }
+    }
+
+    default String getFilelds(String fields){
+        return StringUtils.isBlank(fields)? " * " : fields;
+    }
+
+    String getDatabaseName(String uri);
+
+    BaseInfo getBaseInfoByType(ResourceTablePreposeRequest request, BaseInfo baseInfo, DatasourceDetailResult datasource, Connection conn, String tableEnglishName) throws Exception;
+
+    BusinessPageResult getSampleList(Connection conn, ResourceTablePreposeRequest request, DatasourceDetailResult datasource) throws Exception;
+
+    String getUri(String uri);
 }

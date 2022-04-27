@@ -7,6 +7,19 @@ public class DatasourceApiGenerateSaveRequest {
     private String datasourceId;
     private String sql;
     private String tableName;
+    private Integer databaseType;//数据库类型:1-mysql,2-oracle,3-pg
+
+    public DatasourceApiGenerateSaveRequest() {
+    }
+
+    public DatasourceApiGenerateSaveRequest(String id, Integer model, String datasourceId, String sql, String tableName, Integer databaseType) {
+        this.id = id;
+        this.model = model;
+        this.datasourceId = datasourceId;
+        this.sql = sql;
+        this.tableName = tableName;
+        this.databaseType = databaseType;
+    }
 
     public String getId() {
         return id;
@@ -48,14 +61,11 @@ public class DatasourceApiGenerateSaveRequest {
         this.tableName = tableName;
     }
 
-    public DatasourceApiGenerateSaveRequest() {
+    public Integer getDatabaseType() {
+        return databaseType;
     }
 
-    public DatasourceApiGenerateSaveRequest(String id, Integer model, String datasourceId, String sql, String tableName) {
-        this.id = id;
-        this.model = model;
-        this.datasourceId = datasourceId;
-        this.sql = sql;
-        this.tableName = tableName;
+    public void setDatabaseType(Integer databaseType) {
+        this.databaseType = databaseType;
     }
 }

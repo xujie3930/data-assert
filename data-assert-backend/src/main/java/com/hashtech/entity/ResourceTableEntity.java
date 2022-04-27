@@ -149,6 +149,11 @@ public class ResourceTableEntity implements Serializable {
     private Integer masterDataId;
 
     /**
+     * 数据源类型：1-mysql,2-oracle,3-postgre
+     */
+    private Integer type;
+
+    /**
      * 是否为主数据，0-是，1-否，默认0（2022-03-24新增）
      */
     private Integer masterDataFlag;
@@ -156,7 +161,7 @@ public class ResourceTableEntity implements Serializable {
     public ResourceTableEntity() {
     }
 
-    public ResourceTableEntity(String id, String resourceId, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId, Integer masterDataId, Integer masterDataFlag) {
+    public ResourceTableEntity(String id, String resourceId, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId, Integer masterDataId, Integer type, Integer masterDataFlag) {
         this.id = id;
         this.resourceId = resourceId;
         this.name = name;
@@ -180,7 +185,16 @@ public class ResourceTableEntity implements Serializable {
         this.createUserId = createUserId;
         this.datasourceId = datasourceId;
         this.masterDataId = masterDataId;
+        this.type = type;
         this.masterDataFlag = masterDataFlag;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public String getId() {

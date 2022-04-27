@@ -14,7 +14,10 @@ Date: 2021-12-17 10:18:39
 */
 
 use daas;
-ALTER TABLE `daas`.`resource_table` ADD datasource_id varchar(32) COMMENT '数据源id';
-ALTER TABLE `daas`.`table_setting` ADD desensitize_fields varchar(500) COMMENT '脱敏字段';
-ALTER TABLE `daas`.`table_setting` ADD resp_info varchar(500) COMMENT '返回字段信息';
+ALTER TABLE `daas`.`resource_table`
+    ADD datasource_id varchar(32) COMMENT '数据源id';
+ALTER TABLE `daas`.`table_setting`
+    ADD desensitize_fields varchar(500) COMMENT '脱敏字段';
+ALTER TABLE `daas`.`table_setting`
+    ADD resp_info varchar(500) COMMENT '返回字段信息';
 

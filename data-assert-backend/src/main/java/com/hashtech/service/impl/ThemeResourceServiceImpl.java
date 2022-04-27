@@ -138,13 +138,13 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     public BusinessResult<IdResult> deleteTheme(String userId, ThemeDeleteRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         BusinessResult<Map<String, List<String>>> result = serveFeignClient.getOpenTopicAndClassifyIds();
-        if (!result.isSuccess()){
+        if (!result.isSuccess()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
         }
         Map<String, List<String>> map = result.getData();
         //所有在开放平台开放的主题
         List<String> openTopicIds = map.get("topicIds");
-        if (openTopicIds.contains(request.getId())){
+        if (openTopicIds.contains(request.getId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.getCode());
         }
         //删除主题下的资源
@@ -216,13 +216,13 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     public BusinessResult<ResourceResult> getResourceInfo(String id) {
         ResourceResult result = new ResourceResult();
         ThemeResourceEntity resourceEntity = getById(id);
-        if (resourceEntity == null){
+        if (resourceEntity == null) {
             return BusinessResult.success(result);
         }
         BeanCopyUtils.copyProperties(resourceEntity, result);
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getListByResourceId(id);
         BusinessResult<String[]> serveResult = serveFeignClient.getOpenDirIds(id);
-        if (!serveResult.isSuccess()){
+        if (!serveResult.isSuccess()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
         }
         long openCount = serveResult.getData().length;
@@ -257,14 +257,14 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         //如果删除的资源分类包含有已开放的表,不能删除
         BusinessResult<Map<String, List<String>>> result = serveFeignClient.getOpenTopicAndClassifyIds();
-        if (!result.isSuccess()){
+        if (!result.isSuccess()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
         }
         Map<String, List<String>> map = result.getData();
         //所有在开放平台开放的主题
         //所有在开放平台开放的资源分类
         List<String> openResourceIds = map.get("classifyIds");
-        if (openResourceIds.contains(request.getId())){
+        if (openResourceIds.contains(request.getId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.getCode());
         }
         resourceTableMapper.deleteByResourceId(request.getId());

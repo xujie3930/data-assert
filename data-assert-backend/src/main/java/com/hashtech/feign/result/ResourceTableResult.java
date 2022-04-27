@@ -20,6 +20,14 @@ public class ResourceTableResult {
 
     private List<String> resps = new ArrayList<>();
 
+    public ResourceTableResult() {
+    }
+
+    public ResourceTableResult(String tableName, List<String> params) {
+        this.tableName = tableName;
+        this.params = params;
+    }
+
     public String getTableName() {
         return tableName;
     }
@@ -33,14 +41,6 @@ public class ResourceTableResult {
     }
 
     public void setParams(List<String> params) {
-        this.params = params;
-    }
-
-    public ResourceTableResult() {
-    }
-
-    public ResourceTableResult(String tableName, List<String> params) {
-        this.tableName = tableName;
         this.params = params;
     }
 

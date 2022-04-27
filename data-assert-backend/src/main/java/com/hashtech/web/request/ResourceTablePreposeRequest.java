@@ -18,12 +18,23 @@ public class ResourceTablePreposeRequest extends BusinessBasePageForm {
      */
     private String tableName;
 
+    private String fields;
+
+    private String desensitizeFields;
+
     public ResourceTablePreposeRequest() {
     }
 
     public ResourceTablePreposeRequest(String datasourceId, String tableName) {
         this.datasourceId = datasourceId;
         this.tableName = tableName;
+    }
+
+    public ResourceTablePreposeRequest(String datasourceId, String tableName, String fields, String desensitizeFields) {
+        this.datasourceId = datasourceId;
+        this.tableName = tableName;
+        this.fields = fields;
+        this.desensitizeFields = desensitizeFields;
     }
 
     public String getTableName() {
@@ -40,5 +51,21 @@ public class ResourceTablePreposeRequest extends BusinessBasePageForm {
 
     public void setDatasourceId(String datasourceId) {
         this.datasourceId = datasourceId;
+    }
+
+    public String getFields() {
+        return fields;
+    }
+
+    public void setFields(String fields) {
+        this.fields = fields;
+    }
+
+    public String getDesensitizeFields() {
+        return desensitizeFields;
+    }
+
+    public void setDesensitizeFields(String desensitizeFields) {
+        this.desensitizeFields = desensitizeFields;
     }
 }
