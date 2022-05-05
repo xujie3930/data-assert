@@ -28,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -333,15 +334,20 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
 
     @Override
     public BusinessResult<List<ThemeResult>> getList() {
-        List<ThemeResult> list = themeResourceMapper.getResourceByParentId(THEME_PARENT_ID);
+        List<ThemeResult> list = themeResourceMapper.getResourceByParentId(null);
         if (CollectionUtils.isEmpty(list)) {
             return BusinessResult.success(list);
         }
-        for (ThemeResult themeResult : list) {
-            List<ThemeResult> resourceByParentId = themeResourceMapper.getResourceByParentId(themeResult.getId());
-            themeResult.setResourceList(resourceByParentId);
+        List<ThemeResult> themeList = list.stream()
+                .filter(t -> THEME_PARENT_ID.equals(t.getParentId()))
+                .collect(Collectors.toList());
+        for (ThemeResult themeResult : themeList) {
+            List<ThemeResult> resourceList = list.stream()
+                    .filter(t -> themeResult.getId().equals(t.getParentId()))
+                    .collect(Collectors.toList());
+            themeResult.setResourceList(resourceList);
         }
-        return BusinessResult.success(list);
+        return BusinessResult.success(themeList);
     }
 
     private ThemeResourceEntity getResourceEntity(InternalUserInfoVO user, ResourceSaveRequest request) {
