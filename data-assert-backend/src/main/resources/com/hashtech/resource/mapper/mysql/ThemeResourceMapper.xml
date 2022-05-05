@@ -4,6 +4,7 @@
 
     <sql id="Base_Column_List">
         id               	as  id,
+      parent_id         as  parentId,
       name              as  name,
       descriptor        as  descriptor,
       sort              as  sort,
