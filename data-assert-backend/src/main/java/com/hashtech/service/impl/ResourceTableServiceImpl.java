@@ -139,6 +139,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = getById(request.getId());
+            updateMasterData(request, entity);
             BusinessResult<String[]> serveResult = serveFeignClient.getOpenDirIds(entity.getResourceId());
             if (!serveResult.isSuccess()) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
@@ -163,6 +164,14 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         updateById(entityUpdate);
         TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(entityUpdate, request);
         return BusinessResult.success(tableSettingService.updateById(tableSettingUpdateEntity));
+    }
+
+    private void updateMasterData(ResourceTableUpdateRequest request, ResourceTableEntity entity) {
+        if (MasterFlagEnum.YES.getCode().equals(request.getMasterDataFlag())) {
+            entity.setResourceId(request.getResourceId());
+            ThemeResourceEntity themeResourceEntity = themeResourceService.getById(request.getResourceId());
+            entity.setThemeId(Optional.ofNullable(themeResourceEntity).orElse(new ThemeResourceEntity()).getParentId());
+        }
     }
 
     private void checkTableHasExist(String chineseName, String id) {
@@ -442,11 +451,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setColumnsCount(baseInfo.getColumnsCount());
         entity.setDataSize(baseInfo.getDataSize());
         entity.setDatasourceId(request.getDatasourceId());
-        if (MasterFlagEnum.YES.getCode().equals(entity.getMasterDataFlag())) {
-            entity.setResourceId(request.getResourceId());
-            ThemeResourceEntity themeResourceEntity = themeResourceService.getById(request.getResourceId());
-            entity.setThemeId(Optional.ofNullable(themeResourceEntity).orElse(new ThemeResourceEntity()).getParentId());
-        }
+        updateMasterData(request, entity);
         return entity;
     }
 
