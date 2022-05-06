@@ -28,6 +28,11 @@ public class ThemeResult implements Serializable {
     private String id;
 
     /**
+     * 上级目录id
+     */
+    private String parentId;
+
+    /**
      * 主题或者资源分类名称
      */
     private String name;
@@ -92,8 +97,9 @@ public class ThemeResult implements Serializable {
     public ThemeResult() {
     }
 
-    public ThemeResult(String id, String name, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, List<ThemeResult> resourceList, Boolean hidden, String createUserId, String picPath, String picUrl) {
+    public ThemeResult(String id, String parentId, String name, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, List<ThemeResult> resourceList, Boolean hidden, String createUserId, String picPath, String picUrl) {
         this.id = id;
+        this.parentId = parentId;
         this.name = name;
         this.descriptor = descriptor;
         this.sort = sort;
@@ -114,6 +120,14 @@ public class ThemeResult implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
     public String getName() {
