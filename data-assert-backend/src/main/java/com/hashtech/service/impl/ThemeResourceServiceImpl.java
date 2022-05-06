@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.FileParse;
 import com.hashtech.config.validate.BusinessParamsValidate;
+import com.hashtech.entity.MasterDataEntity;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.vo.InternalUserInfoVO;
+import com.hashtech.mapper.MasterDataMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.OauthApiService;
@@ -28,6 +30,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +57,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private OauthApiService oauthApiService;
     @Autowired
     private ServeFeignClient serveFeignClient;
+    @Autowired
+    private MasterDataMapper masterDataMapper;
 
     public static String getThemeParentId() {
         return THEME_PARENT_ID;
@@ -314,9 +319,9 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
                 resourceEntity.setParentId(themeId);
                 updateById(resourceEntity);
                 resourceSize -= 1;
-                //更新该资源对应的主题
-                resourceTableService.updateThemIdByResourceId(themeId, resourceId);
             }
+            //更新该资源对应的主题
+            resourceTableService.updateThemIdByResourceIds(themeId, resourceIds);
         }
         return BusinessResult.success(true);
     }
@@ -350,6 +355,17 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             themeResult.setResourceList(resourceList);
         }
         return BusinessResult.success(themeList);
+    }
+
+    @Override
+    public Boolean masterDataJudge(MasterDataJudgeRequest request) {
+        String themeId = request.getThemeId();
+        if (StringUtils.isNotBlank(request.getResourceId()) && StringUtils.isBlank(request.getThemeId())){
+            ThemeResourceEntity themeResourceEntity = themeResourceMapper.selectById(request.getResourceId());
+            themeId = themeResourceEntity.getParentId();
+        }
+        MasterDataEntity masterDataEntity = masterDataMapper.selectByThemeId(themeId);
+        return Objects.isNull(masterDataEntity);
     }
 
     private ThemeResourceEntity getResourceEntity(InternalUserInfoVO user, ResourceSaveRequest request) {

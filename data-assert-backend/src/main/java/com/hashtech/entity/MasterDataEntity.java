@@ -28,12 +28,15 @@ public class MasterDataEntity implements Serializable {
      */
     private String name;
 
+    private String themeId;
+
     public MasterDataEntity() {
     }
 
-    public MasterDataEntity(Integer id, String name) {
+    public MasterDataEntity(Integer id, String name, String themeId) {
         this.id = id;
         this.name = name;
+        this.themeId = themeId;
     }
 
     public Integer getId() {
@@ -50,5 +53,13 @@ public class MasterDataEntity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getThemeId() {
+        return themeId;
+    }
+
+    public void setThemeId(String themeId) {
+        this.themeId = themeId;
     }
 }

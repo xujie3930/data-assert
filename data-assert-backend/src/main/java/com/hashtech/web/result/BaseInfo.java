@@ -71,6 +71,11 @@ public class BaseInfo {
     private String resourceId;
 
     /**
+     * 资源分类/主数据二级分类名称
+     */
+    private String resourceName;
+
+    /**
      * 数据源类型：1-mysql，2-oracle，3-postgresql，4-sqlServer，5-MongoDB
      */
     private Integer type;
@@ -103,7 +108,7 @@ public class BaseInfo {
     public BaseInfo() {
     }
 
-    public BaseInfo(String id, String name, String chineseName, Integer externalState, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String themeId, String resourceId, Integer type, String databaseName, Integer masterDataFlag, Integer masterDataId, String masterDataName, String datasourceId) {
+    public BaseInfo(String id, String name, String chineseName, Integer externalState, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String themeId, String resourceId, String resourceName, Integer type, String databaseName, Integer masterDataFlag, Integer masterDataId, String masterDataName, String datasourceId) {
         this.id = id;
         this.name = name;
         this.chineseName = chineseName;
@@ -118,6 +123,7 @@ public class BaseInfo {
         this.orgName = orgName;
         this.themeId = themeId;
         this.resourceId = resourceId;
+        this.resourceName = resourceName;
         this.type = type;
         this.databaseName = databaseName;
         this.masterDataFlag = masterDataFlag;
@@ -284,5 +290,13 @@ public class BaseInfo {
 
     public void setMasterDataName(String masterDataName) {
         this.masterDataName = masterDataName;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 }

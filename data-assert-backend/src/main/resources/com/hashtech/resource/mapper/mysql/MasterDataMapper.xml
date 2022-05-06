@@ -2,9 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hashtech.mapper.MasterDataMapper">
 
-    <select id="getList" resultType="map">
-        select id   as id,
-               name as name
+    <select id="getList" resultType="com.hashtech.entity.MasterDataEntity">
+        select *
         from master_data
+    </select>
+
+    <select id="selectByThemeId" resultType="com.hashtech.entity.MasterDataEntity">
+        select *
+        from master_data WHERE theme_id = #{themeId}
     </select>
 </mapper>

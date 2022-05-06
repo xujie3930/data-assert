@@ -227,4 +227,19 @@
             resource_id=#{resourceId}
         </where>
     </update>
+
+    <update id="updateThemIdByResourceIds">
+        update resource_table
+        <set>
+            theme_id=#{themeId}
+        </set>
+        <where>
+            <if test="resourceIds != null and resourceIds.length != 0">
+                AND resource_id in
+                <foreach collection="resourceIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+        </where>
+    </update>
 </mapper>

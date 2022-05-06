@@ -44,4 +44,6 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     ResourceTableEntity getByDatasourceIdAndName(@Param("request") ResourceTableNameRequest request);
 
     void updateThemIdByResourceId(@Param("themeId") String themeId, @Param("resourceId") String resourceId);
+
+    void updateThemIdByResourceIds(@Param("themeId") String themeId, @Param("resourceIds")String[] resourceIds);
 }
