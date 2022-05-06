@@ -217,4 +217,14 @@
             and del_flag='N'
         </where>
     </select>
+
+    <update id="updateThemIdByResourceId">
+        update resource_table
+        <set>
+            theme_id=#{themeId}
+        </set>
+        <where>
+            resource_id=#{resourceId}
+        </where>
+    </update>
 </mapper>

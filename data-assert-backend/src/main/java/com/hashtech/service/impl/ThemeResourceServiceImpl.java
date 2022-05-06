@@ -313,6 +313,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
                 resourceEntity.setParentId(themeId);
                 updateById(resourceEntity);
                 resourceSize -= 1;
+                //更新该资源对应的主题
+                resourceTableService.updateThemIdByResourceId(themeId, resourceId);
             }
         }
         return BusinessResult.success(true);

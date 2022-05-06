@@ -49,4 +49,6 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
     BusinessResult<Boolean> updateResourceTableState(String userId, ResourceTableUpdateStateRequest request);
 
     Map<String, Object> dataPreview(ResourceDataPreviewRequest request);
+
+    void updateThemIdByResourceId(String themeId, String resourceId);
 }
