@@ -67,6 +67,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000039("60000039", "数据服务异常！"),
         RESOURCE_CODE_60000040("60000040", "该资源表中已在开放平台开放，暂不能编辑！"),
         RESOURCE_CODE_60000041("60000041", "主数据不能删除！"),
+        RESOURCE_CODE_60000042("60000042", "该数据源已停用，请重新选择!"),
         ;
 
         public final String code;
