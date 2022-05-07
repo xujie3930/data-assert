@@ -168,6 +168,11 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         ThemeResourceEntity entity = getThemeResourceEntityDel(user, request);
         updateById(entity);
         IdResult idResult = getIdResult(entity.getId(), entity.getSort(), THEME_PARENT_ID);
+        List<MasterDataEntity> masterDataList = masterDataMapper.getList();
+        List<String> mDatathemeIds = masterDataList.stream().map(d -> d.getThemeId()).collect(Collectors.toList());
+        if (mDatathemeIds.contains(request.getId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000041.getCode());
+        }
         return BusinessResult.success(idResult);
     }
 
