@@ -331,6 +331,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             if (masterDataThemeIds.contains(themeId)){
                 MasterDataEntity masterDataEntity = masterDataList.stream().filter(s -> themeId.equals(s.getThemeId())).findFirst().get();
                 resourceTableService.updateMasterDataByResourceIds(MasterFlagEnum.YES.getCode(), masterDataEntity.getId(), resourceIds);
+            }else {
+                resourceTableService.updateMasterDataByResourceIds(MasterFlagEnum.NO.getCode(), 0, resourceIds);
             }
         }
         return BusinessResult.success(true);
