@@ -27,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -298,6 +295,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         if (CollectionUtils.isEmpty(request)) {
             return BusinessResult.success(true);
         }
+        List<MasterDataEntity> masterDataList = masterDataMapper.getList();
+        List<String> masterDataThemeIds = masterDataList.stream().map(d -> d.getThemeId()).collect(Collectors.toList());
         int size = request.entrySet().size();
         for (Map.Entry<String, String[]> m : request.entrySet()) {
 
@@ -328,6 +327,11 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             }
             //更新该资源对应的主题
             resourceTableService.updateThemIdByResourceIds(themeId, resourceIds);
+            //修改其下所有表为主数据类型
+            if (masterDataThemeIds.contains(themeId)){
+                MasterDataEntity masterDataEntity = masterDataList.stream().filter(s -> themeId.equals(s.getThemeId())).findFirst().get();
+                resourceTableService.updateMasterDataByResourceIds(MasterFlagEnum.YES.getCode(), masterDataEntity.getId(), resourceIds);
+            }
         }
         return BusinessResult.success(true);
     }

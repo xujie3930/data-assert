@@ -242,4 +242,19 @@
             </if>
         </where>
     </update>
+
+    <update id="updateMasterDataByResourceIds">
+        update resource_table
+        <set>
+            master_data_flag=#{masterDataFlag}, master_data_id=#{masterDataId}
+        </set>
+        <where>
+            <if test="resourceIds != null and resourceIds.length != 0">
+                AND resource_id in
+                <foreach collection="resourceIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+        </where>
+    </update>
 </mapper>

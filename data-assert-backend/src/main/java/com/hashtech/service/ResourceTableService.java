@@ -53,4 +53,6 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
     void updateThemIdByResourceId(String themeId, String resourceId);
 
     void updateThemIdByResourceIds(String themeId, String[] resourceIds);
+
+    void updateMasterDataByResourceIds(Integer code, Integer id, String[] resourceIds);
 }
