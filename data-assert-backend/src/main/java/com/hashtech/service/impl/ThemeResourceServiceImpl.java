@@ -142,6 +142,12 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Transactional(rollbackFor = Exception.class)
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<IdResult> deleteTheme(String userId, ThemeDeleteRequest request) {
+        //主数据类型的主题不能删除
+        List<MasterDataEntity> masterDataList = masterDataMapper.getList();
+        List<String> mDatathemeIds = masterDataList.stream().map(d -> d.getThemeId()).collect(Collectors.toList());
+        if (mDatathemeIds.contains(request.getId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000041.getCode());
+        }
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         BusinessResult<Map<String, List<String>>> result = serveFeignClient.getOpenTopicAndClassifyIds();
         if (!result.isSuccess()) {
@@ -168,11 +174,6 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         ThemeResourceEntity entity = getThemeResourceEntityDel(user, request);
         updateById(entity);
         IdResult idResult = getIdResult(entity.getId(), entity.getSort(), THEME_PARENT_ID);
-        List<MasterDataEntity> masterDataList = masterDataMapper.getList();
-        List<String> mDatathemeIds = masterDataList.stream().map(d -> d.getThemeId()).collect(Collectors.toList());
-        if (mDatathemeIds.contains(request.getId())){
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000041.getCode());
-        }
         return BusinessResult.success(idResult);
     }
 
