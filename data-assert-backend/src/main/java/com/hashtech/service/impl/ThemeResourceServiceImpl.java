@@ -317,14 +317,22 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             if (BooleanUtils.isTrue(themeResourceMapper.hasExitErrorLevel(resourceIds, THEME_PARENT_ID))) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.getCode());
             }
+//            int resourceSize = resourceIds.length;
+//            for (String resourceId : resourceIds) {
+//                ThemeResourceEntity resourceEntity = getById(resourceId);
+//                resourceEntity.setSort(resourceSize);
+//                resourceEntity.setParentId(themeId);
+//                updateById(resourceEntity);
+//                resourceSize -= 1;
+//            }
+            List<ThemeResourceEntity> themeResourceList = themeResourceMapper.selectBatchIds(Arrays.asList(resourceIds));
             int resourceSize = resourceIds.length;
-            for (String resourceId : resourceIds) {
-                ThemeResourceEntity resourceEntity = getById(resourceId);
+            for (ThemeResourceEntity resourceEntity : themeResourceList) {
                 resourceEntity.setSort(resourceSize);
                 resourceEntity.setParentId(themeId);
-                updateById(resourceEntity);
                 resourceSize -= 1;
             }
+            updateBatchById(themeResourceList);
             //更新该资源对应的主题
             resourceTableService.updateThemIdByResourceIds(themeId, resourceIds);
             //修改其下所有表为主数据类型
