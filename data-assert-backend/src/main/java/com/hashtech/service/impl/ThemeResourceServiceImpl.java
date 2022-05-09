@@ -327,7 +327,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
 //            }
             List<ThemeResourceEntity> themeResourceList = themeResourceMapper.selectBatchIds(Arrays.asList(resourceIds));
             int resourceSize = resourceIds.length;
-            for (ThemeResourceEntity resourceEntity : themeResourceList) {
+            for (String resourceId : resourceIds) {
+                ThemeResourceEntity resourceEntity = themeResourceList.stream().filter(t -> Objects.equals(t.getId(), resourceId)).findFirst().get();
                 resourceEntity.setSort(resourceSize);
                 resourceEntity.setParentId(themeId);
                 resourceSize -= 1;
