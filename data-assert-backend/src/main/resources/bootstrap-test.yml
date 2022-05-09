@@ -5,7 +5,7 @@ spring:
         server-addr: 192.168.0.107:8848
         group: jodptest
   datasource:
-    url: "jdbc:mysql://192.168.0.193:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
+    url: "jdbc:mysql://192.168.0.193:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true"
     username: 'root'
     password: 'MySQL2021'
 

@@ -5,7 +5,7 @@ spring:
         server-addr: 192.168.211.3:8848
         group: PROD
   datasource:
-    url: "jdbc:mysql://192.168.211.2:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8"
+    url: "jdbc:mysql://192.168.211.2:3306/daas?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true"
     username: 'daas'
     password: 'daas@1122'
 
