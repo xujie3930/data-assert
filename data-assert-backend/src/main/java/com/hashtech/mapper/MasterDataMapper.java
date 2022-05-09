@@ -3,9 +3,9 @@ package com.hashtech.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hashtech.entity.MasterDataEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -18,5 +18,7 @@ import java.util.Map;
 @Mapper
 public interface MasterDataMapper extends BaseMapper<MasterDataEntity> {
 
-    List<Map<Integer, String>> getList();
+    List<MasterDataEntity> getList();
+
+    MasterDataEntity selectByThemeId(@Param("themeId") String themeId);
 }

@@ -191,11 +191,13 @@ public class DBConnectionManager {
                 con = (Connection) freeConnections.firstElement();
                 freeConnections.removeElementAt(0);
                 try {
-                    if (con.isClosed()) {
-                        con = getConnection();
+                    if (con == null || con.isClosed()) {
+//                        con = getConnection();
+                        con = newConnection();
                     }
                 } catch (SQLException e) {
-                    con = getConnection();
+//                    con = getConnection();
+                    con = newConnection();
                 }
             } else if (maxConn == 0 || checkedOut < maxConn) {
                 con = newConnection();

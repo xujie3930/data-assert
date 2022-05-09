@@ -87,5 +87,10 @@ public class ThemeResourceController {
     BusinessResult<IdResult> deleteResource(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody ResourceDeleteRequest request) {
         return themeResourceService.deleteResource(userId, request);
     }
+
+    @PostMapping("/masterDataJudge")
+    public BusinessResult<Boolean> masterDataJudge(@RequestBody MasterDataJudgeRequest request) {
+        return BusinessResult.success(themeResourceService.masterDataJudge(request));
+    }
 }
 

@@ -15,7 +15,7 @@ public class ResourceTableSaveRequest {
     /**
      * 所属资源id
      */
-    private String id;
+    private String resourceId;
     /**
      * 是否开放：0-开放，1-不开放
      */
@@ -105,8 +105,8 @@ public class ResourceTableSaveRequest {
     public ResourceTableSaveRequest() {
     }
 
-    public ResourceTableSaveRequest(String id, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag, Integer type) {
-        this.id = id;
+    public ResourceTableSaveRequest(String resourceId, Integer state, String name, String requestUrl, Integer columnsCount, Long dataSize, String source, String descriptor, String matters, Integer sort, String serialNum, String chineseName, String orgId, String orgName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag, Integer type) {
+        this.resourceId = resourceId;
         this.state = state;
         this.name = name;
         this.requestUrl = requestUrl;
@@ -127,12 +127,12 @@ public class ResourceTableSaveRequest {
         this.type = type;
     }
 
-    public String getId() {
-        return id;
+    public String getResourceId() {
+        return resourceId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
     public Integer getState() {
@@ -282,7 +282,7 @@ public class ResourceTableSaveRequest {
     @Override
     public String toString() {
         return "ResourceTableSaveRequest{" +
-                "id='" + id + '\'' +
+                "resourceId='" + resourceId + '\'' +
                 ", state=" + state +
                 ", name='" + name + '\'' +
                 ", requestUrl='" + requestUrl + '\'' +
@@ -300,6 +300,7 @@ public class ResourceTableSaveRequest {
                 ", desensitizeFields=" + desensitizeFields +
                 ", masterDataId=" + masterDataId +
                 ", masterDataFlag=" + masterDataFlag +
+                ", type=" + type +
                 '}';
     }
 }

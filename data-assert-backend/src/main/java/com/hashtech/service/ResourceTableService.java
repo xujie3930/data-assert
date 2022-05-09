@@ -51,4 +51,8 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
     Map<String, Object> dataPreview(ResourceDataPreviewRequest request);
 
     void updateThemIdByResourceId(String themeId, String resourceId);
+
+    void updateThemIdByResourceIds(String themeId, String[] resourceIds);
+
+    void updateMasterDataByResourceIds(Integer code, Integer id, String[] resourceIds);
 }

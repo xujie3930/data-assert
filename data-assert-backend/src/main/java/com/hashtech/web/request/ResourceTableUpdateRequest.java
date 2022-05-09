@@ -17,6 +17,12 @@ public class ResourceTableUpdateRequest {
      * 主键id
      */
     private String id;
+
+    /**
+     * 资源id/主数据二级分类id
+     */
+    private String resourceId;
+
     /**
      * 表名
      */
@@ -86,8 +92,9 @@ public class ResourceTableUpdateRequest {
     public ResourceTableUpdateRequest() {
     }
 
-    public ResourceTableUpdateRequest(String id, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag, Integer type) {
+    public ResourceTableUpdateRequest(String id, String resourceId, String name, String source, String descriptor, String matters, String serialNum, String orgId, String orgName, String chineseName, String datasourceId, List<String> desensitizeFields, Integer masterDataId, Integer masterDataFlag, Integer type) {
         this.id = id;
+        this.resourceId = resourceId;
         this.name = name;
         this.source = source;
         this.descriptor = descriptor;
@@ -109,6 +116,14 @@ public class ResourceTableUpdateRequest {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 
     public String getName() {

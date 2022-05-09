@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.FileParse;
 import com.hashtech.config.validate.BusinessParamsValidate;
+import com.hashtech.entity.MasterDataEntity;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.entity.ThemeResourceEntity;
 import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.vo.InternalUserInfoVO;
+import com.hashtech.mapper.MasterDataMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.OauthApiService;
@@ -25,9 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +54,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private OauthApiService oauthApiService;
     @Autowired
     private ServeFeignClient serveFeignClient;
+    @Autowired
+    private MasterDataMapper masterDataMapper;
 
     public static String getThemeParentId() {
         return THEME_PARENT_ID;
@@ -137,6 +139,12 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     @Transactional(rollbackFor = Exception.class)
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<IdResult> deleteTheme(String userId, ThemeDeleteRequest request) {
+        //主数据类型的主题不能删除
+        List<MasterDataEntity> masterDataList = masterDataMapper.getList();
+        List<String> mDatathemeIds = masterDataList.stream().map(d -> d.getThemeId()).collect(Collectors.toList());
+        if (mDatathemeIds.contains(request.getId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000041.getCode());
+        }
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         BusinessResult<Map<String, List<String>>> result = serveFeignClient.getOpenTopicAndClassifyIds();
         if (!result.isSuccess()) {
@@ -287,6 +295,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         if (CollectionUtils.isEmpty(request)) {
             return BusinessResult.success(true);
         }
+        List<MasterDataEntity> masterDataList = masterDataMapper.getList();
+        List<String> masterDataThemeIds = masterDataList.stream().map(d -> d.getThemeId()).collect(Collectors.toList());
         int size = request.entrySet().size();
         for (Map.Entry<String, String[]> m : request.entrySet()) {
 
@@ -307,15 +317,31 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             if (BooleanUtils.isTrue(themeResourceMapper.hasExitErrorLevel(resourceIds, THEME_PARENT_ID))) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.getCode());
             }
+//            int resourceSize = resourceIds.length;
+//            for (String resourceId : resourceIds) {
+//                ThemeResourceEntity resourceEntity = getById(resourceId);
+//                resourceEntity.setSort(resourceSize);
+//                resourceEntity.setParentId(themeId);
+//                updateById(resourceEntity);
+//                resourceSize -= 1;
+//            }
+            List<ThemeResourceEntity> themeResourceList = themeResourceMapper.selectBatchIds(Arrays.asList(resourceIds));
             int resourceSize = resourceIds.length;
             for (String resourceId : resourceIds) {
-                ThemeResourceEntity resourceEntity = getById(resourceId);
+                ThemeResourceEntity resourceEntity = themeResourceList.stream().filter(t -> Objects.equals(t.getId(), resourceId)).findFirst().get();
                 resourceEntity.setSort(resourceSize);
                 resourceEntity.setParentId(themeId);
-                updateById(resourceEntity);
                 resourceSize -= 1;
-                //更新该资源对应的主题
-                resourceTableService.updateThemIdByResourceId(themeId, resourceId);
+            }
+            updateBatchById(themeResourceList);
+            //更新该资源对应的主题
+            resourceTableService.updateThemIdByResourceIds(themeId, resourceIds);
+            //修改其下所有表为主数据类型
+            if (masterDataThemeIds.contains(themeId)){
+                MasterDataEntity masterDataEntity = masterDataList.stream().filter(s -> themeId.equals(s.getThemeId())).findFirst().get();
+                resourceTableService.updateMasterDataByResourceIds(MasterFlagEnum.YES.getCode(), masterDataEntity.getId(), resourceIds);
+            }else {
+                resourceTableService.updateMasterDataByResourceIds(MasterFlagEnum.NO.getCode(), 0, resourceIds);
             }
         }
         return BusinessResult.success(true);
@@ -350,6 +376,17 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             themeResult.setResourceList(resourceList);
         }
         return BusinessResult.success(themeList);
+    }
+
+    @Override
+    public Boolean masterDataJudge(MasterDataJudgeRequest request) {
+        String themeId = request.getThemeId();
+        if (StringUtils.isNotBlank(request.getResourceId()) && StringUtils.isBlank(request.getThemeId())){
+            ThemeResourceEntity themeResourceEntity = themeResourceMapper.selectById(request.getResourceId());
+            themeId = themeResourceEntity.getParentId();
+        }
+        MasterDataEntity masterDataEntity = masterDataMapper.selectByThemeId(themeId);
+        return Objects.isNull(masterDataEntity);
     }
 
     private ThemeResourceEntity getResourceEntity(InternalUserInfoVO user, ResourceSaveRequest request) {
