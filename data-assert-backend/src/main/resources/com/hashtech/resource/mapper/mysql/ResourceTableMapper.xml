@@ -227,4 +227,56 @@
             resource_id=#{resourceId}
         </where>
     </update>
+
+    <update id="updateThemIdByResourceIds">
+        update resource_table
+        <set>
+            theme_id=#{themeId}
+        </set>
+        <where>
+            <if test="resourceIds != null and resourceIds.length != 0">
+                AND resource_id in
+                <foreach collection="resourceIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <update id="updateMasterDataByResourceIds">
+        update resource_table
+        <set>
+            master_data_flag=#{masterDataFlag}, master_data_id=#{masterDataId}
+        </set>
+        <where>
+            <if test="resourceIds != null and resourceIds.length != 0">
+                AND resource_id in
+                <foreach collection="resourceIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <select id="statisticsResourceTableInfo" resultType="com.hashtech.web.result.StatisticsResourceTableResult">
+        select count(id) as directoryCount,
+               sum(columns_count) as columnCount,
+               sum(data_size) as dataCount from resource_table
+        <where>
+            <if test="delFlag !=null and delFlag != '' ">
+                and del_flag=#{delFlag}
+            </if>
+        </where>
+    </select>
+
+    <select id="getList" resultType="com.hashtech.entity.ResourceTableEntity">
+        select
+        *
+        from resource_table
+        <where>
+            <if test="delFlag !=null and delFlag != '' ">
+                and del_flag=#{delFlag}
+            </if>
+        </where>
+    </select>
 </mapper>

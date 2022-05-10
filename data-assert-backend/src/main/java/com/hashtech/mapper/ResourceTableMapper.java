@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.web.request.ResourceTableNameRequest;
 import com.hashtech.web.request.ResourceTablePageListRequest;
+import com.hashtech.web.result.StatisticsResourceTableResult;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -44,4 +45,12 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     ResourceTableEntity getByDatasourceIdAndName(@Param("request") ResourceTableNameRequest request);
 
     void updateThemIdByResourceId(@Param("themeId") String themeId, @Param("resourceId") String resourceId);
+
+    void updateThemIdByResourceIds(@Param("themeId") String themeId, @Param("resourceIds")String[] resourceIds);
+
+    void updateMasterDataByResourceIds(@Param("masterDataFlag")Integer code, @Param("masterDataId")Integer id, @Param("resourceIds")String[] resourceIds);
+
+    StatisticsResourceTableResult statisticsResourceTableInfo(@Param("delFlag") String delFlag);
+
+    List<ResourceTableEntity> getList(@Param("delFlag") String delFlag);
 }
