@@ -151,4 +151,28 @@
         </where>
         limit 1
     </select>
+
+    <select id="countByTheme"
+            resultType="java.lang.Long">
+        select count(*)
+        from theme_resource
+        <where>
+            <if test="delFlag != null and delFlag != '' ">
+                AND del_flag = #{delFlag}
+            </if>
+            AND parent_id = 0
+        </where>
+    </select>
+
+    <select id="countByResource"
+            resultType="java.lang.Long">
+        select count(*)
+        from theme_resource
+        <where>
+            <if test="delFlag != null and delFlag != '' ">
+                AND del_flag = #{delFlag}
+            </if>
+            AND parent_id != 0
+        </where>
+    </select>
 </mapper>

@@ -36,4 +36,8 @@ public interface ThemeResourceMapper extends BaseMapper<ThemeResourceEntity> {
     String selectNextId(@Param("sort") Integer sort, @Param("parentId") String parentId);
 
     String selectPreviousId(@Param("sort") Integer sort, @Param("parentId") String parentId);
+
+    Long countByTheme(@Param("delFlag") String desc);
+
+    Long countByResource(@Param("delFlag") String desc);
 }

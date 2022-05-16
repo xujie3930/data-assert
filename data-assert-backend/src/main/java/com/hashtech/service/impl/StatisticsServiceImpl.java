@@ -2,6 +2,7 @@ package com.hashtech.service.impl;
 
 import com.hashtech.common.DelFalgEnum;
 import com.hashtech.mapper.ResourceTableMapper;
+import com.hashtech.mapper.ThemeResourceMapper;
 import com.hashtech.service.StatisticsService;
 import com.hashtech.web.result.StatisticsResourceTableResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,17 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Autowired
     private ResourceTableMapper resourceTableMapper;
+    @Autowired
+    private ThemeResourceMapper themeResourceMapper;
     @Override
     public StatisticsResourceTableResult statisticsResourceTableInfo() {
-        return resourceTableMapper.statisticsResourceTableInfo(DelFalgEnum.NOT_DELETE.getDesc());
+        StatisticsResourceTableResult statisticsResourceTable = resourceTableMapper.statisticsResourceTableInfo(DelFalgEnum.NOT_DELETE.getDesc());
+        Long themeCount = themeResourceMapper.countByTheme(DelFalgEnum.NOT_DELETE.getDesc());
+        statisticsResourceTable.setThemeCount(themeCount);
+        Long resourceCount = themeResourceMapper.countByResource(DelFalgEnum.NOT_DELETE.getDesc());
+        statisticsResourceTable.setResourceCount(resourceCount);
+        Long masterDataCount = resourceTableMapper.countByMasterData(DelFalgEnum.NOT_DELETE.getDesc());
+        statisticsResourceTable.setMasterDataCount(masterDataCount);
+        return statisticsResourceTable;
     }
 }

@@ -1,6 +1,5 @@
 package com.hashtech.schedule;
 
-import com.hashtech.common.AppException;
 import com.hashtech.common.DelFalgEnum;
 import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.mapper.ResourceTableMapper;
@@ -8,17 +7,16 @@ import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.result.BaseInfo;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author xujie

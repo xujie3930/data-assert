@@ -53,4 +53,6 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     StatisticsResourceTableResult statisticsResourceTableInfo(@Param("delFlag") String delFlag);
 
     List<ResourceTableEntity> getList(@Param("delFlag") String delFlag);
+
+    Long countByMasterData(@Param("delFlag") String desc);
 }

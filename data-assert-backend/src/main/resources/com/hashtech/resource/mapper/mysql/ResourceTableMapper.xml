@@ -279,4 +279,15 @@
             </if>
         </where>
     </select>
+
+    <select id="countByMasterData" resultType="java.lang.Long">
+        select
+        sum(data_size) as dataCount from resource_table
+        <where>
+            <if test="delFlag !=null and delFlag != '' ">
+                and del_flag=#{delFlag}
+            </if>
+            and master_data_flag = 0
+        </where>
+    </select>
 </mapper>
