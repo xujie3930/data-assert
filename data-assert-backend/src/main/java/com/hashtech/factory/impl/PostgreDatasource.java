@@ -40,7 +40,6 @@ public class PostgreDatasource implements DatasourceSync {
     @Override
     public BaseInfo getBaseInfoByType(ResourceTablePreposeRequest request, BaseInfo baseInfo, DatasourceDetailResult datasource, Connection conn, String tableEnglishName) throws Exception{
         String schema = DatasourceSync.getSchema(datasource.getUri());
-        conn.setSchema(schema);
         DatabaseMetaData metaData = conn.getMetaData();
         ResultSet rs = metaData.getTables(conn.getCatalog(), schema, tableEnglishName,
                 new String[]{"TABLE"});
