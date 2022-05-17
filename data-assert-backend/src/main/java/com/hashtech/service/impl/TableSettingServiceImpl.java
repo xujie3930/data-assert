@@ -21,6 +21,7 @@ import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.*;
 import com.hashtech.service.bo.TableFieldsBO;
 import com.hashtech.utils.*;
+import com.hashtech.utils.druid.DataApiDruidDataSourceService;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
@@ -246,11 +247,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
         Integer type = datasource.getType();
-        Connection conn = DBConnectionManager.getInstance().getConnection(uri, type);
-        if (conn == null) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
-        }
-        try {
+        try (Connection conn = DataApiDruidDataSourceService.getInstance()
+                .getOrCreateConnectionWithoutUsername(uri, type)){
             String tableEnglishName = request.getTableName();
             DatasourceSync factory = DatasourceFactory.getDatasource(type);
             baseInfo = factory.getBaseInfoByType(request, baseInfo, datasource, conn, tableEnglishName);
@@ -259,8 +257,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             e.printStackTrace();
             LOGGER.error("表基本信息接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        } finally {
-            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
     }
 
@@ -273,11 +269,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         List<Structure> structureList = new LinkedList<>();
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
-        Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
-        if (conn == null) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
-        }
-        try {
+        try (Connection conn = DataApiDruidDataSourceService.getInstance()
+                .getOrCreateConnectionWithoutUsername(uri, datasource.getType())){
             DatabaseMetaData metaData = conn.getMetaData();
             ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
@@ -310,8 +303,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             e.printStackTrace();
             LOGGER.error("表结构接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        } finally {
-            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return structureList;
     }
@@ -321,20 +312,15 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //只展示前10000条数据
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(request.getDatasourceId());
         String uri = datasource.getUri();
-        Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
-        if (conn == null) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_10000003.getCode());
-        }
         DatasourceSync factory = DatasourceFactory.getDatasource(datasource.getType());
         BusinessPageResult result = null;
-        try {
+        try (Connection conn = DataApiDruidDataSourceService.getInstance()
+                .getOrCreateConnectionWithoutUsername(uri, datasource.getType())){
             result = factory.getSampleList(conn, request, datasource);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("采样数据接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        } finally {
-            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return result;
     }
@@ -359,7 +345,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         TableFieldsBO tableFieldsBO = new TableFieldsBO();
         DatasourceDetailResult datasource = romoteDataSourceService.getDatasourceDetail(datasourceId);
         String uri = datasource.getUri();
-        Connection conn = DBConnectionManager.getInstance().getConnection(uri, datasource.getType());
         List<String> columnNameList = new LinkedList<>();
         ResourceTableEntity resourceTableEntity = resourceTableMapper.getByDatasourceIdAndName(new ResourceTableNameRequest(tableName, datasourceId));
         StringBuilder fieldSb = new StringBuilder();
@@ -374,7 +359,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         if (!DEFAULT_RESP_INFO.equals(fields)) {
             fieldArr = fields.split(",");
         }
-        try {
+        try (Connection conn = DataApiDruidDataSourceService.getInstance()
+                .getOrCreateConnectionWithoutUsername(uri, datasource.getType())){
             ResultSet rs = conn.getMetaData().getColumns(conn.getCatalog(), null, tableName, "%");
             while (rs.next()) {
                 if (null == fieldArr && DEFAULT_RESP_INFO.equals(fields)) {
@@ -396,8 +382,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             e.printStackTrace();
             LOGGER.error("采样数据接口异常：", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
-        } finally {
-            DBConnectionManager.getInstance().freeConnection(uri, conn);
         }
         return tableFieldsBO;
     }
