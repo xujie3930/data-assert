@@ -8,6 +8,7 @@ import com.hashtech.web.request.ResourceTablePageListRequest;
 import com.hashtech.web.result.StatisticsResourceTableResult;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,4 +56,6 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     List<ResourceTableEntity> getList(@Param("delFlag") String delFlag);
 
     Long countByMasterData(@Param("delFlag") String desc);
+
+    List<ResourceTableEntity> newlyDayList(@Param("createTime") Date date);
 }

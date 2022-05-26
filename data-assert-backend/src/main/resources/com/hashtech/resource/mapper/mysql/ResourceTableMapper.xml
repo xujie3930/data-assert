@@ -290,4 +290,16 @@
             and master_data_flag = 0
         </where>
     </select>
+
+    <select id="newlyDayList" resultType="com.hashtech.entity.ResourceTableEntity">
+        select
+        *
+        from resource_table
+        <where>
+            <if test="createTime !=null ">
+                and TO_DAYS(create_time) = TO_DAYS(#{createTime})
+            </if>
+            and del_flag='N'
+        </where>
+    </select>
 </mapper>

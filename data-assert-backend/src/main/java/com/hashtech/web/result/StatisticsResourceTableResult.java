@@ -37,16 +37,28 @@ public class StatisticsResourceTableResult {
      */
     private Long masterDataCount;
 
+    /**
+     * 当日新增资源表数量
+     */
+    private Long newlyTableCount;
+
+    /**
+     * 当日新增资源表数据量
+     */
+    private Long newlyDataSizeCount;
+
     public StatisticsResourceTableResult() {
     }
 
-    public StatisticsResourceTableResult(Long themeCount, Long resourceCount, Long directoryCount, Long columnCount, Long dataCount, Long masterDataCount) {
+    public StatisticsResourceTableResult(Long themeCount, Long resourceCount, Long directoryCount, Long columnCount, Long dataCount, Long masterDataCount, Long newlyTableCount, Long newlyDataSizeCount) {
         this.themeCount = themeCount;
         this.resourceCount = resourceCount;
         this.directoryCount = directoryCount;
         this.columnCount = columnCount;
         this.dataCount = dataCount;
         this.masterDataCount = masterDataCount;
+        this.newlyTableCount = newlyTableCount;
+        this.newlyDataSizeCount = newlyDataSizeCount;
     }
 
     public Long getThemeCount() {
@@ -95,5 +107,21 @@ public class StatisticsResourceTableResult {
 
     public void setMasterDataCount(Long masterDataCount) {
         this.masterDataCount = masterDataCount;
+    }
+
+    public Long getNewlyTableCount() {
+        return newlyTableCount;
+    }
+
+    public void setNewlyTableCount(Long newlyTableCount) {
+        this.newlyTableCount = newlyTableCount;
+    }
+
+    public Long getNewlyDataSizeCount() {
+        return newlyDataSizeCount;
+    }
+
+    public void setNewlyDataSizeCount(Long newlyDataSizeCount) {
+        this.newlyDataSizeCount = newlyDataSizeCount;
     }
 }
