@@ -83,7 +83,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         checkTableChineseName(request.getChineseName());
         checkTableHasExist(request.getChineseName(), null);
-        ThemeResourceEntity resourceEntity = themeResourceService.getById(request.getId());
+        ThemeResourceEntity resourceEntity = themeResourceService.getById(request.getResourceId());
         if (Objects.isNull(resourceEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000007.getCode());
         }
@@ -139,6 +139,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = getById(request.getId());
+            updateMasterData(request, entity);
             BusinessResult<String[]> serveResult = serveFeignClient.getOpenDirIds(entity.getResourceId());
             if (!serveResult.isSuccess()) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
@@ -163,6 +164,14 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         updateById(entityUpdate);
         TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(entityUpdate, request);
         return BusinessResult.success(tableSettingService.updateById(tableSettingUpdateEntity));
+    }
+
+    private void updateMasterData(ResourceTableUpdateRequest request, ResourceTableEntity entity) {
+        if (MasterFlagEnum.YES.getCode().equals(request.getMasterDataFlag())) {
+            entity.setResourceId(request.getResourceId());
+            ThemeResourceEntity themeResourceEntity = themeResourceService.getById(request.getResourceId());
+            entity.setThemeId(Optional.ofNullable(themeResourceEntity).orElse(new ThemeResourceEntity()).getParentId());
+        }
     }
 
     private void checkTableHasExist(String chineseName, String id) {
@@ -230,6 +239,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
                 baseInfo.setMasterDataFlag(MasterFlagEnum.YES.getCode());
                 baseInfo.setMasterDataId(masterDataEntity.getId());
                 baseInfo.setMasterDataName(masterDataEntity.getName());
+                ThemeResourceEntity themeResourceEntity = themeResourceService.getById(oldEntity.getResourceId());
+                baseInfo.setResourceName(Optional.ofNullable(themeResourceEntity).orElse(new ThemeResourceEntity()).getName());
             }
         }
     }
@@ -411,13 +422,13 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         ResourceTableEntity entity = BeanCopyUtils.copyProperties(request, new ResourceTableEntity());
         Date date = new Date();
         entity.setId(null);
-        entity.setResourceId(request.getId());
+        entity.setResourceId(request.getResourceId());
         entity.setCreateTime(date);
         entity.setUpdateTime(date);
         entity.setCreateBy(user.getUsername());
         entity.setCreateUserId(user.getUserId());
         entity.setUpdateBy(user.getUsername());
-        entity.setResourceId(request.getId());
+        entity.setResourceId(request.getResourceId());
         entity.setColumnsCount(baseInfo.getColumnsCount());
         entity.setDataSize(baseInfo.getDataSize());
         //保存主题id
@@ -440,7 +451,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         entity.setColumnsCount(baseInfo.getColumnsCount());
         entity.setDataSize(baseInfo.getDataSize());
         entity.setDatasourceId(request.getDatasourceId());
-        entity.setDatasourceId(request.getDatasourceId());
+        updateMasterData(request, entity);
         return entity;
     }
 
@@ -470,6 +481,16 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Override
     public void updateThemIdByResourceId(String themeId, String resourceId) {
         resourceTableMapper.updateThemIdByResourceId(themeId, resourceId);
+    }
+
+    @Override
+    public void updateThemIdByResourceIds(String themeId, String[] resourceIds) {
+        resourceTableMapper.updateThemIdByResourceIds(themeId, resourceIds);
+    }
+
+    @Override
+    public void updateMasterDataByResourceIds(Integer code, Integer id, String[] resourceIds) {
+        resourceTableMapper.updateMasterDataByResourceIds(code, id, resourceIds);
     }
 
     //将object转换为list

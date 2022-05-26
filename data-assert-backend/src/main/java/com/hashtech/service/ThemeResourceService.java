@@ -45,4 +45,6 @@ public interface ThemeResourceService extends IService<ThemeResourceEntity> {
     BusinessResult<Boolean> hasExitResource(ResourceSaveRequest request);
 
     BusinessResult<List<ThemeResult>> getList();
+
+    Boolean masterDataJudge(MasterDataJudgeRequest request);
 }

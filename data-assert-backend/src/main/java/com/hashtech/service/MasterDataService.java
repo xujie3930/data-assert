@@ -17,5 +17,5 @@ import java.util.Map;
  */
 public interface MasterDataService extends IService<MasterDataEntity> {
 
-    BusinessResult<List<Map<Integer, String>>> getDataSource();
+    BusinessResult<List<MasterDataEntity>> getDataSource();
 }

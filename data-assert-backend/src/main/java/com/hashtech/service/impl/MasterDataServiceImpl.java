@@ -26,7 +26,7 @@ public class MasterDataServiceImpl extends ServiceImpl<MasterDataMapper, MasterD
     private MasterDataMapper masterDataMapper;
 
     @Override
-    public BusinessResult<List<Map<Integer, String>>> getDataSource() {
+    public BusinessResult<List<MasterDataEntity>> getDataSource() {
         return BusinessResult.success(masterDataMapper.getList());
     }
 }

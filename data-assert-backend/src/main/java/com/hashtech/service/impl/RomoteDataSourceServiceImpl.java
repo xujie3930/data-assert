@@ -35,6 +35,9 @@ public class RomoteDataSourceServiceImpl implements RomoteDataSourceService {
 
     @Override
     public BusinessResult<List<Map<String, String>>> getTableNameList(TableNameListRequest request) {
+        if (StringUtils.isBlank(request.getId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000042.getCode());
+        }
         return datasourceFeignClient.getTableNameList(request);
     }
 
