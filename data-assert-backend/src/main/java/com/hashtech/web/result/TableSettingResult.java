@@ -73,6 +73,11 @@ public class TableSettingResult implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
+    /**
+     * 返回APP信息
+     */
+    private List<TableSettingAppsResult> appList;
+
     public TableSettingResult() {
     }
 
@@ -167,5 +172,13 @@ public class TableSettingResult implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public List<TableSettingAppsResult> getAppList() {
+        return appList;
+    }
+
+    public void setAppList(List<TableSettingAppsResult> appList) {
+        this.appList = appList;
     }
 }

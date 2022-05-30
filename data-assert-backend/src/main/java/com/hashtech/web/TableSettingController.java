@@ -2,12 +2,15 @@ package com.hashtech.web;
 
 
 import com.hashtech.common.BusinessResult;
+import com.hashtech.feign.result.AppGroupListResult;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.ExistInterfaceNamelRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
 import com.hashtech.web.result.TableSettingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -38,6 +41,11 @@ public class TableSettingController {
     public BusinessResult<Boolean> hasExistInterfaceName(@RequestBody ExistInterfaceNamelRequest request) {
         Boolean hasExistOpenExternalState = tableSettingService.hasExistInterfaceName(request);
         return BusinessResult.success(hasExistOpenExternalState);
+    }
+
+    @GetMapping("/appGroups")
+    BusinessResult<List<AppGroupListResult>> getAppGroups() {
+        return BusinessResult.success(tableSettingService.getAppGroups());
     }
 }
 

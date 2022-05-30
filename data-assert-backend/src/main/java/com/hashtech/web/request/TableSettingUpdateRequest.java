@@ -1,8 +1,10 @@
 package com.hashtech.web.request;
 
+import com.hashtech.web.result.TableSettingAppsResult;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * @author xujie
@@ -36,6 +38,11 @@ public class TableSettingUpdateRequest {
      * 返回字段信息
      */
     private String[] respInfo;
+
+    /**
+     * 返回APP信息
+     */
+    private List<TableSettingAppsResult> appList;
 
     /**
      * 接口名称
@@ -110,5 +117,13 @@ public class TableSettingUpdateRequest {
 
     public void setRespInfo(String[] respInfo) {
         this.respInfo = respInfo;
+    }
+
+    public List<TableSettingAppsResult> getAppList() {
+        return appList;
+    }
+
+    public void setAppList(List<TableSettingAppsResult> appList) {
+        this.appList = appList;
     }
 }

@@ -1,22 +1,27 @@
 package com.hashtech.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
+import com.hashtech.entity.TableSettingAppsEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.factory.DatasourceFactory;
 import com.hashtech.factory.DatasourceSync;
 import com.hashtech.feign.DataApiFeignClient;
 import com.hashtech.feign.DatasourceFeignClient;
+import com.hashtech.feign.request.AppQueryListRequest;
 import com.hashtech.feign.request.DatasourceApiGenerateSaveRequest;
 import com.hashtech.feign.request.DatasourceApiParamSaveRequest;
 import com.hashtech.feign.request.DatasourceApiSaveRequest;
 import com.hashtech.feign.result.ApiSaveResult;
+import com.hashtech.feign.result.AppGroupListResult;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
+import com.hashtech.mapper.TableSettingAppsMapper;
 import com.hashtech.mapper.TableSettingMapper;
 import com.hashtech.service.*;
 import com.hashtech.service.bo.TableFieldsBO;
@@ -25,6 +30,7 @@ import com.hashtech.utils.druid.DataApiDruidDataSourceService;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
+import com.hashtech.web.result.TableSettingAppsResult;
 import com.hashtech.web.result.TableSettingResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
@@ -33,6 +39,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopContext;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +83,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private ResourceTableMapper resourceTableMapper;
     @Resource
     private DataApiFeignClient dataApiFeignClient;
+    @Resource
+    private TableSettingAppsMapper tableSettingAppsMapper;
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -114,6 +124,18 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             //对勾选的请求参数进行设置
             handleReqParamInfo(tableSettingEntity.getParamInfo(), structureList);
         }
+        //查询应用列表
+        List<TableSettingAppsEntity> tableSettingApps = tableSettingAppsMapper.queryByTableSettingId(id);
+        List<TableSettingAppsResult> appList = new ArrayList<>();
+        if(null!=tableSettingApps && !tableSettingApps.isEmpty()){
+            tableSettingApps.stream().forEach(tableSettingApp->{
+                TableSettingAppsResult app = new TableSettingAppsResult();
+                app.setAppGroupId(tableSettingApp.getAppGroupId());
+                app.setAppId(tableSettingApp.getAppId());
+                appList.add(app);
+            });
+        }
+        result.setAppList(appList);
         result.setInterfaceName(tableSettingEntity.getInterfaceName());
         result.setUpdateTime(resourceTableEntity.getUpdateTime());
         result.setCreateTime(resourceTableEntity.getCreateTime());
@@ -151,6 +173,25 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<Boolean> updateTableSetting(String userId, TableSettingUpdateRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
+        //更新APP关联信息
+        if(null!=request.getAppList()){
+            List<TableSettingAppsResult> appList = request.getAppList();
+            tableSettingAppsMapper.deleteByTableSettingId(request.getId());
+            if(!appList.isEmpty()){
+                //此处不判断app的信息是否存在
+                //不为空，写入新的关联关系
+                List<TableSettingAppsEntity> list = new ArrayList<>();
+                appList.stream().forEach(app->{
+                    TableSettingAppsEntity appEntity = new TableSettingAppsEntity();
+                    appEntity.setAppGroupId(app.getAppGroupId());
+                    appEntity.setAppId(app.getAppId());
+                    appEntity.setTableSettingId(request.getId());
+                    appEntity.setCreateBy(user.getUserId());
+                    list.add(appEntity);
+                });
+                tableSettingAppsMapper.batchInsert(list);
+            }
+        }
         //更新资源表
         ResourceTableEntity resourceTableEntity = resourceTableService.getById(request.getId());
         if (Objects.isNull(resourceTableEntity)) {
@@ -406,5 +447,11 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         if (hasExist) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.getCode());
         }
+    }
+
+    @Override
+    public List<AppGroupListResult> getAppGroups() {
+        BusinessResult<List<AppGroupListResult>> feignResult = dataApiFeignClient.appGroupList(null, new AppQueryListRequest());
+        return (null!=feignResult&&feignResult.isSuccess()&&null!=feignResult.getData()?feignResult.getData():new ArrayList<>(0));
     }
 }

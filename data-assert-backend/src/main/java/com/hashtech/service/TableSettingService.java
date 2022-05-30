@@ -5,6 +5,7 @@ import com.hashtech.common.AppException;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.feign.result.AppGroupListResult;
 import com.hashtech.service.bo.TableFieldsBO;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
@@ -43,4 +44,6 @@ public interface TableSettingService extends IService<TableSettingEntity> {
     Boolean hasExistInterfaceName(ExistInterfaceNamelRequest request);
 
     void updateTableSettingState(String[] ids, String delFlag);
+
+    List<AppGroupListResult> getAppGroups();
 }

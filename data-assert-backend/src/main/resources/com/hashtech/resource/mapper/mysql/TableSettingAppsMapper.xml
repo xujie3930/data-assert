@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hashtech.mapper.TableSettingAppsMapper">
+    
+    <resultMap id="tableSettingAppsResults" type="com.hashtech.entity.TableSettingAppsEntity">
+        <id property="id" column="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <result property="appId" column="app_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="appGroupId" column="app_group_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="tableSettingId" column="table_setting_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="delFlag" column="del_flag" javaType="java.lang.Byte" jdbcType="TINYINT"/>
+        <result property="createTime" column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" javaType="java.lang.String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <update id="deleteByTableSettingId" parameterType="java.lang.String">
+        UPDATE table_setting_apps SET del_flag=1 WHERE del_flag=0 AND table_setting_id=#{tableSettingId}
+    </update>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO table_setting_apps(id, app_id, app_group_id, table_setting_id, del_flag, create_time, create_by)
+        VALUES
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            (#{id},#{appId},#{appGroupId},#{tableSettingId},0,now(),#{createBy})
+        </foreach>
+    </insert>
+
+    <select id="queryByTableSettingId" parameterType="java.lang.String" resultMap="tableSettingAppsResults">
+        SELECT app_id, app_group_id FROM table_setting_apps WHERE 1=1 AND del_flag=0 AND table_setting_id=#{tableSettingId}
+    </select>
+</mapper>
