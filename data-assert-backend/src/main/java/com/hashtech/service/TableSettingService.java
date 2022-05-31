@@ -5,6 +5,9 @@ import com.hashtech.common.AppException;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.entity.TableSettingEntity;
+import com.hashtech.feign.request.AppAuthInfoRequest;
+import com.hashtech.feign.request.AppAuthSaveRequest;
+import com.hashtech.feign.result.AppAuthInfoResult;
 import com.hashtech.feign.result.AppGroupListResult;
 import com.hashtech.service.bo.TableFieldsBO;
 import com.hashtech.web.request.*;
@@ -46,4 +49,8 @@ public interface TableSettingService extends IService<TableSettingEntity> {
     void updateTableSettingState(String[] ids, String delFlag);
 
     List<AppGroupListResult> getAppGroups();
+
+    BusinessResult<Boolean> appAuthSave(String userId, AppAuthSaveRequest request);
+
+    AppAuthInfoResult appAuthInfo(AppAuthInfoRequest request);
 }

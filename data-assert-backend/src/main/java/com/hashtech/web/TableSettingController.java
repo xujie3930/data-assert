@@ -2,6 +2,9 @@ package com.hashtech.web;
 
 
 import com.hashtech.common.BusinessResult;
+import com.hashtech.feign.request.AppAuthInfoRequest;
+import com.hashtech.feign.request.AppAuthSaveRequest;
+import com.hashtech.feign.result.AppAuthInfoResult;
 import com.hashtech.feign.result.AppGroupListResult;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.ExistInterfaceNamelRequest;
@@ -43,9 +46,19 @@ public class TableSettingController {
         return BusinessResult.success(hasExistOpenExternalState);
     }
 
-    @GetMapping("/appGroups")
-    BusinessResult<List<AppGroupListResult>> getAppGroups() {
+    @GetMapping("/app/groups")
+    public BusinessResult<List<AppGroupListResult>> getAppGroups() {
         return BusinessResult.success(tableSettingService.getAppGroups());
+    }
+
+    @PostMapping("/app/auth/save")
+    public BusinessResult<Boolean> appAuthSave(@RequestHeader(value = "userId", required = false) String userId, @RequestBody AppAuthSaveRequest request) {
+        return tableSettingService.appAuthSave(userId, request);
+    }
+
+    @PostMapping("/app/auth/info")
+    public BusinessResult<AppAuthInfoResult> appAuthInfo(@RequestBody AppAuthInfoRequest request) {
+        return BusinessResult.success(tableSettingService.appAuthInfo(request));
     }
 }
 

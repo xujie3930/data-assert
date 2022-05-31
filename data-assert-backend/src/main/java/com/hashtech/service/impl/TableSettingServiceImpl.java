@@ -1,7 +1,5 @@
 package com.hashtech.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
@@ -12,20 +10,22 @@ import com.hashtech.factory.DatasourceFactory;
 import com.hashtech.factory.DatasourceSync;
 import com.hashtech.feign.DataApiFeignClient;
 import com.hashtech.feign.DatasourceFeignClient;
-import com.hashtech.feign.request.AppQueryListRequest;
-import com.hashtech.feign.request.DatasourceApiGenerateSaveRequest;
-import com.hashtech.feign.request.DatasourceApiParamSaveRequest;
-import com.hashtech.feign.request.DatasourceApiSaveRequest;
+import com.hashtech.feign.request.*;
 import com.hashtech.feign.result.ApiSaveResult;
+import com.hashtech.feign.result.AppAuthInfoResult;
 import com.hashtech.feign.result.AppGroupListResult;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingAppsMapper;
 import com.hashtech.mapper.TableSettingMapper;
-import com.hashtech.service.*;
+import com.hashtech.service.OauthApiService;
+import com.hashtech.service.ResourceTableService;
+import com.hashtech.service.RomoteDataSourceService;
+import com.hashtech.service.TableSettingService;
 import com.hashtech.service.bo.TableFieldsBO;
-import com.hashtech.utils.*;
+import com.hashtech.utils.AddressUtils;
+import com.hashtech.utils.RandomUtils;
 import com.hashtech.utils.druid.DataApiDruidDataSourceService;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
@@ -39,16 +39,15 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopContext;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.util.*;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
@@ -173,25 +172,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     @BusinessParamsValidate(argsIndexs = {1})
     public BusinessResult<Boolean> updateTableSetting(String userId, TableSettingUpdateRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
-        //更新APP关联信息
-        if(null!=request.getAppList()){
-            List<TableSettingAppsResult> appList = request.getAppList();
-            tableSettingAppsMapper.deleteByTableSettingId(request.getId());
-            if(!appList.isEmpty()){
-                //此处不判断app的信息是否存在
-                //不为空，写入新的关联关系
-                List<TableSettingAppsEntity> list = new ArrayList<>();
-                appList.stream().forEach(app->{
-                    TableSettingAppsEntity appEntity = new TableSettingAppsEntity();
-                    appEntity.setAppGroupId(app.getAppGroupId());
-                    appEntity.setAppId(app.getAppId());
-                    appEntity.setTableSettingId(request.getId());
-                    appEntity.setCreateBy(user.getUserId());
-                    list.add(appEntity);
-                });
-                tableSettingAppsMapper.batchInsert(list);
-            }
-        }
+
         //更新资源表
         ResourceTableEntity resourceTableEntity = resourceTableService.getById(request.getId());
         if (Objects.isNull(resourceTableEntity)) {
@@ -214,6 +195,25 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         BusinessResult<ApiSaveResult> result = dataApiFeignClient.createAndPublish(userId, dataApiRequest);
         if (!result.isSuccess() || Objects.isNull(result.getData())) {
             throw new AppException(result.getReturnCode());
+        }
+        //更新APP关联信息
+        if(null!=request.getAppList()){
+            List<TableSettingAppsResult> appList = request.getAppList();
+            tableSettingAppsMapper.deleteByTableSettingId(request.getId());
+            if(!appList.isEmpty()){
+                //此处不判断app的信息是否存在
+                //不为空，写入新的关联关系
+                List<TableSettingAppsEntity> list = new ArrayList<>();
+                appList.stream().forEach(app->{
+                    TableSettingAppsEntity appEntity = new TableSettingAppsEntity();
+                    appEntity.setAppGroupId(app.getAppGroupId());
+                    appEntity.setAppId(app.getAppId());
+                    appEntity.setTableSettingId(request.getId());
+                    appEntity.setCreateBy(user.getUserId());
+                    list.add(appEntity);
+                });
+                tableSettingAppsMapper.batchInsert(list);
+            }
         }
         //数据服务获取接口地址
         entity.setExplainInfo(result.getData().getDesc());
@@ -451,7 +451,23 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     @Override
     public List<AppGroupListResult> getAppGroups() {
-        BusinessResult<List<AppGroupListResult>> feignResult = dataApiFeignClient.appGroupList(null, new AppQueryListRequest());
+        AppQueryListRequest appQueryListRequest = new AppQueryListRequest();
+        appQueryListRequest.setIsEnable(1);//只返回已启用应用
+        BusinessResult<List<AppGroupListResult>> feignResult = dataApiFeignClient.appGroupList(null, appQueryListRequest);
         return (null!=feignResult&&feignResult.isSuccess()&&null!=feignResult.getData()?feignResult.getData():new ArrayList<>(0));
+    }
+
+    @Override
+    public BusinessResult<Boolean> appAuthSave(String userId, AppAuthSaveRequest request) {
+        return dataApiFeignClient.appAuthSave(userId, request);
+    }
+
+    @Override
+    public AppAuthInfoResult appAuthInfo(AppAuthInfoRequest request) {
+        BusinessResult<AppAuthInfoResult> result = dataApiFeignClient.appAuthInfo(request);
+        if (null==result || !result.isSuccess() || null==result.getData()) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000043.getCode());
+        }
+        return result.getData();
     }
 }

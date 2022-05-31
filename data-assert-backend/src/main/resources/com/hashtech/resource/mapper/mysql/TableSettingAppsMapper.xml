@@ -19,8 +19,8 @@
     <insert id="batchInsert" parameterType="java.util.List">
         INSERT INTO table_setting_apps(id, app_id, app_group_id, table_setting_id, del_flag, create_time, create_by)
         VALUES
-        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
-            (#{id},#{appId},#{appGroupId},#{tableSettingId},0,now(),#{createBy})
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.appId},#{item.appGroupId},#{item.tableSettingId},0,now(),#{item.createBy})
         </foreach>
     </insert>
 

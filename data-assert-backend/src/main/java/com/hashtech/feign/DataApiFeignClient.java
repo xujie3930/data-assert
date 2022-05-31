@@ -1,9 +1,12 @@
 package com.hashtech.feign;
 
 import com.hashtech.common.BusinessResult;
+import com.hashtech.feign.request.AppAuthInfoRequest;
+import com.hashtech.feign.request.AppAuthSaveRequest;
 import com.hashtech.feign.request.AppQueryListRequest;
 import com.hashtech.feign.request.DatasourceApiSaveRequest;
 import com.hashtech.feign.result.ApiSaveResult;
+import com.hashtech.feign.result.AppAuthInfoResult;
 import com.hashtech.feign.result.AppGroupListResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author xujie
@@ -30,4 +32,9 @@ public interface DataApiFeignClient {
     @PostMapping("/dataserve/appGroup/list")
     BusinessResult<List<AppGroupListResult>> appGroupList(@RequestHeader(value = "userId") String userId, @RequestBody AppQueryListRequest request);
 
+    @PostMapping("/dataserve/auth/save")
+    BusinessResult<Boolean> appAuthSave(@RequestHeader(value = "userId") String userId, @RequestBody AppAuthSaveRequest request);
+
+    @PostMapping("/dataserve/auth/info")
+    BusinessResult<AppAuthInfoResult> appAuthInfo(@RequestBody AppAuthInfoRequest request);
 }
