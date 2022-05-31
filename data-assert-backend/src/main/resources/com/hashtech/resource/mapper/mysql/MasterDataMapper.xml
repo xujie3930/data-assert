@@ -4,7 +4,7 @@
 
     <select id="getList" resultType="com.hashtech.entity.MasterDataEntity">
         select *
-        from master_data
+        from master_data order by id asc
     </select>
 
     <select id="selectByThemeId" resultType="com.hashtech.entity.MasterDataEntity">
