@@ -50,7 +50,7 @@ public interface TableSettingService extends IService<TableSettingEntity> {
 
     List<AppGroupListResult> getAppGroups();
 
-    BusinessResult<Boolean> appAuthSave(String userId, AppAuthSaveRequest request);
+    /*BusinessResult<Boolean> appAuthSave(String userId, AppAuthSaveRequest request);
 
-    AppAuthInfoResult appAuthInfo(AppAuthInfoRequest request);
+    AppAuthInfoResult appAuthInfo(AppAuthInfoRequest request);*/
 }

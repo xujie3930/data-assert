@@ -51,7 +51,7 @@ public class TableSettingController {
         return BusinessResult.success(tableSettingService.getAppGroups());
     }
 
-    @PostMapping("/app/auth/save")
+    /*@PostMapping("/app/auth/save")
     public BusinessResult<Boolean> appAuthSave(@RequestHeader(value = "userId", required = false) String userId, @RequestBody AppAuthSaveRequest request) {
         return tableSettingService.appAuthSave(userId, request);
     }
@@ -59,6 +59,6 @@ public class TableSettingController {
     @PostMapping("/app/auth/info")
     public BusinessResult<AppAuthInfoResult> appAuthInfo(@RequestBody AppAuthInfoRequest request) {
         return BusinessResult.success(tableSettingService.appAuthInfo(request));
-    }
+    }*/
 }
 

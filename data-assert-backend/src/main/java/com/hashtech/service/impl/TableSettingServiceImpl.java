@@ -11,10 +11,7 @@ import com.hashtech.factory.DatasourceSync;
 import com.hashtech.feign.DataApiFeignClient;
 import com.hashtech.feign.DatasourceFeignClient;
 import com.hashtech.feign.request.*;
-import com.hashtech.feign.result.ApiSaveResult;
-import com.hashtech.feign.result.AppAuthInfoResult;
-import com.hashtech.feign.result.AppGroupListResult;
-import com.hashtech.feign.result.DatasourceDetailResult;
+import com.hashtech.feign.result.*;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingAppsMapper;
@@ -124,7 +121,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             handleReqParamInfo(tableSettingEntity.getParamInfo(), structureList);
         }
         //查询应用列表
-        List<TableSettingAppsEntity> tableSettingApps = tableSettingAppsMapper.queryByTableSettingId(id);
+        BusinessResult<List<AuthListResult>> auths = dataApiFeignClient.queryApiAuthListByPath(result.getRequestUrl());
+        /*List<TableSettingAppsEntity> tableSettingApps = tableSettingAppsMapper.queryByTableSettingId(id);
         List<TableSettingAppsResult> appList = new ArrayList<>();
         if(null!=tableSettingApps && !tableSettingApps.isEmpty()){
             tableSettingApps.stream().forEach(tableSettingApp->{
@@ -133,7 +131,25 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 app.setAppId(tableSettingApp.getAppId());
                 appList.add(app);
             });
+        }*/
+        List<String[]> appList = new ArrayList<>();
+        AppAuthResult authResult = new AppAuthResult();
+        if(null!=auths && null!=auths.getData() && !auths.getData().isEmpty()){
+            auths.getData().stream().forEach(auth->{
+                String appId = auth.getAppId();
+                String appGroupId = auth.getAppGroupId();
+                String[] appArr = {appId, appGroupId};
+                appList.add(appArr);
+            });
+            AuthListResult auth = auths.getData().get(0);
+            authResult.setAllowCall(auth.getAuthAllowCall());
+            authResult.setAuthEffectiveTime(null==auth.getAuthPeriodBegin() || auth.getAuthPeriodBegin().intValue()==-1?-1:0);
+            authResult.setCallCountType(null==auth.getAuthAllowCall()||auth.getAuthAllowCall().intValue()==-1?1:0);
+            authResult.setPeriodEnd(auth.getAuthPeroidEnd());
+            authResult.setPeriodBegin(auth.getAuthPeriodBegin());
+            authResult.setTokenType(auth.getAppTokenType());
         }
+        result.setAuthResult(authResult);
         result.setAppList(appList);
         result.setInterfaceName(tableSettingEntity.getInterfaceName());
         result.setUpdateTime(resourceTableEntity.getUpdateTime());
@@ -197,7 +213,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             throw new AppException(result.getReturnCode());
         }
         //更新APP关联信息
-        if(null!=request.getAppList()){
+        if(null!=request.getAppList() && null!=request.getAuthResult()){
             List<TableSettingAppsResult> appList = request.getAppList();
             tableSettingAppsMapper.deleteByTableSettingId(request.getId());
             if(!appList.isEmpty()){
@@ -457,7 +473,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         return (null!=feignResult&&feignResult.isSuccess()&&null!=feignResult.getData()?feignResult.getData():new ArrayList<>(0));
     }
 
-    @Override
+    /*@Override
     public BusinessResult<Boolean> appAuthSave(String userId, AppAuthSaveRequest request) {
         return dataApiFeignClient.appAuthSave(userId, request);
     }
@@ -469,5 +485,5 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000043.getCode());
         }
         return result.getData();
-    }
+    }*/
 }

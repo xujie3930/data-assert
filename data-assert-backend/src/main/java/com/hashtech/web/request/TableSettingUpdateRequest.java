@@ -1,5 +1,6 @@
 package com.hashtech.web.request;
 
+import com.hashtech.feign.result.AppAuthResult;
 import com.hashtech.web.result.TableSettingAppsResult;
 import org.hibernate.validator.constraints.Length;
 
@@ -43,6 +44,11 @@ public class TableSettingUpdateRequest {
      * 返回APP信息
      */
     private List<TableSettingAppsResult> appList;
+
+    /**
+     * 应用授权信息
+     */
+    private AppAuthResult authResult;
 
     /**
      * 接口名称
@@ -125,5 +131,13 @@ public class TableSettingUpdateRequest {
 
     public void setAppList(List<TableSettingAppsResult> appList) {
         this.appList = appList;
+    }
+
+    public AppAuthResult getAuthResult() {
+        return authResult;
+    }
+
+    public void setAuthResult(AppAuthResult authResult) {
+        this.authResult = authResult;
     }
 }

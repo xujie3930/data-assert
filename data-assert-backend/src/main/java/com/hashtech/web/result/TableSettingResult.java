@@ -1,6 +1,7 @@
 package com.hashtech.web.result;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hashtech.feign.result.AppAuthResult;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
@@ -74,9 +75,14 @@ public class TableSettingResult implements Serializable {
     private Date updateTime;
 
     /**
-     * 返回APP信息
+     * 返回已授权APP ID信息
      */
-    private List<TableSettingAppsResult> appList;
+    private List<String[]> appList;//应前端要求，改为数组//idx=0:appId,idx=1:appGroupId
+
+    /**
+     * 应用授权信息
+     */
+    private AppAuthResult authResult;
 
     public TableSettingResult() {
     }
@@ -174,11 +180,19 @@ public class TableSettingResult implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public List<TableSettingAppsResult> getAppList() {
+    public List<String[]> getAppList() {
         return appList;
     }
 
-    public void setAppList(List<TableSettingAppsResult> appList) {
+    public void setAppList(List<String[]> appList) {
         this.appList = appList;
+    }
+
+    public AppAuthResult getAuthResult() {
+        return authResult;
+    }
+
+    public void setAuthResult(AppAuthResult authResult) {
+        this.authResult = authResult;
     }
 }

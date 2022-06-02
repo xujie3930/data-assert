@@ -8,10 +8,9 @@ import com.hashtech.feign.request.DatasourceApiSaveRequest;
 import com.hashtech.feign.result.ApiSaveResult;
 import com.hashtech.feign.result.AppAuthInfoResult;
 import com.hashtech.feign.result.AppGroupListResult;
+import com.hashtech.feign.result.AuthListResult;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,9 +31,12 @@ public interface DataApiFeignClient {
     @PostMapping("/dataserve/appGroup/list")
     BusinessResult<List<AppGroupListResult>> appGroupList(@RequestHeader(value = "userId") String userId, @RequestBody AppQueryListRequest request);
 
-    @PostMapping("/dataserve/auth/save")
+    @GetMapping("/dataserve/auth/queryApiAuthListByPath")
+    BusinessResult<List<AuthListResult>> queryApiAuthListByPath(@RequestParam(value = "path") String path);
+
+    /*@PostMapping("/dataserve/auth/save")
     BusinessResult<Boolean> appAuthSave(@RequestHeader(value = "userId") String userId, @RequestBody AppAuthSaveRequest request);
 
     @PostMapping("/dataserve/auth/info")
-    BusinessResult<AppAuthInfoResult> appAuthInfo(@RequestBody AppAuthInfoRequest request);
+    BusinessResult<AppAuthInfoResult> appAuthInfo(@RequestBody AppAuthInfoRequest request);*/
 }
