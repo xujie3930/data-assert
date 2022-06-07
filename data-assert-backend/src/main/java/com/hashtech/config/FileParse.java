@@ -1,6 +1,8 @@
 package com.hashtech.config;
 
 import com.hashtech.common.AppException;
+import io.minio.GetObjectArgs;
+import io.minio.GetObjectResponse;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import org.slf4j.Logger;
@@ -8,10 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.FastByteArrayOutputStream;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -71,5 +77,28 @@ public class FileParse {
             throw new AppException("文件上传失败");
         }
         return filePath;
+    }
+
+    public void iconDisplay(HttpServletResponse res, String iconPath) {
+        GetObjectArgs objectArgs = GetObjectArgs.builder().bucket(bucketName).object(iconPath).build();
+        try (GetObjectResponse response = minioClient.getObject(objectArgs)){
+            OutputStream outputStream = res.getOutputStream();
+            byte[] buf = new byte[1024];
+            int len;
+            try (FastByteArrayOutputStream os = new FastByteArrayOutputStream()){
+                while ((len=response.read(buf))!=-1){
+                    os.write(buf,0,len);
+                }
+                os.flush();
+                byte[] bytes = os.toByteArray();
+                FileCopyUtils.copy(bytes,outputStream);
+                res.setContentType("jpg=image/jpeg");
+                outputStream.flush();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+//            throw new AppException(JodpErrorConstant.DOWNLOAD_FILE_FAIL.code,JodpErrorConstant.DOWNLOAD_FILE_FAIL.message);
+        }
     }
 }
