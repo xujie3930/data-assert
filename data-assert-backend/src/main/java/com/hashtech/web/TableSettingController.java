@@ -10,6 +10,8 @@ import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.ExistInterfaceNamelRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
 import com.hashtech.web.result.TableSettingResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +29,7 @@ import java.util.List;
 @RequestMapping("/table/setting")
 public class TableSettingController {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private TableSettingService tableSettingService;
 
@@ -48,6 +51,7 @@ public class TableSettingController {
 
     @GetMapping("/app/groups")
     public BusinessResult<List<AppGroupListResult>> getAppGroups() {
+        logger.info("getAppGroups");
         return BusinessResult.success(tableSettingService.getAppGroups());
     }
 
