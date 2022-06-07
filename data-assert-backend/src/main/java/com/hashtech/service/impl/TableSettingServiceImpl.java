@@ -151,7 +151,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             auths.getData().stream().forEach(auth->{
                 String appId = auth.getAppId();
                 String appGroupId = auth.getAppGroupId();
-                String[] appArr = {appId, appGroupId};
+                String[] appArr = {appGroupId, appId};
                 appList.add(appArr);
             });
             AuthListResult auth = auths.getData().get(auths.getData().size()-1);
@@ -240,7 +240,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 }
                 Set<String> appIds = new HashSet<>();
                 appList.stream().forEach(app->{
-                    appIds.add(app[0]);
+                    appIds.add(app[1]);
                 });
                 saveApi.setAppIds(appIds);
                 saveApi.setAllowCall(request.getAuthResult().getAllowCall());
