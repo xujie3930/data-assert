@@ -37,6 +37,7 @@ public class ResourceCodeClass {
         RESOURCE_CODE_70000018("70000018", "模板下载失败！"),
         RESOURCE_CODE_70000019("70000019", "该标签已被使用，请取消后再进行停用操作！"),
         RESOURCE_CODE_70000020("70000020", "上传失败，请使用下载的模板进行编辑！"),
+        RESOURCE_CODE_70000021("70000021", "上传失败，请选择svg格式图片！"),
         ;
 
         public final String code;
