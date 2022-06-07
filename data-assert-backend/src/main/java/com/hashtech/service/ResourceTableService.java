@@ -24,6 +24,12 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
 
     BusinessResult<Boolean> saveResourceTable(String userId, ResourceTableSaveRequest request);
 
+    /**
+     * 注意：此方法被切面使用，故方法的入参（String userId, ResourceTableUpdateRequest request）必须在前面且顺序不可改变，但可以在后面追加入参参数
+     * @author  maoc
+     * @create  2022/6/7 11:37
+     * @desc
+     **/
     BusinessResult<Boolean> updateResourceTable(String userId, ResourceTableUpdateRequest request);
 
     BusinessResult<BaseInfo> getResourceTableBaseInfo(ResourceTableBaseInfoRequest request);

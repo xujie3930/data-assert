@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.ResourceTableEntity;
-import com.hashtech.entity.TableSettingAppsEntity;
 import com.hashtech.entity.TableSettingEntity;
 import com.hashtech.factory.DatasourceFactory;
 import com.hashtech.factory.DatasourceSync;
@@ -27,7 +26,6 @@ import com.hashtech.utils.druid.DataApiDruidDataSourceService;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.BaseInfo;
 import com.hashtech.web.result.Structure;
-import com.hashtech.web.result.TableSettingAppsResult;
 import com.hashtech.web.result.TableSettingResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
@@ -134,6 +132,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         }*/
         List<String[]> appList = new ArrayList<>();
         AppAuthResult authResult = new AppAuthResult();
+        //赋默认值
+        authResult.setCallCountType(1);
+        authResult.setAuthEffectiveTime(1);
+        authResult.setAllowCall(0);
         if(null!=auths && null!=auths.getData() && !auths.getData().isEmpty()){
             auths.getData().stream().forEach(auth->{
                 String appId = auth.getAppId();
@@ -141,10 +143,10 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
                 String[] appArr = {appId, appGroupId};
                 appList.add(appArr);
             });
-            AuthListResult auth = auths.getData().get(0);
+            AuthListResult auth = auths.getData().get(auths.getData().size()-1);
             authResult.setAllowCall(auth.getAuthAllowCall());
-            authResult.setAuthEffectiveTime(null==auth.getAuthPeriodBegin() || auth.getAuthPeriodBegin().intValue()==-1?-1:0);
-            authResult.setCallCountType(null==auth.getAuthAllowCall()||auth.getAuthAllowCall().intValue()==-1?1:0);
+            authResult.setAuthEffectiveTime(null!=auth.getAuthPeriodBegin() && auth.getAuthPeriodBegin().intValue()>-1?0:1);
+            authResult.setCallCountType(null!=auth.getAuthAllowCall()&&auth.getAuthAllowCall().intValue()>-1?0:1);
             authResult.setPeriodEnd(auth.getAuthPeroidEnd());
             authResult.setPeriodBegin(auth.getAuthPeriodBegin());
             authResult.setTokenType(auth.getAppTokenType());
@@ -206,33 +208,44 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
         entity.setRespInfo(StringUtils.join(request.getRespInfo(), ","));
         entity.setInterfaceName(request.getInterfaceName());
+        String desc = "";
+        BusinessResult<ApiSaveResult> result;
         //这里组装参数,调用数据服务
         DatasourceApiSaveRequest dataApiRequest = getDatasourceApiSaveRequest(request, resourceTableEntity, entity);
-        BusinessResult<ApiSaveResult> result = dataApiFeignClient.createAndPublish(userId, dataApiRequest);
+        //更新APP关联信息
+        if(null!=request.getAppList()){
+            AuthSaveApiRequest saveApi = new AuthSaveApiRequest();
+            List<String[]> appList = request.getAppList();
+            if(appList.isEmpty()){
+                //为空，表示取消所有应用授权
+                //给一个空集合，防止空指针异常
+                saveApi.setAppIds(new HashSet<>(0));
+            }else{
+                if(null==request.getAuthResult()){
+                    throw new AppException("auth result is null");
+                }
+                Set<String> appIds = new HashSet<>();
+                appList.stream().forEach(app->{
+                    appIds.add(app[0]);
+                });
+                saveApi.setAppIds(appIds);
+                saveApi.setAllowCall(request.getAuthResult().getAllowCall());
+                saveApi.setTokenType(request.getAuthResult().getTokenType());
+                saveApi.setPeriodBegin(request.getAuthResult().getPeriodBegin());
+                saveApi.setPeriodEnd(request.getAuthResult().getPeriodEnd());
+            }
+
+            saveApi.setApiSaveRequest(dataApiRequest);
+            result = dataApiFeignClient.saveOuterApi(userId, saveApi);//为避免出现分布式bug，dataApiFeignClient.createAndPublish操作整合到saveOuterApi内部完成
+        }else{
+            result = dataApiFeignClient.createAndPublish(userId, dataApiRequest);
+        }
         if (!result.isSuccess() || Objects.isNull(result.getData())) {
             throw new AppException(result.getReturnCode());
         }
-        //更新APP关联信息
-        if(null!=request.getAppList() && null!=request.getAuthResult()){
-            List<TableSettingAppsResult> appList = request.getAppList();
-            tableSettingAppsMapper.deleteByTableSettingId(request.getId());
-            if(!appList.isEmpty()){
-                //此处不判断app的信息是否存在
-                //不为空，写入新的关联关系
-                List<TableSettingAppsEntity> list = new ArrayList<>();
-                appList.stream().forEach(app->{
-                    TableSettingAppsEntity appEntity = new TableSettingAppsEntity();
-                    appEntity.setAppGroupId(app.getAppGroupId());
-                    appEntity.setAppId(app.getAppId());
-                    appEntity.setTableSettingId(request.getId());
-                    appEntity.setCreateBy(user.getUserId());
-                    list.add(appEntity);
-                });
-                tableSettingAppsMapper.batchInsert(list);
-            }
-        }
+        desc = result.getData().getDesc();
         //数据服务获取接口地址
-        entity.setExplainInfo(result.getData().getDesc());
+        entity.setExplainInfo(desc);
         tableSettingMapper.updateById(entity);
         return BusinessResult.success(true);
     }

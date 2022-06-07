@@ -43,7 +43,7 @@ public class TableSettingUpdateRequest {
     /**
      * 返回APP信息
      */
-    private List<TableSettingAppsResult> appList;
+    private List<String[]> appList;
 
     /**
      * 应用授权信息
@@ -125,11 +125,11 @@ public class TableSettingUpdateRequest {
         this.respInfo = respInfo;
     }
 
-    public List<TableSettingAppsResult> getAppList() {
+    public List<String[]> getAppList() {
         return appList;
     }
 
-    public void setAppList(List<TableSettingAppsResult> appList) {
+    public void setAppList(List<String[]> appList) {
         this.appList = appList;
     }
 

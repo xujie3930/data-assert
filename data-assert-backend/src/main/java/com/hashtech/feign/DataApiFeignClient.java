@@ -1,12 +1,10 @@
 package com.hashtech.feign;
 
 import com.hashtech.common.BusinessResult;
-import com.hashtech.feign.request.AppAuthInfoRequest;
-import com.hashtech.feign.request.AppAuthSaveRequest;
 import com.hashtech.feign.request.AppQueryListRequest;
+import com.hashtech.feign.request.AuthSaveApiRequest;
 import com.hashtech.feign.request.DatasourceApiSaveRequest;
 import com.hashtech.feign.result.ApiSaveResult;
-import com.hashtech.feign.result.AppAuthInfoResult;
 import com.hashtech.feign.result.AppGroupListResult;
 import com.hashtech.feign.result.AuthListResult;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -33,6 +31,9 @@ public interface DataApiFeignClient {
 
     @GetMapping("/dataserve/auth/queryApiAuthListByPath")
     BusinessResult<List<AuthListResult>> queryApiAuthListByPath(@RequestParam(value = "path") String path);
+
+    @PostMapping("/dataserve/auth/saveOuterApi")
+    BusinessResult<ApiSaveResult> saveOuterApi(@RequestHeader(value = "userId") String userId, @RequestBody AuthSaveApiRequest request);
 
     /*@PostMapping("/dataserve/auth/save")
     BusinessResult<Boolean> appAuthSave(@RequestHeader(value = "userId") String userId, @RequestBody AppAuthSaveRequest request);
