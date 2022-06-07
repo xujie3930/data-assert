@@ -58,8 +58,8 @@ public class ResourceTableAop {
         String interfaceName = tableSetting.getInterfaceName();
         String requestUrl = tableSetting.getRequestUrl();
         Integer requestWay = tableSetting.getRequestWay();
-        List<Structure> paramInfo = tableSetting.getParamInfo();
-        List<Structure> outParamInfo = tableSetting.getOutParamInfo();
+        List<Structure> paramInfoList = tableSetting.getParamInfo();
+        List<Structure> outParamInfoList = tableSetting.getOutParamInfo();
         List<Structure> structureList = tableSetting.getStructureList();
         List<String[]> appList = tableSetting.getAppList();
         AppAuthResult authResult = tableSetting.getAuthResult();
@@ -72,17 +72,21 @@ public class ResourceTableAop {
         updateRequest.setInterfaceName(interfaceName);
         updateRequest.setAppList(appList);
         updateRequest.setAuthResult(authResult);
-        List<String> paramInfoList = new ArrayList<>(), respInfoList = new ArrayList<>();
-        if(null!=paramInfo && !paramInfo.isEmpty()){
-            paramInfo.stream().forEach(param->{
-                paramInfoList.add(param.getFieldEnglishName());
-            });
+        String[] paramInfos = new String[0], respInfos = new String[0];
+        if(null!=paramInfoList && !paramInfoList.isEmpty()){
+            paramInfos = new String[paramInfoList.size()];
+            for(int i=0;i<paramInfoList.size();i++){
+                paramInfos[i]=paramInfoList.get(i).getFieldEnglishName();
+            }
         }
-        if(null!=outParamInfo && !outParamInfo.isEmpty()){
-            outParamInfo.stream().forEach(resp->{
-                respInfoList.add(resp.getFieldEnglishName());
-            });
+        if(null!=outParamInfoList && !outParamInfoList.isEmpty()){
+            respInfos = new String[outParamInfoList.size()];
+            for(int i=0;i<outParamInfoList.size();i++){
+                respInfos[i]=outParamInfoList.get(i).getFieldEnglishName();
+            }
         }
+        updateRequest.setRespInfo(respInfos);
+        updateRequest.setParamInfo(paramInfos);
         BusinessResult<Boolean> tableSettingUpdateResult = tableSettingService.updateTableSetting(userId, updateRequest);
         if(null==tableSettingUpdateResult || null==tableSettingUpdateResult.getData() || !tableSettingUpdateResult.getData().booleanValue()){
             logger.error("updateResourceTableAfter error, updateTableSetting is false; userId:{}, updateRequest:{}", userId, JSON.toJSONString(updateRequest));
