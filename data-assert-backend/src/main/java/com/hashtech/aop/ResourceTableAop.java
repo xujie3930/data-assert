@@ -37,9 +37,11 @@ public class ResourceTableAop {
 
     @AfterReturning(value = "updateResourceTablePointcut()", returning = "result")
     public void updateResourceTableAfter(JoinPoint joinPoint, Object result){
+        System.out.println("ResourceTableAop updateResourceTableAfter start");
         final Object[] args = joinPoint.getArgs();
         final BusinessResult<Boolean> businessResult = (BusinessResult<Boolean>) result;
         if(null==businessResult || null==businessResult.getData() || !businessResult.getData().booleanValue()){
+            logger.error("updateResourceTableAfter error, businessResult is false;", businessResult==null?"{}":JSON.toJSONString(businessResult));
             return;//方法没成功
         }
         String userId = (String) args[0];
@@ -47,7 +49,7 @@ public class ResourceTableAop {
         String id = request.getId();
         BusinessResult<TableSettingResult> tableSettingInfoResult = tableSettingService.getTableSetting(id);
         if(null==tableSettingInfoResult || null==tableSettingInfoResult.getData()){
-            logger.error("updateResourceTableAfter error, tableSettingInfoResult is null;", tableSettingInfoResult);
+            logger.error("updateResourceTableAfter error, tableSettingInfoResult is null;", null==tableSettingInfoResult?"{}":JSON.toJSONString(tableSettingInfoResult));
             return;
         }
         TableSettingResult tableSetting = tableSettingInfoResult.getData();
