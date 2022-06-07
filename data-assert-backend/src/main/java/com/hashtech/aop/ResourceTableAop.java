@@ -37,7 +37,7 @@ public class ResourceTableAop {
 
     @AfterReturning(value = "updateResourceTablePointcut()", returning = "result")
     public void updateResourceTableAfter(JoinPoint joinPoint, Object result){
-        System.out.println("ResourceTableAop updateResourceTableAfter start");
+        logger.info("ResourceTableAop updateResourceTableAfter start");
         final Object[] args = joinPoint.getArgs();
         final BusinessResult<Boolean> businessResult = (BusinessResult<Boolean>) result;
         if(null==businessResult || null==businessResult.getData() || !businessResult.getData().booleanValue()){
