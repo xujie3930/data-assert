@@ -52,4 +52,9 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
         map.put("picUrl", picUrl);
         return map;
     }
+
+    @Override
+    public void iconDisplay(HttpServletResponse response, String picUrl) {
+        fileParse.iconDisplay(response, picUrl);
+    }
 }

@@ -40,5 +40,9 @@ public class ResourcePicController {
         return BusinessResult.success(list);
     }
 
+    @GetMapping("/iconDisplay")
+    public void iconDisplay(HttpServletResponse response, @RequestParam("picUrl") String picUrl) {
+        resourcePicService.iconDisplay(response, picUrl);
+    }
 }
 

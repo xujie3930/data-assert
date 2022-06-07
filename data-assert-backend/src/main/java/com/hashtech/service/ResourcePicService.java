@@ -19,4 +19,5 @@ public interface ResourcePicService extends IService<ResourcePicEntity> {
 
     Map<String, String> upload(MultipartFile file) throws Exception;
 
+    void iconDisplay(HttpServletResponse response, String picUrl);
 }
