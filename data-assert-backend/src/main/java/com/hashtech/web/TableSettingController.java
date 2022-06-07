@@ -29,7 +29,6 @@ import java.util.List;
 @RequestMapping("/table/setting")
 public class TableSettingController {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private TableSettingService tableSettingService;
 
@@ -51,7 +50,6 @@ public class TableSettingController {
 
     @GetMapping("/app/groups")
     public BusinessResult<List<AppGroupListResult>> getAppGroups() {
-        logger.info("getAppGroups");
         return BusinessResult.success(tableSettingService.getAppGroups());
     }
 
