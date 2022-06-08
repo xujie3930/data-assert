@@ -40,18 +40,18 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
     private ResourcePicMapper resourcePicMapper;
     @Value("${server.port}")
     private String port;
+    @Value("${server.host}")
+    private String host;
     private String CUSTOM  = "/resource/pic/iconDisplay?picUrl=";
     private String HTTP_PRE  = "http://";
     @Override
     public Map<String, String> upload(HttpServletRequest request, MultipartFile file) throws Exception{
         String picPath = file.getOriginalFilename();
         checkRepetition(picPath);
-        //获取当前服务的内网ip
-        String ip = AddressUtils.getOriginIp(request);
         String picUrl = fileParse.uploadFile(file);
         ResourcePicEntity resourcePicEntity = new ResourcePicEntity();
         resourcePicEntity.setPicPath(picPath);
-        picUrl = new StringBuilder(HTTP_PRE).append(ip).append(":").append(port).append(CUSTOM).append(picUrl).toString();
+        picUrl = new StringBuilder(HTTP_PRE).append(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
         resourcePicEntity.setPicUrl(picUrl);
         save(resourcePicEntity);
         Map<String, String> map = new HashMap<>();

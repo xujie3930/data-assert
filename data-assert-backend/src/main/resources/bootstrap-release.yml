@@ -46,3 +46,6 @@ logging:
   config: classpath:logback/logback-dev.xml
   level:
     com.hashtech: debug
+
+server:
+  host: 192.168.0.234
