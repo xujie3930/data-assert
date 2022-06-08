@@ -51,7 +51,7 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
         String picUrl = fileParse.uploadFile(file);
         ResourcePicEntity resourcePicEntity = new ResourcePicEntity();
         resourcePicEntity.setPicPath(picPath);
-        picUrl = new StringBuilder(HTTP_PRE).append(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
+//        picUrl = new StringBuilder(HTTP_PRE).append(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
         resourcePicEntity.setPicUrl(picUrl);
         save(resourcePicEntity);
         Map<String, String> map = new HashMap<>();
@@ -85,7 +85,8 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
             String picType = item.getPicPath().substring(item.getPicPath().lastIndexOf(".") + 1);
             resourcePicResult.setPicPath(picPath);
             resourcePicResult.setFormat(picType);
-            resourcePicResult.setPicUrl(item.getPicUrl());
+            String picUrl = new StringBuilder(HTTP_PRE).append(host).append(":").append(port).append(CUSTOM).append(item.getPicUrl()).toString();
+            resourcePicResult.setPicUrl(picUrl);
             resourcePicResult.setId(item.getId());
             result.add(resourcePicResult);
         });

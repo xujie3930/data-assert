@@ -23,6 +23,7 @@ import com.hashtech.web.result.ThemeResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -56,6 +57,13 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
     private ServeFeignClient serveFeignClient;
     @Autowired
     private MasterDataMapper masterDataMapper;
+
+    @Value("${server.port}")
+    private String port;
+    @Value("${server.host}")
+    private String host;
+    private String CUSTOM  = "/resource/pic/iconDisplay?picUrl=";
+    private String HTTP_PRE  = "http://";
 
     public static String getThemeParentId() {
         return THEME_PARENT_ID;
@@ -201,9 +209,6 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         checkRepetitionNameByResource(request.getName(), null);
         ThemeResourceEntity entity = getResourceEntity(user, request);
         save(entity);
-        //按开放平台保存图片格式
-        String picUrl = fileParse.uploadFile(entity.getId(), request.getPicUrl());
-        entity.setPicUrl(picUrl);
         updateById(entity);
         return BusinessResult.success(entity.getId());
     }
@@ -253,7 +258,12 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         BeanCopyUtils.copyProperties(request, entity);
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(user.getUsername());
-        String picUrl = fileParse.uploadFile(request.getId(), request.getPicUrl());
+        String picUrl = request.getPicUrl();
+        String pre = new StringBuilder(HTTP_PRE).append(host).append(":").append(port).append(CUSTOM).toString();
+        //picUrl去除pre
+        if (picUrl.startsWith(pre)) {
+            picUrl = picUrl.substring(pre.length());
+        }
         entity.setPicUrl(picUrl);
         updateById(entity);
         return BusinessResult.success(entity.getId());
@@ -409,7 +419,13 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         //TODO:查询和插入得保证原子性
         Integer maxSort = themeResourceMapper.getMaxSortByParentId(request.getId());
         entity.setSort(maxSort + 1);
-        entity.setPicUrl(null);
+        String picUrl = request.getPicUrl();
+        String pre = new StringBuilder(HTTP_PRE).append(host).append(":").append(port).append(CUSTOM).toString();
+        //picUrl去除pre
+        if (picUrl.startsWith(pre)) {
+            picUrl = picUrl.substring(pre.length());
+        }
+        entity.setPicUrl(picUrl);
         return entity;
     }
 
