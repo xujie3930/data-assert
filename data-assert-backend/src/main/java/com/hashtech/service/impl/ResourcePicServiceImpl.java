@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -46,8 +47,7 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
         String picPath = file.getOriginalFilename();
         checkRepetition(picPath);
         //获取当前服务的内网ip
-        InetAddress address = InetAddress.getLocalHost();
-        String ip = AddressUtils.getV4IP();
+        String ip = AddressUtils.getHostIp();
         String picUrl = fileParse.uploadFile(file);
         ResourcePicEntity resourcePicEntity = new ResourcePicEntity();
         resourcePicEntity.setPicPath(picPath);
