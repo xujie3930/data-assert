@@ -2,9 +2,11 @@ package com.hashtech.service;
 
 import com.hashtech.entity.ResourcePicEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.web.result.ResourcePicResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,4 +22,6 @@ public interface ResourcePicService extends IService<ResourcePicEntity> {
     Map<String, String> upload(MultipartFile file) throws Exception;
 
     void iconDisplay(HttpServletResponse response, String picUrl);
+
+    List<ResourcePicResult> getList();
 }

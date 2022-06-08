@@ -2,6 +2,7 @@ package com.hashtech.mapper;
 
 import com.hashtech.entity.ResourcePicEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ResourcePicMapper extends BaseMapper<ResourcePicEntity> {
 
+    Boolean checkRepetition(@Param("picPath") String picPath);
 }

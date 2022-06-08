@@ -2,4 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hashtech.mapper.ResourcePicMapper">
 
+    <select id="checkRepetition"
+            resultType="java.lang.Boolean">
+        select 1
+        from resource_pic
+        <where>
+            <if test="picPath != null and picPath != '' ">
+                AND pic_path = #{picPath}
+            </if>
+        </where>
+        limit 1
+    </select>
 </mapper>
