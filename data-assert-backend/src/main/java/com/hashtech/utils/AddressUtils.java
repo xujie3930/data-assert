@@ -79,7 +79,7 @@ public class AddressUtils {
      *
      * @return
      */
-    public String getV4IP() {
+    public static String getV4IP() {
         String ip = "";
         String chinaz = "http://ip.chinaz.com";
 
