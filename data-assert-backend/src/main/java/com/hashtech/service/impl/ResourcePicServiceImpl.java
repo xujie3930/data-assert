@@ -47,7 +47,7 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
         String picPath = file.getOriginalFilename();
         checkRepetition(picPath);
         //获取当前服务的内网ip
-        String ip = AddressUtils.getHostIp();
+        String ip = AddressUtils.getInnetIp();
         String picUrl = fileParse.uploadFile(file);
         ResourcePicEntity resourcePicEntity = new ResourcePicEntity();
         resourcePicEntity.setPicPath(picPath);

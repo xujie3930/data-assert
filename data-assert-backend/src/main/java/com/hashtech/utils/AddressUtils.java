@@ -80,6 +80,8 @@ public class AddressUtils {
         //step1.获得内网ip和外网ip，并输出到控制台
         String ip1 = getInnetIp();
         System.out.println("内网ip:" + ip1);
+        System.out.println("内网ip1:" +getHostIp());
+
     }
 
     /**
