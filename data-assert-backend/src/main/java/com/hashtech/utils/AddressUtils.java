@@ -80,8 +80,6 @@ public class AddressUtils {
         //step1.获得内网ip和外网ip，并输出到控制台
         String ip1 = getInnetIp();
         System.out.println("内网ip:" + ip1);
-        System.out.println("内网ip1:" +getHostIp());
-
     }
 
     /**
@@ -243,43 +241,29 @@ public class AddressUtils {
     }
 
 
-    public static String getHostIp(){
-
-        String realIp = null;
-
-        try {
-            InetAddress address = InetAddress.getLocalHost();
-
-            // 如果是回环网卡地址, 则获取ipv4 地址
-            if (address.isLoopbackAddress()) {
-                address = getInet4Address();
-            }
-
-            realIp = address.getHostAddress();
-
-            return address.getHostAddress();
-        } catch (Exception e) {
-            log.error("获取主机ip地址异常", e);
+    /**
+     * docker内部部署的Java程序获取不到外部客户端访问IP解决方法
+     * @param request
+     * @return
+     */
+    public static String getOriginIp(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        String unknown = "unknown";
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
         }
-
-        return realIp;
-    }
-
-    /** 获取IPV4网络配置 */
-    private static InetAddress getInet4Address() throws SocketException {
-        // 获取所有网卡信息
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-        while (networkInterfaces.hasMoreElements()) {
-            NetworkInterface netInterface = (NetworkInterface) networkInterfaces.nextElement();
-            Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
-            while (addresses.hasMoreElements()) {
-                InetAddress ip = (InetAddress) addresses.nextElement();
-                if (ip instanceof Inet4Address) {
-                    return ip;
-                }
-            }
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
         }
-        return null;
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
     }
-
 }

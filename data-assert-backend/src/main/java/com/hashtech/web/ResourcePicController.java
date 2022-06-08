@@ -31,8 +31,8 @@ public class ResourcePicController {
     private ResourcePicService resourcePicService;
 
     @PostMapping("/upload")
-    public BusinessResult<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-        Map<String, String> map = resourcePicService.upload(file);
+    public BusinessResult<Map<String, String>> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws Exception {
+        Map<String, String> map = resourcePicService.upload(request, file);
         return BusinessResult.success(map);
     }
 

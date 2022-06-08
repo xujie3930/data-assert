@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public interface ResourcePicService extends IService<ResourcePicEntity> {
 
-    Map<String, String> upload(MultipartFile file) throws Exception;
+    Map<String, String> upload(HttpServletRequest request, MultipartFile file) throws Exception;
 
     void iconDisplay(HttpServletResponse response, String picUrl);
 
