@@ -7,6 +7,7 @@ import com.hashtech.config.FileParse;
 import com.hashtech.entity.ResourcePicEntity;
 import com.hashtech.mapper.ResourcePicMapper;
 import com.hashtech.service.ResourcePicService;
+import com.hashtech.utils.AddressUtils;
 import com.hashtech.web.result.ResourcePicResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,7 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
         String picPath = file.getOriginalFilename();
         checkRepetition(picPath);
         //获取当前服务的内网ip
-        InetAddress address = InetAddress.getLocalHost();
-        String ip = address.getHostAddress();
+        String ip = AddressUtils.getInnetIp();
         String picUrl = fileParse.uploadFile(file);
         ResourcePicEntity resourcePicEntity = new ResourcePicEntity();
         resourcePicEntity.setPicPath(picPath);
