@@ -49,6 +49,7 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
     Boolean hasExistOpenExternalState(ExistOpenExternalRequest request);
 
     ResourceTableResult getByResourceTableId(String resourceTableId);
+    String getChineseName(String name);
 
     BusinessResult<List<ResourceTableEntity>> getList(ResourceTableListRequest request);
 
