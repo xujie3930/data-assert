@@ -392,6 +392,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     }
 
     @Override
+    public String getChineseName(String name) {
+        return resourceTableMapper.getChineseName(name);
+    }
+
+    @Override
     public ResourceTableResult getByResourceTableId(String resourceTableId) {
         ResourceTableResult result = new ResourceTableResult();
         ResourceTableEntity resourceTable = resourceTableMapper.getByResourceTableId(resourceTableId);

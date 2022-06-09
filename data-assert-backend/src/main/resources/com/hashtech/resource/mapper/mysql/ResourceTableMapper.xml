@@ -302,4 +302,8 @@
             and del_flag='N'
         </where>
     </select>
+
+    <select id="getChineseName" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT chinese_name FROM resource_table where name=#{name} AND del_flag='N' limit 1
+    </select>
 </mapper>

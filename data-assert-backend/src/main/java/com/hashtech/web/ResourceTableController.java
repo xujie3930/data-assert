@@ -113,5 +113,10 @@ public class ResourceTableController {
         ResourceTableResult result = resourceTableService.getByResourceTableId(resourceTableId);
         return BusinessResult.success(result);
     }
+
+    @GetMapping("/getChineseName")
+    BusinessResult<String> getChineseName(@RequestParam("name") String name) {
+        return BusinessResult.success(resourceTableService.getChineseName(name));
+    }
 }
 

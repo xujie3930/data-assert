@@ -28,7 +28,7 @@ public interface ResourceTableMapper extends BaseMapper<ResourceTableEntity> {
     List<ResourceTableEntity> queryPage(Page<ResourceTableEntity> page, @Param(value = "request") ResourceTablePageListRequest request);
 
     ResourceTableEntity getByResourceTableId(@Param("resourceTableId") String resourceTableId);
-
+    String getChineseName(@Param("name") String name);
     Long getCountDataSizeResourceId(@Param("resourceId") String id);
 
     Boolean hasExitExternalStateByResourceIds(@Param("resourceIds") String[] ids, @Param("externalState") Integer externalState);
