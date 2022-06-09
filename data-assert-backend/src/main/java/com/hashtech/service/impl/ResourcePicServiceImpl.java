@@ -51,9 +51,9 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
         String picUrl = fileParse.uploadFile(file);
         ResourcePicEntity resourcePicEntity = new ResourcePicEntity();
         resourcePicEntity.setPicPath(picPath);
-//        picUrl = new StringBuilder(HTTP_PRE).append(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
         resourcePicEntity.setPicUrl(picUrl);
         save(resourcePicEntity);
+        picUrl = new StringBuilder(HTTP_PRE).append(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
         Map<String, String> map = new HashMap<>();
         map.put("picPath", picPath);
         map.put("picUrl", picUrl);
