@@ -1,10 +1,10 @@
 package com.hashtech.web.request;
 
 import com.hashtech.feign.result.AppAuthResult;
-import com.hashtech.web.result.TableSettingAppsResult;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -22,11 +22,19 @@ public class TableSettingUpdateRequest {
     /**
      * 表的访问url
      */
+    @NotBlank(message = "60000044")
     private String requestUrl;
     /**
      * 请求方式：0-POST,1-GET
      */
+    @NotNull(message = "60000045")
     private Integer requestWay = 1;
+
+    /**
+     * 支持格式
+     */
+    @NotNull(message = "60000046")
+    private Integer formats;
     /**
      * 请求示例说明
      */
@@ -139,5 +147,13 @@ public class TableSettingUpdateRequest {
 
     public void setAuthResult(AppAuthResult authResult) {
         this.authResult = authResult;
+    }
+
+    public Integer getFormats() {
+        return formats;
+    }
+
+    public void setFormats(Integer formats) {
+        this.formats = formats;
     }
 }

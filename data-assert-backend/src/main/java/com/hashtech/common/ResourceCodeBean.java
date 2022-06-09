@@ -69,6 +69,9 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000041("60000041", "主数据不能删除！"),
         RESOURCE_CODE_60000042("60000042", "该数据源已停用，请重新选择!"),
         RESOURCE_CODE_60000043("60000043", "授权资源不存在!"),
+        RESOURCE_CODE_60000044("60000044", "url不能为空"),
+        RESOURCE_CODE_60000045("60000045", "请求方式不能为空"),
+        RESOURCE_CODE_60000046("60000046", "支持格式不能为空"),
         ;
 
         public final String code;
