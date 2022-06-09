@@ -6,6 +6,12 @@ package com.hashtech.utils;
  * @create 2022-01-06 14:39
  **/
 
+import com.hashtech.config.ExceptionHandler;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.*;
 import java.util.Enumeration;
@@ -18,6 +24,8 @@ import java.util.regex.Pattern;
  * *
  */
 public class AddressUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(AddressUtils.class);
 
     /**
      * 获取本机的内网ip地址
@@ -79,7 +87,7 @@ public class AddressUtils {
      *
      * @return
      */
-    public String getV4IP() {
+    public static String getV4IP() {
         String ip = "";
         String chinaz = "http://ip.chinaz.com";
 
@@ -230,5 +238,32 @@ public class AddressUtils {
             }
         }
         return null;
+    }
+
+
+    /**
+     * docker内部部署的Java程序获取不到外部客户端访问IP解决方法
+     * @param request
+     * @return
+     */
+    public static String getOriginIp(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        String unknown = "unknown";
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
     }
 }
