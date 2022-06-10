@@ -19,3 +19,6 @@ INSERT INTO `sys_resource` (`sys_resource_id`, `name`, `is_leaf`, `code`, `paren
                             `updater_depart_id`, `updater_depart_name`, `need_auth`)
 VALUES ('925059302496927747', '后端解析分类图标', 1, 'L-226', '925052739900145664', 1, '/**/resource/pic/iconDisplay', 1, 3, NULL,
         NULL, '2021-12-29 12:42:31', NULL, NULL, NULL, NULL, '2021-12-29 12:42:31', NULL, NULL, NULL, NULL, NULL);
+
+use daas;
+alter table `resource_table` add column `tableUpdateTime` datetime DEFAULT NULL COMMENT '表更新时间';

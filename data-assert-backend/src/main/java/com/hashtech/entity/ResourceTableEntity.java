@@ -158,10 +158,16 @@ public class ResourceTableEntity implements Serializable {
      */
     private Integer masterDataFlag;
 
+    /**
+     * 更新时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date tableUpdateTime;
+
     public ResourceTableEntity() {
     }
 
-    public ResourceTableEntity(String id, String resourceId, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId, Integer masterDataId, Integer type, Integer masterDataFlag) {
+    public ResourceTableEntity(String id, String resourceId, String name, String chineseName, String serialNum, String orgId, String orgName, String requestUrl, String source, Integer columnsCount, Long dataSize, String matters, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String themeId, String createUserId, String datasourceId, Integer masterDataId, Integer type, Integer masterDataFlag, Date tableUpdateTime) {
         this.id = id;
         this.resourceId = resourceId;
         this.name = name;
@@ -187,6 +193,7 @@ public class ResourceTableEntity implements Serializable {
         this.masterDataId = masterDataId;
         this.type = type;
         this.masterDataFlag = masterDataFlag;
+        this.tableUpdateTime = tableUpdateTime;
     }
 
     public Integer getType() {
@@ -387,5 +394,13 @@ public class ResourceTableEntity implements Serializable {
 
     public void setMasterDataFlag(Integer masterDataFlag) {
         this.masterDataFlag = masterDataFlag;
+    }
+
+    public Date getTableUpdateTime() {
+        return tableUpdateTime;
+    }
+
+    public void setTableUpdateTime(Date tableUpdateTime) {
+        this.tableUpdateTime = tableUpdateTime;
     }
 }
