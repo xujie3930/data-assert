@@ -50,6 +50,7 @@ public class ResourceTableStatisticsTask {
     @Scheduled(cron = "0 */1 * * * ?")
     public void statisticsTask() throws InterruptedException {
         System.out.println("开始执行资源表统计任务");
+        Date date = new Date();
         long startTime = System.currentTimeMillis();
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getList(DelFalgEnum.NOT_DELETE.getDesc());
         if (CollectionUtils.isEmpty(resourceTableList)){
@@ -59,10 +60,15 @@ public class ResourceTableStatisticsTask {
             //同步数据服务数据
             executor.execute(() -> {
                 BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(resourceTableEntity.getDatasourceId(), resourceTableEntity.getName()));
-                resourceTableEntity.setColumnsCount(baseInfo.getColumnsCount());
-                resourceTableEntity.setDataSize(baseInfo.getDataSize());
-                resourceTableService.updateById(resourceTableEntity);
-                System.out.println("执行完成，资源表id：" + resourceTableEntity.getId());
+                //如果columnsCount或者dataSize不同，则更新数据库
+                if (!resourceTableEntity.getColumnsCount().equals(baseInfo.getColumnsCount()) ||
+                        !resourceTableEntity.getDataSize().equals(baseInfo.getDataSize())) {
+                    resourceTableEntity.setColumnsCount(baseInfo.getColumnsCount());
+                    resourceTableEntity.setDataSize(baseInfo.getDataSize());
+                    resourceTableEntity.setTableUpdateTime(date);
+                    resourceTableService.updateById(resourceTableEntity);
+                    System.out.println("执行完成，资源表id：" + resourceTableEntity.getId());
+                }
             });
         }
         long endTime = System.currentTimeMillis();

@@ -89,6 +89,7 @@ CREATE TABLE `resource_table`
     `master_data_flag` tinyint(1)   DEFAULT '0' COMMENT '是否主数据：0-是，1-否，默认0',
     `master_data_id`   int(11)      DEFAULT '0' COMMENT '主数据id，对应master_data表的id',
     `type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '数据源类型：1-mysql,2-oracle,3-postgre',
+    `tableUpdateTime` datetime DEFAULT NULL COMMENT '表更新时间',
     UNIQUE KEY `uk_resource_table_serial_num` (`serial_num`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='资源表';
