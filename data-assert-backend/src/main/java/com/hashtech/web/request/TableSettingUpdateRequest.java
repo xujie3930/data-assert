@@ -22,18 +22,18 @@ public class TableSettingUpdateRequest {
     /**
      * 表的访问url
      */
-    @NotBlank(message = "60000044")
+    //@NotBlank(message = "60000044")
     private String requestUrl;
     /**
      * 请求方式：0-POST,1-GET
      */
-    @NotNull(message = "60000045")
+    //@NotNull(message = "60000045")
     private Integer requestWay = 1;
 
     /**
      * 支持格式
      */
-    @NotNull(message = "60000046")
+    //@NotNull(message = "60000046")
     private Integer formats;
     /**
      * 请求示例说明
