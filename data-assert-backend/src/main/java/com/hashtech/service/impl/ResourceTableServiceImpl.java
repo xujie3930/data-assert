@@ -140,14 +140,15 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         if (resourceTableEntity.getName().equals(request.getName())) {
             ResourceTableEntity entity = getById(request.getId());
             updateMasterData(request, entity);
-            BusinessResult<String[]> serveResult = serveFeignClient.getOpenDirIds(entity.getResourceId());
-            if (!serveResult.isSuccess()) {
-                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
-            }
-            Set<String> openResourceIds = new HashSet<>(Arrays.asList(serveResult.getData()));
-            if (openResourceIds.contains(entity.getId())) {
-                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000040.getCode());
-            }
+            //TODO：暂时放开限制
+//            BusinessResult<String[]> serveResult = serveFeignClient.getOpenDirIds(entity.getResourceId());
+//            if (!serveResult.isSuccess()) {
+//                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000038.getCode());
+//            }
+//            Set<String> openResourceIds = new HashSet<>(Arrays.asList(serveResult.getData()));
+//            if (openResourceIds.contains(entity.getId())) {
+//                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000040.getCode());
+//            }
             BeanCopyUtils.copyProperties(request, entity);
             entity.setUpdateBy(user.getUsername());
             entity.setUpdateTime(new Date());
