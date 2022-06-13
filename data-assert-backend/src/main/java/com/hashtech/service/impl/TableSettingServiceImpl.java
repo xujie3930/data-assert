@@ -156,7 +156,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             });
             AuthListResult auth = auths.getData().get(auths.getData().size()-1);
             authResult.setAllowCall(auth.getAuthAllowCall());
-            authResult.setAuthEffectiveTime(null!=auth.getAuthPeriodBegin() && auth.getAuthPeriodBegin().intValue()>-1?0:1);
+            authResult.setAuthEffectiveTime(null!=auth.getAuthPeriodBegin() && auth.getAuthPeriodBegin().longValue()>-1?0:1);
             authResult.setCallCountType(null!=auth.getAuthAllowCall()&&auth.getAuthAllowCall().intValue()>-1?0:1);
             authResult.setPeriodEnd(auth.getAuthPeroidEnd());
             authResult.setPeriodBegin(auth.getAuthPeriodBegin());
