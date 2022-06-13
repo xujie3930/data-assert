@@ -60,7 +60,6 @@ public class ResourceTableAop {
         Integer requestWay = tableSetting.getRequestWay();
         List<Structure> paramInfoList = tableSetting.getParamInfo();
         List<Structure> outParamInfoList = tableSetting.getOutParamInfo();
-        List<Structure> structureList = tableSetting.getStructureList();
         List<String[]> appList = tableSetting.getAppList();
         AppAuthResult authResult = tableSetting.getAuthResult();
         TableSettingUpdateRequest updateRequest = new TableSettingUpdateRequest();
@@ -72,6 +71,7 @@ public class ResourceTableAop {
         updateRequest.setInterfaceName(interfaceName);
         updateRequest.setAppList(appList);
         updateRequest.setAuthResult(authResult);
+        updateRequest.setFormats(tableSetting.getFormats());
         String[] paramInfos = new String[0], respInfos = new String[0];
         if(null!=paramInfoList && !paramInfoList.isEmpty()){
             paramInfos = new String[paramInfoList.size()];

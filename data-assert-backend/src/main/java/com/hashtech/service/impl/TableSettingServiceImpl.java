@@ -146,7 +146,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //赋默认值
         authResult.setCallCountType(1);
         authResult.setAuthEffectiveTime(1);
-        authResult.setAllowCall(0);
+        //authResult.setAllowCall(0);
         if(null!=auths && null!=auths.getData() && !auths.getData().isEmpty()){
             auths.getData().stream().forEach(auth->{
                 String appId = auth.getAppId();
@@ -156,7 +156,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             });
             AuthListResult auth = auths.getData().get(auths.getData().size()-1);
             authResult.setAllowCall(auth.getAuthAllowCall());
-            authResult.setAuthEffectiveTime(null!=auth.getAuthPeriodBegin() && auth.getAuthPeriodBegin().intValue()>-1?0:1);
+            authResult.setAuthEffectiveTime(null!=auth.getAuthPeriodBegin() && auth.getAuthPeriodBegin().longValue()>-1?0:1);
             authResult.setCallCountType(null!=auth.getAuthAllowCall()&&auth.getAuthAllowCall().intValue()>-1?0:1);
             authResult.setPeriodEnd(auth.getAuthPeroidEnd());
             authResult.setPeriodBegin(auth.getAuthPeriodBegin());

@@ -2,17 +2,14 @@ package com.hashtech.web;
 
 
 import com.hashtech.common.BusinessResult;
-import com.hashtech.feign.request.AppAuthInfoRequest;
-import com.hashtech.feign.request.AppAuthSaveRequest;
-import com.hashtech.feign.result.AppAuthInfoResult;
+import com.hashtech.common.ResourceCodeBean;
 import com.hashtech.feign.result.AppGroupListResult;
 import com.hashtech.service.TableSettingService;
 import com.hashtech.web.request.ExistInterfaceNamelRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
 import com.hashtech.web.result.TableSettingResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +36,20 @@ public class TableSettingController {
 
     @PostMapping("/update")
     BusinessResult<Boolean> updateTableSetting(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody TableSettingUpdateRequest request) {
+        //新增三处非空判断
+        //由于TableSettingUpdateRequest类多个地方用到，仅该接口需要判断非空，故不在TableSettingUpdateRequest里面加非空注解
+        if(StringUtils.isEmpty(request.getFormats())){
+            ResourceCodeBean.ResourceCode rc60000046 = ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000046;
+            return BusinessResult.fail(rc60000046.getCode(), rc60000046.getMessage());
+        }
+        if(StringUtils.isEmpty(request.getRequestWay())){
+            ResourceCodeBean.ResourceCode rc60000045 = ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000045;
+            return BusinessResult.fail(rc60000045.getCode(), rc60000045.getMessage());
+        }
+        if(StringUtils.isEmpty(request.getRequestUrl())){
+            ResourceCodeBean.ResourceCode rc60000044 = ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044;
+            return BusinessResult.fail(rc60000044.getCode(), rc60000044.getMessage());
+        }
         return tableSettingService.updateTableSetting(userId, request);
     }
 
