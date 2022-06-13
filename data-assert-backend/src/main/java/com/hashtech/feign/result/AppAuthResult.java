@@ -8,11 +8,11 @@ public class AppAuthResult {
 
     private Long periodEnd;
 
-    private Integer callCountType;
+    private Integer callCountType;//可调用类型，1：无限次，0：有限次
 
     private Integer allowCall;
 
-    private Integer authEffectiveTime;
+    private Integer authEffectiveTime;//授权有效期，1：永久，0：短期
 
     public Integer getTokenType() {
         return tokenType;

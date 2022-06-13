@@ -146,7 +146,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //赋默认值
         authResult.setCallCountType(1);
         authResult.setAuthEffectiveTime(1);
-        authResult.setAllowCall(0);
+        //authResult.setAllowCall(0);
         if(null!=auths && null!=auths.getData() && !auths.getData().isEmpty()){
             auths.getData().stream().forEach(auth->{
                 String appId = auth.getAppId();
