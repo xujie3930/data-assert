@@ -15,9 +15,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author xujie
@@ -45,10 +45,23 @@ public class ResourceTableStatisticsTask {
             THREAD_COUNT_NUM * 2,
             50,
             TimeUnit.SECONDS
-            , new LinkedBlockingQueue<Runnable>());
+            , new LinkedBlockingQueue<Runnable>(100000)
+            , new RejectedExecutionHandler() {
+                @Override
+                public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                    throw new RejectedExecutionException("Task "+r.toString()+" rejected from "+ executor.toString());
+                }
+    });
+    private final AtomicInteger taskNum = new AtomicInteger(0);
+    /*private final AtomicLong taskTime = new AtomicLong();*/
 
     @Scheduled(cron = "0 */1 * * * ?")
     public void statisticsTask() throws InterruptedException {
+        if(!canExec()){
+            //有任务执行，抛弃
+            System.out.println("有任务正在执行，抛弃当前任务");
+            return;
+        }
         System.out.println("开始执行资源表统计任务");
         Date date = new Date();
         long startTime = System.currentTimeMillis();
@@ -58,21 +71,49 @@ public class ResourceTableStatisticsTask {
         }
         for (ResourceTableEntity resourceTableEntity : resourceTableList) {
             //同步数据服务数据
+            taskNum.incrementAndGet();
             executor.execute(() -> {
+                try{
                 BaseInfo baseInfo = tableSettingService.getBaseInfo(new ResourceTablePreposeRequest(resourceTableEntity.getDatasourceId(), resourceTableEntity.getName()));
                 //如果columnsCount或者dataSize不同，则更新数据库
                 if (!resourceTableEntity.getColumnsCount().equals(baseInfo.getColumnsCount()) ||
                         !resourceTableEntity.getDataSize().equals(baseInfo.getDataSize())) {
-                    resourceTableEntity.setColumnsCount(baseInfo.getColumnsCount());
-                    resourceTableEntity.setDataSize(baseInfo.getDataSize());
-                    resourceTableEntity.setTableUpdateTime(date);
-                    resourceTableService.updateById(resourceTableEntity);
+                        ResourceTableEntity entity = new ResourceTableEntity();
+                        entity.setId(resourceTableEntity.getId());
+                        entity.setColumnsCount(baseInfo.getColumnsCount());
+                        entity.setDataSize(baseInfo.getDataSize());
+                        entity.setTableUpdateTime(date);
+                        resourceTableService.updateById(entity);
                     System.out.println("执行完成，资源表id：" + resourceTableEntity.getId());
+                }
+                }finally {
+                    taskNum.decrementAndGet();
                 }
             });
         }
+        //子线程异步执行，所以统计时间不准
         long endTime = System.currentTimeMillis();
         long spendTime = (endTime - startTime) ;
         System.out.println("执行资源表统计任务总耗时:" + spendTime + " 毫秒");
+    }
+
+    private boolean canExec(){
+        if(taskNum.get()<=0 || executor.getQueue().isEmpty()){
+            taskNum.set(0);
+            //taskTime.set(System.currentTimeMillis());
+            return true;
+        }else {
+            return false;
+        }
+        //如果大于0，判断上次发起时间
+        /*long lastTime = taskTime.get();
+        long nowTime = System.currentTimeMillis();
+        if(lastTime>0 && (nowTime-lastTime)>(1800000l)){
+            //上次执行时间距今超过30分钟，可执行
+            taskNum.set(0);
+            taskTime.set(nowTime);
+            return true;
+        }
+        return false;*/
     }
 }
