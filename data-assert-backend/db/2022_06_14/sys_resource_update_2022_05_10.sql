@@ -1,4 +1,6 @@
-use iframe;
+-- 生产：192.168.211.2
+-- 预发布：192.168.0.112
+use jodpiframe;
 INSERT INTO `sys_resource` (`sys_resource_id`, `name`, `is_leaf`, `code`, `parent_id`, `status`, `url`, `type`,
                             `layout`, `order_by`, `remark`, `create_time`, `creator_id`, `creator_name`,
                             `creator_depart_id`, `creator_depart_name`, `update_time`, `updater_id`, `updater_name`,
