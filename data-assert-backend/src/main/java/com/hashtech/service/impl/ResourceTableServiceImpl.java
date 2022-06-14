@@ -137,7 +137,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         checkHasExitResourceTable(request.getName(), request.getDatasourceId(), resourceTableEntity.getId());
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), request.getId()));
         //不更换表，只更新表信息
-        if (resourceTableEntity.getName().equals(request.getName())) {
+        if (resourceTableEntity.getName().equals(request.getName()) && resourceTableEntity.getDatasourceId().equals(request.getDatasourceId())) {
             ResourceTableEntity entity = getById(request.getId());
             updateMasterData(request, entity);
             //TODO：暂时放开限制
