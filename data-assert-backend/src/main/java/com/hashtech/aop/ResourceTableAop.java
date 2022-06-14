@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +48,12 @@ public class ResourceTableAop {
         String userId = (String) args[0];
         ResourceTableUpdateRequest request = (ResourceTableUpdateRequest) args[1];
         String id = request.getId();
-        BusinessResult<TableSettingResult> tableSettingInfoResult = tableSettingService.getTableSetting(id);
-        if(null==tableSettingInfoResult || null==tableSettingInfoResult.getData()){
-            logger.error("updateResourceTableAfter error, tableSettingInfoResult is null;", null==tableSettingInfoResult?"{}":JSON.toJSONString(tableSettingInfoResult));
+        BusinessResult<TableSettingResult> tableSettingResult = tableSettingService.getTableSetting(id);
+        if(null==tableSettingResult || null==tableSettingResult.getData() || StringUtils.isEmpty(tableSettingResult.getData().getInterfaceName())){
+            logger.error("updateResourceTableAfter error, tableSettingInfoResult or interfaceName is null;", null==tableSettingResult?"{}":JSON.toJSONString(tableSettingResult));
             return;
         }
-        TableSettingResult tableSetting = tableSettingInfoResult.getData();
+        TableSettingResult tableSetting = tableSettingResult.getData();
         String explainInfo = tableSetting.getExplainInfo();
         Integer formats = tableSetting.getFormats();
         String interfaceName = tableSetting.getInterfaceName();
