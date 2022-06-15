@@ -58,7 +58,7 @@ public class ResourceTableStatisticsTask {
     private final AtomicInteger taskNum = new AtomicInteger(0);
     /*private final AtomicLong taskTime = new AtomicLong();*/
 
-    @Scheduled(cron = "* * * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     public void statisticsTask() throws InterruptedException {
         if(!canExec()){
             //有任务执行，抛弃
