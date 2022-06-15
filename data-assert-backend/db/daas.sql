@@ -89,7 +89,7 @@ CREATE TABLE `resource_table`
     `master_data_flag` tinyint(1)   DEFAULT '0' COMMENT '是否主数据：0-是，1-否，默认0',
     `master_data_id`   int(11)      DEFAULT '0' COMMENT '主数据id，对应master_data表的id',
     `type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '数据源类型：1-mysql,2-oracle,3-postgre',
-    `tableUpdateTime` datetime DEFAULT NULL COMMENT '表更新时间',
+    `table_update_time` datetime DEFAULT NULL COMMENT '表更新时间',
     UNIQUE KEY `uk_resource_table_serial_num` (`serial_num`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='资源表';
@@ -109,7 +109,7 @@ CREATE TABLE `table_setting`
     `param_info`         varchar(500) DEFAULT NULL COMMENT '参数信息',
     `interface_name`     varchar(50)  DEFAULT NULL COMMENT '接口名称',
     `del_flag`           char(1)      DEFAULT 'N' COMMENT '是否删除:N-否，Y-删除',
-    `desensitize_fields` varchar(255) DEFAULT NULL COMMENT '脱敏字段',
+    `desensitize_fields` text DEFAULT NULL COMMENT '脱敏字段',
     `resp_info`          text COMMENT '返回字段信息'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='资源信息设置表';
