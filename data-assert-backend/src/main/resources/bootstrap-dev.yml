@@ -48,3 +48,10 @@ logging:
 
 server:
   host: 192.168.0.125
+
+feign:
+  client:
+    config:
+      default:
+        connectionTimeout: 60000
+        readTimeout: 60000

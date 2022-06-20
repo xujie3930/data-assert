@@ -5,8 +5,11 @@ import com.hashtech.entity.ResourceTableEntity;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.service.ResourceTableService;
 import com.hashtech.service.TableSettingService;
+import com.hashtech.utils.druid.DataApiDruidDataSourceService;
 import com.hashtech.web.request.ResourceTablePreposeRequest;
 import com.hashtech.web.result.BaseInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -37,7 +40,7 @@ public class ResourceTableStatisticsTask {
     private ResourceTableMapper resourceTableMapper;
     @Autowired
     private ResourceTableService resourceTableService;
-
+    private final Logger logger = LoggerFactory.getLogger(ResourceTableStatisticsTask.class);
 
     private static final int THREAD_COUNT_NUM = 5;
     private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(
@@ -59,10 +62,12 @@ public class ResourceTableStatisticsTask {
     public void statisticsTask() throws InterruptedException {
         if(!canExec()){
             //有任务执行，抛弃
-            System.out.println("有任务正在执行，抛弃当前任务");
+            logger.warn("有任务正在执行，抛弃当前任务");
+            //System.out.println("有任务正在执行，抛弃当前任务");
             return;
         }
-        System.out.println("开始执行资源表统计任务");
+        //System.out.println("开始执行资源表统计任务");
+        logger.warn("开始执行资源表统计任务");
         Date date = new Date();
         long startTime = System.currentTimeMillis();
         List<ResourceTableEntity> resourceTableList = resourceTableMapper.getList(DelFalgEnum.NOT_DELETE.getDesc());
@@ -94,7 +99,8 @@ public class ResourceTableStatisticsTask {
         //子线程异步执行，所以统计时间不准
         long endTime = System.currentTimeMillis();
         long spendTime = (endTime - startTime) ;
-        System.out.println("执行资源表统计任务总耗时:" + spendTime + " 毫秒");
+        logger.warn("执行资源表统计任务总耗时:" + spendTime + " 毫秒");
+        //System.out.println("执行资源表统计任务总耗时:" + spendTime + " 毫秒");
     }
 
     private boolean canExec(){
