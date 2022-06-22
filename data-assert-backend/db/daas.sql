@@ -66,7 +66,7 @@ CREATE TABLE `resource_table`
     `id`               varchar(32)  DEFAULT NULL COMMENT '主键id',
     `resource_id`      varchar(32)  DEFAULT NULL COMMENT '关联theme_resource表的id',
     `state`            tinyint(4)   DEFAULT NULL COMMENT '0-开放，1-不开放',
-    `name`             varchar(50)  DEFAULT NULL COMMENT '资源分类名称',
+    `name`             varchar(100)  DEFAULT NULL COMMENT '资源分类名称',
     `chinese_name`     varchar(255) DEFAULT NULL COMMENT '资源表中文名称',
     `serial_num`       varchar(50) NOT NULL COMMENT '资源表编号',
     `request_url`      varchar(500) DEFAULT NULL COMMENT '访问表的URL',
