@@ -36,7 +36,7 @@ logging:
   #  file: ../logs/api-gateway/api-gateway.log
   #  level:
   #    root: info
-  config: classpath:logback/logback-dev.xml
+  config: classpath:logback/logback-prod.xml
   level:
     com.hashtech: info
 
