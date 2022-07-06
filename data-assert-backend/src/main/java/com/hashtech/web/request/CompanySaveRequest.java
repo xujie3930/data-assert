@@ -29,14 +29,18 @@ public class CompanySaveRequest {
     @Length(max = 200, message = "70000015")
     private String describe;
 
+    //产业库id列表
+    private List<String> industrialIds;
+
     public CompanySaveRequest() {
     }
 
-    public CompanySaveRequest(String uscc, String corpNm, List<String> tagIds, String describe) {
+    public CompanySaveRequest(String uscc, String corpNm, List<String> tagIds, String describe, List<String> industrialIds) {
         this.uscc = uscc;
         this.corpNm = corpNm;
         this.tagIds = tagIds;
         this.describe = describe;
+        this.industrialIds = industrialIds;
     }
 
     public String getUscc() {
@@ -69,6 +73,14 @@ public class CompanySaveRequest {
 
     public void setDescribe(String describe) {
         this.describe = describe;
+    }
+
+    public List<String> getIndustrialIds() {
+        return industrialIds;
+    }
+
+    public void setIndustrialIds(List<String> industrialIds) {
+        this.industrialIds = industrialIds;
     }
 }
 

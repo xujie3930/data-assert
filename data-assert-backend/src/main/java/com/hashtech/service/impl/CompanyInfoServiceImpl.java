@@ -10,11 +10,13 @@ import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.easyexcel.bean.CompanyInfoImportContent;
 import com.hashtech.entity.CompanyInfoEntity;
 import com.hashtech.entity.CompanyTagEntity;
+import com.hashtech.entity.IndustrialCompanyEntity;
 import com.hashtech.entity.TagEntity;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.CompanyInfoMapper;
 import com.hashtech.service.CompanyInfoService;
 import com.hashtech.service.CompanyTagService;
+import com.hashtech.service.IndustrialCompanyService;
 import com.hashtech.service.TagService;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.excel.ExcelUtils;
@@ -55,6 +57,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     private CompanyInfoMapper companyInfoMapper;
     @Autowired
     private OauthApiServiceImpl oauthApiService;
+    @Autowired
+    private IndustrialCompanyService industrialCompanyService;
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
@@ -79,8 +83,17 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             companyInfoEntity.setTagNum(tagNum);
             updateById(companyInfoEntity);
         }
+        if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
+            for (String industrialId : request.getIndustrialIds()) {
+                if (StringUtils.isBlank(industrialId) || "null".equals(industrialId)){
+                    continue;
+                }
+                saveIndustrialCompany(user, date, companyInfoId, industrialId);
+            }
+        }
         return true;
     }
+
 
     @Override
     public Boolean hasExistUscc(String uscc, String id) {
@@ -169,15 +182,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         if (Objects.isNull(companyInfoEntity)) {
             return true;
         }
-        //更改企业
         checkUnifiedSocial(request.getUscc());
-        companyInfoEntity.setUscc(request.getUscc());
-        companyInfoEntity.setCorpNm(request.getCorpNm());
-        companyInfoEntity.setDescribe(request.getDescribe());
-        companyInfoEntity.setUpdateTime(new Date());
-        companyInfoEntity.setUpdateUserId(userId);
-        companyInfoEntity.setUpdateBy(user.getUsername());
-        updateById(companyInfoEntity);
         //去除旧标签，同时更新企业标签数量和标签被企业使用数量
         List<CompanyTagEntity> oldCompanyTag = companyTagService.getListByCompanyId(request.getId());
         List<String> oldTagIds = oldCompanyTag.stream().map(old -> old.getTagId()).collect(Collectors.toList());
@@ -201,7 +206,14 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
                 }
             }
         }
+        ////更改企业
         companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
+        companyInfoEntity.setUscc(request.getUscc());
+        companyInfoEntity.setCorpNm(request.getCorpNm());
+        companyInfoEntity.setDescribe(request.getDescribe());
+        companyInfoEntity.setUpdateTime(new Date());
+        companyInfoEntity.setUpdateUserId(userId);
+        companyInfoEntity.setUpdateBy(user.getUsername());
         updateById(companyInfoEntity);
         return true;
     }
@@ -334,5 +346,18 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         //改标签使用次数+1
         tagEntity.setUsedTime(tagEntity.getUsedTime() + 1);
         tagService.updateById(tagEntity);
+    }
+
+    private void saveIndustrialCompany(InternalUserInfoVO user, Date date, String companyInfoId, String industrialId) {
+        IndustrialCompanyEntity industrialCompanyEntity = new IndustrialCompanyEntity();
+        industrialCompanyEntity.setIndustrialId(industrialId);
+        industrialCompanyEntity.setCompanyInfoId(companyInfoId);
+        industrialCompanyEntity.setCreateTime(date);
+        industrialCompanyEntity.setCreateUserId(user.getUserId());
+        industrialCompanyEntity.setCreateBy(user.getUsername());
+        industrialCompanyEntity.setUpdateTime(date);
+        industrialCompanyEntity.setUpdateUserId(user.getUserId());
+        industrialCompanyEntity.setUpdateBy(user.getUsername());
+        industrialCompanyService.save(industrialCompanyEntity);
     }
 }

@@ -3,6 +3,8 @@ package com.hashtech.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,7 +16,7 @@ import lombok.EqualsAndHashCode;
  * @author xujie
  * @since 2022-07-06
  */
-@Data
+//@Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("industrial")
 public class IndustrialEntity implements Serializable {
@@ -44,7 +46,7 @@ public class IndustrialEntity implements Serializable {
     /**
      * 创建时间
      */
-    private LocalDateTime createTime;
+    private Date createTime;
 
     /**
      * 创建人id
@@ -59,7 +61,7 @@ public class IndustrialEntity implements Serializable {
     /**
      * 更新时间
      */
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     /**
      * 更新人id
@@ -76,5 +78,112 @@ public class IndustrialEntity implements Serializable {
      */
     private Integer delFlag;
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getCreateUserId() {
+        return createUserId;
+    }
+
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId;
+    }
+
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getUpdateUserId() {
+        return updateUserId;
+    }
+
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public Integer getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(Integer delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    public IndustrialEntity() {
+    }
+
+    public IndustrialEntity(String id, String name, String parentId, String desc, Date createTime, String createUserId, String createBy, Date updateTime, String updateUserId, String updateBy, Integer delFlag) {
+        this.id = id;
+        this.name = name;
+        this.parentId = parentId;
+        this.desc = desc;
+        this.createTime = createTime;
+        this.createUserId = createUserId;
+        this.createBy = createBy;
+        this.updateTime = updateTime;
+        this.updateUserId = updateUserId;
+        this.updateBy = updateBy;
+        this.delFlag = delFlag;
+    }
 }
