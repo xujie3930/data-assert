@@ -11,7 +11,29 @@
         <result property="delFlag" column="del_flag" javaType="java.lang.Byte" jdbcType="TINYINT"/>
         <result property="createTime" column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
         <result property="createBy" column="create_by" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="createUserId" column="create_user_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
         <result property="updateTime" column="update_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
         <result property="updateBy" column="update_by" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="updateUserId" column="update_user_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
     </resultMap>
+
+    <select id="queryPageList" resultMap="tagCategoryBaseMap" parameterType="com.hashtech.web.request.TagListRequest">
+        SELECT tc.id, tc.`name`, tc.`describe`, tc.create_time, tc.create_by FROM tag_category tc
+
+        <where> 1=1 AND tc.del_flag=0
+            <if test="null!=categoryName and ''!=categoryName"> AND tc`name` LIKE CONCAT('%',#{categoryName},'%') </if>
+            <if test="null!=name or null!=state or null!=lastUsedTimeBegin or null!=lastUsedTimeEnd">
+
+                AND tc.id IN (
+                  SELECT tcr.tag_category_id FROM tag_category_relation tcr
+                  INNER JOIN tag t ON tcr.tag_id=t.id
+                  WHERE tcr.del_flag = 0 AND t.del_flag = 0
+                  <if test="null!=name"> AND t.`name` LIKE CONCAT('%',#{name},'%')  </if>
+                  <if test="null!=state"> AND t.`state` = #{state}  </if>
+                  <if test="null!=lastUsedTimeBegin"> AND t.last_used_time &gt;= #{lastUsedTimeBegin}  </if>
+                  <if test="null!=lastUsedTimeEnd"> AND t.last_used_time &lt;= #{lastUsedTimeEnd}  </if>
+                )
+            </if>
+        </where>
+    </select>
 </mapper>

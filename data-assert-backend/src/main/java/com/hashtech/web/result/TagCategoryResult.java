@@ -12,8 +12,10 @@ public class TagCategoryResult {
     private Byte delFlag;//tinyint(1) DEFAULT '0' COMMENT '逻辑删除',
     private Date createTime;//datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
     private String createBy;//varchar(100) DEFAULT NULL COMMENT '创建人',
+    private String createUserId;//varchar(100) DEFAULT NULL COMMENT '更新人',
     private Date updateTime;//datetime(3) DEFAULT NULL COMMENT '更新时间',
     private String updateBy;//varchar(100) DEFAULT NULL COMMENT '更新人',
+    private String updateUserId;//varchar(100) DEFAULT NULL COMMENT '更新人',
 
     public Long getId() {
         return id;
@@ -93,5 +95,21 @@ public class TagCategoryResult {
 
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
+    }
+
+    public String getCreateUserId() {
+        return createUserId;
+    }
+
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId;
+    }
+
+    public String getUpdateUserId() {
+        return updateUserId;
+    }
+
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
     }
 }

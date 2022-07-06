@@ -38,11 +38,15 @@ public class TagCategoryEntity implements Serializable {
     private Date createTime;//datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
     @TableField("`create_by`")
     private String createBy;//varchar(100) DEFAULT NULL COMMENT '创建人',
+    @TableField("`create_user_id`")
+    private String createUserId;//varchar(100) DEFAULT NULL COMMENT '创建人',
     @TableField("`update_time`")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;//datetime(3) DEFAULT NULL COMMENT '更新时间',
     @TableField("`update_by`")
     private String updateBy;//varchar(100) DEFAULT NULL COMMENT '更新人',
+    @TableField("`update_user_id`")
+    private String updateUserId;//varchar(100) DEFAULT NULL COMMENT '更新人',
 
     public Long getId() {
         return id;
@@ -122,5 +126,21 @@ public class TagCategoryEntity implements Serializable {
 
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
+    }
+
+    public String getCreateUserId() {
+        return createUserId;
+    }
+
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId;
+    }
+
+    public String getUpdateUserId() {
+        return updateUserId;
+    }
+
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
     }
 }
