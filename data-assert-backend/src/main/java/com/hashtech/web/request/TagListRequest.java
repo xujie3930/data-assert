@@ -30,6 +30,17 @@ public class TagListRequest extends BusinessBasePageForm {
 
     private String sortField;
 
+    //分类名称
+    private String categoryName;
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
     public TagListRequest() {
     }
 
