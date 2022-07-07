@@ -70,7 +70,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         String companyInfoId = companyInfoEntity.getId();
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
             companyTagService.saveOrUpdateBatchDef(user, date, companyInfoId, request.getTagIds());
-            companyInfoEntity.setTagNum(request.getTagIds().size() + 1);
+            companyInfoEntity.setTagNum(request.getTagIds().size());
             updateById(companyInfoEntity);
         }
         if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
