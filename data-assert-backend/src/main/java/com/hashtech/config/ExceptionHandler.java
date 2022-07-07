@@ -55,7 +55,7 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered, Appl
     }
 
     private ModelAndView resolveException0(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        String errorCode = systemErrorCode, errorMsg = DEFAULT_ERR_MSG;
+        String errorCode = systemErrorCode, errorMsg = DEFAULT_ERR_MSG, errorDetail = getErrorStack(ex);
         if (ex instanceof DecodeException) {
             DecodeException decodeException = (DecodeException) ex;
             Throwable throwable = decodeException.getCause();
@@ -135,6 +135,7 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered, Appl
         CommonOuterResponse commonOuterResponse = new CommonOuterResponse();
         commonOuterResponse.setReturnCode(errorCode);
         commonOuterResponse.setReturnMsg(errorMsg);
+        commonOuterResponse.setReturnError(errorDetail);
 
         try {
             response.setContentType("application/json;charset=UTF-8");
@@ -153,5 +154,35 @@ public class ExceptionHandler implements HandlerExceptionResolver, Ordered, Appl
 
     void publishEvent(BaseEvent event) {
         this.context.publishEvent(event);
+    }
+
+    /**
+     * 获取错误堆栈信息
+     * @author  maoc
+     * @create  2022/6/24 13:52
+     * @desc
+     **/
+    private String getErrorStack(Exception ex){
+        if(null==ex){
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        try{
+            //String property = System.getProperty("line.separator");
+            StackTraceElement[] stackTrace = ex.getStackTrace();
+            String message = ex.getMessage();
+            sb.append(ex.toString());
+            if(!org.springframework.util.StringUtils.isEmpty(message)){
+                sb.append(":").append(message);
+            }
+            if(null!=stackTrace && stackTrace.length>0){
+                for(int i=0;i<stackTrace.length;i++){
+                    StackTraceElement st = stackTrace[i];
+                    sb.append("\\r\\n").append("    at ").append(st.getClassName()).append(".").append(st.getMethodName()).append("(").append(st.getFileName()).append(":").append(st.getLineNumber()).append(")");
+                }
+            }
+        }finally {
+            return sb.toString();
+        }
     }
 }

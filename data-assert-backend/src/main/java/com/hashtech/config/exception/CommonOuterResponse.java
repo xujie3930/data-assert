@@ -28,6 +28,8 @@ public class CommonOuterResponse {
      */
     protected String returnMsg = "Success";
 
+    protected String returnError=null;
+
     protected String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
 
     private boolean success = true;
@@ -75,4 +77,11 @@ public class CommonOuterResponse {
         this.success = success;
     }
 
+    public String getReturnError() {
+        return returnError;
+    }
+
+    public void setReturnError(String returnError) {
+        this.returnError = returnError;
+    }
 }
