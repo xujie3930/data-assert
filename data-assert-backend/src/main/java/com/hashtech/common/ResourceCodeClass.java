@@ -47,6 +47,7 @@ public class ResourceCodeClass {
         RESOURCE_CODE_70000025("70000025", "产业库描述不多于200字"),
         RESOURCE_CODE_70000026("70000026", "该名称已存在，清重新输入！"),
         RESOURCE_CODE_70000027("70000027", "产业库名称包含特殊字符，清重新输入！"),
+        RESOURCE_CODE_70000028("70000028", "产业库不存在，清重新输入！"),
         ;
 
         public final String code;

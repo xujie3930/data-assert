@@ -3,6 +3,8 @@ package com.hashtech.service;
 import com.hashtech.entity.IndustrialCompanyEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 产业-企业表 服务类
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IndustrialCompanyService extends IService<IndustrialCompanyEntity> {
 
+    List<IndustrialCompanyEntity> selectByIndustrialId(String id);
 }

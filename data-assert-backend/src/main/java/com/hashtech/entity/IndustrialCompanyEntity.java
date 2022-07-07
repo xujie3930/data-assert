@@ -1,5 +1,6 @@
 package com.hashtech.entity;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import java.io.Serializable;
@@ -71,6 +72,7 @@ public class IndustrialCompanyEntity implements Serializable {
     /**
      * 是否删除:0-否，1-删除
      */
+    @TableLogic
     private Boolean delFlag;
 
     public IndustrialCompanyEntity() {

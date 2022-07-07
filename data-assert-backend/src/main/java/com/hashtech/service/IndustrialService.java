@@ -1,8 +1,9 @@
 package com.hashtech.service;
 
-import com.hashtech.entity.IndustrialEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.entity.IndustrialEntity;
 import com.hashtech.web.request.IndustrySaveRequest;
+import com.hashtech.web.request.IndustryUpdateRequest;
 
 /**
  * <p>
@@ -15,4 +16,8 @@ import com.hashtech.web.request.IndustrySaveRequest;
 public interface IndustrialService extends IService<IndustrialEntity> {
 
     String saveDef(String userId, IndustrySaveRequest request);
+
+    String updateDef(String userId, IndustryUpdateRequest request);
+
+    String delete(String userId, String id);
 }

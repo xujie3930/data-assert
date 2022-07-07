@@ -4,7 +4,10 @@ import com.hashtech.entity.IndustrialCompanyEntity;
 import com.hashtech.mapper.IndustrialCompanyMapper;
 import com.hashtech.service.IndustrialCompanyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyMapper, IndustrialCompanyEntity> implements IndustrialCompanyService {
 
+    @Autowired
+    private IndustrialCompanyMapper industrialCompanyMapper;
+
+    @Override
+    public List<IndustrialCompanyEntity> selectByIndustrialId(String id) {
+        return industrialCompanyMapper.selectByIndustrialId(id);
+    }
 }

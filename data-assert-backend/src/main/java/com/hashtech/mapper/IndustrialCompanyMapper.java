@@ -2,6 +2,9 @@ package com.hashtech.mapper;
 
 import com.hashtech.entity.IndustrialCompanyEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface IndustrialCompanyMapper extends BaseMapper<IndustrialCompanyEntity> {
 
+    List<IndustrialCompanyEntity> selectByIndustrialId(@Param("industrialId") String id);
 }
