@@ -185,10 +185,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         List<String> oldTagIds = oldCompanyTag.stream().map(old -> old.getTagId()).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
             oldTagIds.removeAll(request.getTagIds());
-        }
-        companyTagService.deleteCompanyTagBatch(user, new Date(), request.getId(), oldTagIds);
-        //更新标签
-        if (!CollectionUtils.isEmpty(request.getTagIds())) {
+            companyTagService.deleteCompanyTagBatch(user, new Date(), companyInfoEntity.getId(), oldTagIds);
             companyTagService.saveOrUpdateBatchDef(user,new Date(), companyInfoEntity.getId(), request.getTagIds());
         }
         //更新产业
@@ -205,13 +202,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyInfoEntity.setUpdateBy(user.getUsername());
         updateById(companyInfoEntity);
         return true;
-    }
-
-    private void updateCompanyTag(InternalUserInfoVO user, CompanyTagEntity companyTag) {
-        companyTag.setUpdateTime(new Date());
-        companyTag.setUpdateUserId(user.getUserId());
-        companyTag.setUpdateBy(user.getUsername());
-        companyTagService.updateById(companyTag);
     }
 
     @Override
@@ -297,23 +287,5 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         if (!CharUtil.isUnifiedSocial(uscc)){
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000017.getCode());
         }
-    }
-
-    private void saveCompanyTag(InternalUserInfoVO user, Date date, String companyInfoId, String tagId) {
-        CompanyTagEntity companyTagEntity = new CompanyTagEntity();
-        companyTagEntity.setTagId(tagId);
-        companyTagEntity.setCompanyInfoId(companyInfoId);
-        companyTagEntity.setCreateTime(date);
-        companyTagEntity.setCreateUserId(user.getUserId());
-        companyTagEntity.setCreateBy(user.getUsername());
-        companyTagEntity.setUpdateTime(date);
-        companyTagEntity.setUpdateUserId(user.getUserId());
-        companyTagEntity.setUpdateBy(user.getUsername());
-        companyTagService.save(companyTagEntity);
-        TagEntity tagEntity = tagService.detailById(tagId);
-        tagEntity.setLastUsedTime(date);
-        //改标签使用次数+1
-        tagEntity.setUsedTime(tagEntity.getUsedTime() + 1);
-        tagService.updateById(tagEntity);
     }
 }
