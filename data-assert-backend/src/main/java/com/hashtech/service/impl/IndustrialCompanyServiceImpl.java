@@ -52,7 +52,7 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
         List<IndustrialCompanyEntity> list = new ArrayList<>();
         List<IndustrialCompanyEntity> industrialCompanyList = selectByCompanyId(companyInfoId);
         for (String industrialId : industrialIds) {
-            IndustrialCompanyEntity industrialCompanyEntity = industrialCompanyList.stream().filter(i -> industrialId.contains(i.getIndustrialId())).findFirst().get();
+            IndustrialCompanyEntity industrialCompanyEntity = industrialCompanyList.stream().filter(i -> industrialId.equals(i.getIndustrialId())).findFirst().get();
             if (Objects.isNull(industrialCompanyEntity)){
                 industrialCompanyEntity = new IndustrialCompanyEntity();
                 industrialCompanyEntity.setCreateTime(date);

@@ -71,6 +71,21 @@
         limit 1
     </select>
 
+    <select id="selectByIds"
+            resultType="com.hashtech.entity.TagEntity">
+        select *
+        from tag
+        <where>
+            <if test="ids != null and ids.length != 0">
+                and id in
+                <foreach collection="ids" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            AND del_flag = 0
+        </where>
+    </select>
+
     <select id="selectCountByStateAndIds"
             resultType="java.lang.Long">
         select count(*)

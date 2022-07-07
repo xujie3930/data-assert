@@ -32,7 +32,5 @@ public interface CompanyInfoService extends IService<CompanyInfoEntity> {
 
     CompanyDetailResult detailById(String id);
 
-    void updateTagNumById(Long count, String companyId);
-
     BusinessPageResult getRelateList(CompanyListRequest request);
 }

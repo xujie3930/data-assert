@@ -68,16 +68,9 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         Date date = new Date();
         CompanyInfoEntity companyInfoEntity = saveCompanyInfo(user, request, date);
         String companyInfoId = companyInfoEntity.getId();
-        Integer tagNum = 0;
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
-            for (String tagId : request.getTagIds()) {
-                if (StringUtils.isBlank(tagId) || "null".equals(tagId)){
-                    continue;
-                }
-                tagNum ++;
-                saveCompanyTag(user, date, companyInfoId, tagId);
-            }
-            companyInfoEntity.setTagNum(tagNum);
+            companyTagService.saveOrUpdateBatchDef(user, date, companyInfoId, request.getTagIds());
+            companyInfoEntity.setTagNum(request.getTagIds().size() + 1);
             updateById(companyInfoEntity);
         }
         if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
@@ -193,22 +186,10 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
             oldTagIds.removeAll(request.getTagIds());
         }
-        for (String tagId : oldTagIds) {
-            deleteCompanyTag(user, new Date(), request.getId(), tagId);
-        }
+        companyTagService.deleteCompanyTagBatch(user, new Date(), request.getId(), oldTagIds);
         //更新标签
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
-            for (String tagId : request.getTagIds()) {
-                if (StringUtils.isBlank(tagId)){
-                    continue;
-                }
-                CompanyTagEntity companyTag = companyTagService.findByTagIdAndCompanyId(tagId, request.getId());
-                if (Objects.isNull(companyTag)) {
-                    saveCompanyTag(user, new Date(), request.getId(), tagId);
-                } else {
-                    updateCompanyTag(user, companyTag);
-                }
-            }
+            companyTagService.saveOrUpdateBatchDef(user,new Date(), companyInfoEntity.getId(), request.getTagIds());
         }
         //更新产业
         if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
@@ -224,19 +205,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyInfoEntity.setUpdateBy(user.getUsername());
         updateById(companyInfoEntity);
         return true;
-    }
-
-    private void deleteCompanyTag(InternalUserInfoVO user, Date date, String companyInfoId, String tagId) {
-        CompanyTagEntity companyTagEntity = companyTagService.findByTagIdAndCompanyId(tagId, companyInfoId);
-        companyTagEntity.setUpdateTime(date);
-        companyTagEntity.setUpdateUserId(user.getUserId());
-        companyTagEntity.setUpdateBy(user.getUsername());
-        companyTagEntity.setDelFlag(DelFalgStateEnum.HAS_DELETE.getCode());
-        companyTagService.updateById(companyTagEntity);
-        //标签关联企业数量-1
-        TagEntity tagEntity = tagService.detailById(tagId);
-        tagEntity.setUsedTime(tagEntity.getUsedTime() - 1);
-        tagService.updateById(tagEntity);
     }
 
     private void updateCompanyTag(InternalUserInfoVO user, CompanyTagEntity companyTag) {
@@ -266,11 +234,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
 
     @Override
-    public void updateTagNumById(Long count, String companyId) {
-        companyInfoMapper.updateTagNumById(count, companyId);
-    }
-
-    @Override
     public BusinessPageResult getRelateList(CompanyListRequest request) {
         List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
         if (CollectionUtils.isEmpty(companyTagList)) {
@@ -289,9 +252,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             if (CollectionUtils.isEmpty(tagIds)){
                 return;
             }
-            for (String tagId : tagIds) {
-                deleteCompanyTag(user, new Date(), companyId, tagId);
-            }
+            companyTagService.deleteCompanyTagBatch(user, new Date(), companyId,tagIds);
         }
     }
 

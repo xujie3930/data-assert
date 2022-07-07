@@ -36,6 +36,8 @@ public interface TagService extends IService<TagEntity> {
 
     TagEntity detailById(String id);
 
+    List<TagEntity> selectByIds(List<String> ids);
+
     List<TagEntity> getListWithoutPaging();
 
     List<TagEntity> getByCompanyId(String id);
