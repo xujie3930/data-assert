@@ -24,15 +24,18 @@ public class CompanyListRequest extends BusinessBasePageForm {
 
     private String updateTime;
 
+    private String industrialName;
+
     public CompanyListRequest() {
     }
 
-    public CompanyListRequest(String uscc, String corpNm, String tagId, String tagNum, String updateTime) {
+    public CompanyListRequest(String uscc, String corpNm, String tagId, String tagNum, String updateTime, String industrialName) {
         this.uscc = uscc;
         this.corpNm = corpNm;
         this.tagId = tagId;
         this.tagNum = tagNum;
         this.updateTime = updateTime;
+        this.industrialName = industrialName;
     }
 
     public String getUscc() {
@@ -73,6 +76,14 @@ public class CompanyListRequest extends BusinessBasePageForm {
 
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getIndustrialName() {
+        return industrialName;
+    }
+
+    public void setIndustrialName(String industrialName) {
+        this.industrialName = industrialName;
     }
 }
 

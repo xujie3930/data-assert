@@ -8,16 +8,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.easyexcel.bean.CompanyInfoImportContent;
-import com.hashtech.entity.CompanyInfoEntity;
-import com.hashtech.entity.CompanyTagEntity;
-import com.hashtech.entity.IndustrialCompanyEntity;
-import com.hashtech.entity.TagEntity;
+import com.hashtech.entity.*;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.CompanyInfoMapper;
-import com.hashtech.service.CompanyInfoService;
-import com.hashtech.service.CompanyTagService;
-import com.hashtech.service.IndustrialCompanyService;
-import com.hashtech.service.TagService;
+import com.hashtech.service.*;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.excel.ExcelUtils;
 import com.hashtech.web.request.CompanyListRequest;
@@ -60,6 +54,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     private OauthApiServiceImpl oauthApiService;
     @Autowired
     private IndustrialCompanyService industrialCompanyService;
+    @Autowired
+    private IndustrialService industrialService;
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
@@ -104,6 +100,18 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
             if (!CollectionUtils.isEmpty(companyTagList)) {
                 companyIdList = companyTagList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
+            }else {
+                return BusinessPageResult.build(Collections.emptyList(), request, 0);
+            }
+        }
+        if (StringUtils.isNotBlank(request.getIndustrialName())) {
+            List<IndustrialEntity> industrialList = industrialService.likeByName(request.getIndustrialName());
+            //获取所有产业id
+            List<String> industryIdList = industrialList.stream().map(IndustrialEntity::getId).collect(Collectors.toList());
+            List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByIndustrialIds(industryIdList);
+            if (!CollectionUtils.isEmpty(industrialCompanyList)) {
+                //取两个集合交集
+                companyIdList.retainAll(industrialCompanyList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList()));
             }else {
                 return BusinessPageResult.build(Collections.emptyList(), request, 0);
             }

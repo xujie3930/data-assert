@@ -4,6 +4,8 @@ import com.hashtech.entity.IndustrialEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * 产业库 Mapper 接口
@@ -15,4 +17,6 @@ import org.apache.ibatis.annotations.Param;
 public interface IndustrialMapper extends BaseMapper<IndustrialEntity> {
 
     Boolean hasExitName(@Param("name") String name, @Param("id") String id);
+
+    List<IndustrialEntity> likeByName(@Param("name") String name);
 }

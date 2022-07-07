@@ -5,6 +5,8 @@ import com.hashtech.entity.IndustrialEntity;
 import com.hashtech.web.request.IndustrySaveRequest;
 import com.hashtech.web.request.IndustryUpdateRequest;
 
+import java.util.List;
+
 /**
  * <p>
  * 产业库 服务类
@@ -20,4 +22,6 @@ public interface IndustrialService extends IService<IndustrialEntity> {
     String updateDef(String userId, IndustryUpdateRequest request);
 
     String delete(String userId, String id);
+
+    List<IndustrialEntity> likeByName(String name);
 }

@@ -5,7 +5,7 @@
     <select id="hasExitName"
             resultType="java.lang.Boolean">
         select 1
-        from theme_resource
+        from industrial
         <where>
             <if test="name != null and name != '' ">
                 AND name = #{name}
@@ -13,6 +13,19 @@
             <if test="id != null and id != '' ">
                 AND id != #{id}
             </if>
+            AND del_flag = 0
+        </where>
+        limit 1
+    </select>
+
+    <select id="likeByName"
+            resultType="com.hashtech.entity.IndustrialEntity">
+        select *
+        from industrial
+        <where>
+            <if test="null!=name and ''!=name">
+             AND name LIKE CONCAT('%',#{name},'%')
+             </if>
             AND del_flag = 0
         </where>
         limit 1

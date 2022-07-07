@@ -17,6 +17,8 @@ public interface IndustrialCompanyService extends IService<IndustrialCompanyEnti
 
     List<IndustrialCompanyEntity> selectByIndustrialId(String id);
 
+    List<IndustrialCompanyEntity> selectByIndustrialIds(List<String> ids);
+
     IndustrialCompanyEntity selectByIndustrialAndCompanyId(String industrialId, String companyInfoId);
 
     List<IndustrialCompanyEntity> selectByCompanyId(String companyInfoId);

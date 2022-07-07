@@ -14,6 +14,21 @@
         </where>
     </select>
 
+    <select id="selectByIndustrialIds"
+            resultType="com.hashtech.entity.IndustrialCompanyEntity">
+        select *
+        from industrial_company_relation
+        <where>
+            <if test="ids != null and ids.length != 0">
+                AND id in
+                <foreach collection="resourceIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            AND del_flag = 0
+        </where>
+    </select>
+
     <select id="selectByIndustrialAndCompanyId"
             resultType="com.hashtech.entity.IndustrialCompanyEntity">
         select *

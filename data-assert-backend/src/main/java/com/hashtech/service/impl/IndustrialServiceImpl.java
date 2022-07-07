@@ -109,6 +109,11 @@ public class IndustrialServiceImpl extends ServiceImpl<IndustrialMapper, Industr
         return id;
     }
 
+    @Override
+    public List<IndustrialEntity> likeByName(String name) {
+        return industrialMapper.likeByName(name);
+    }
+
     /**
      * 检查重复名称
      * @param name
