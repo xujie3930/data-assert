@@ -2,7 +2,9 @@ package com.hashtech.service;
 
 import com.hashtech.entity.IndustrialCompanyEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.feign.vo.InternalUserInfoVO;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,4 +24,6 @@ public interface IndustrialCompanyService extends IService<IndustrialCompanyEnti
     IndustrialCompanyEntity selectByIndustrialAndCompanyId(String industrialId, String companyInfoId);
 
     List<IndustrialCompanyEntity> selectByCompanyId(String companyInfoId);
+
+    void saveOrUpdateIndustrialCompanyBatch(InternalUserInfoVO user, Date date, String companyInfoId, List<String> industrialIds);
 }

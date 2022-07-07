@@ -1,13 +1,17 @@
 package com.hashtech.service.impl;
 
 import com.hashtech.entity.IndustrialCompanyEntity;
+import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.IndustrialCompanyMapper;
 import com.hashtech.service.IndustrialCompanyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -41,5 +45,27 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
     @Override
     public List<IndustrialCompanyEntity> selectByCompanyId(String companyInfoId) {
         return industrialCompanyMapper.selectByCompanyId(companyInfoId);
+    }
+
+    @Override
+    public void saveOrUpdateIndustrialCompanyBatch(InternalUserInfoVO user, Date date, String companyInfoId, List<String> industrialIds) {
+        List<IndustrialCompanyEntity> list = new ArrayList<>();
+        List<IndustrialCompanyEntity> industrialCompanyList = selectByCompanyId(companyInfoId);
+        for (String industrialId : industrialIds) {
+            IndustrialCompanyEntity industrialCompanyEntity = industrialCompanyList.stream().filter(i -> industrialId.contains(i.getIndustrialId())).findFirst().get();
+            if (Objects.isNull(industrialCompanyEntity)){
+                industrialCompanyEntity = new IndustrialCompanyEntity();
+                industrialCompanyEntity.setCreateTime(date);
+                industrialCompanyEntity.setCreateUserId(user.getUserId());
+                industrialCompanyEntity.setCreateBy(user.getUsername());
+            }
+            industrialCompanyEntity.setIndustrialId(industrialId);
+            industrialCompanyEntity.setCompanyInfoId(companyInfoId);
+            industrialCompanyEntity.setUpdateTime(date);
+            industrialCompanyEntity.setUpdateUserId(user.getUserId());
+            industrialCompanyEntity.setUpdateBy(user.getUsername());
+            list.add(industrialCompanyEntity);
+        }
+        saveOrUpdateBatch(list);
     }
 }
