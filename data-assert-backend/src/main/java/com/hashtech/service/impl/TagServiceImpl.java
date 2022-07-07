@@ -3,22 +3,22 @@ package com.hashtech.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.CompanyTagEntity;
+import com.hashtech.entity.TagCategoryRelationEntity;
 import com.hashtech.entity.TagEntity;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.TagMapper;
-import com.hashtech.service.CompanyInfoService;
-import com.hashtech.service.CompanyTagService;
-import com.hashtech.service.OauthApiService;
-import com.hashtech.service.TagService;
+import com.hashtech.service.*;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.DateUtils;
 import com.hashtech.utils.RandomUtils;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.TagRelateResult;
+import com.hashtech.web.result.TagResult;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 @Service
 public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements TagService {
 
+    @Autowired
+    private TagCategoryRelationService tagCategoryRelationService;
     @Autowired
     private TagMapper tagMapper;
     @Autowired
@@ -83,8 +85,19 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         tagEntity.setUpdateTime(date);
         //TODO:后续统计企业的标签数量，有必要时候改为redis的sortsSets
         tagEntity.setUsedTime(0);
-        save(tagEntity);
-        return true;
+        if(save(tagEntity)){
+            //成功
+            //增加关联关系
+            TagCategoryRelationEntity relationEntity = new TagCategoryRelationEntity();
+            relationEntity.setCreateTime(new Date());
+            relationEntity.setDelFlag(DelFlagEnum.ENA_BLED.getCode().byteValue());
+            relationEntity.setTagId(tagEntity.getId());
+            relationEntity.setTagCategoryId(request.getCategoryId());
+            tagCategoryRelationService.save(relationEntity);
+            return true;
+        }else {
+            return false;
+        }
     }
 
     @Override
@@ -122,11 +135,26 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
 
     @Override
     public BusinessPageResult getList(TagListRequest request) {
-        Wrapper<TagEntity> wrapper = queryWrapper(request);
+        /*Wrapper<TagEntity> wrapper = queryWrapper(request);
         IPage<TagEntity> page = this.page(
                 new Query<TagEntity>().getPage(request),
                 wrapper
         );
+        return BusinessPageResult.build(page, request);*/
+
+
+
+
+        Integer count = tagMapper.queryPageDataCount(request);
+        IPage<TagResult> page = new Page<>();
+        page.setTotal(count);
+        page.setPages(request.getPageNum());
+        if(count==null || count.intValue()<=0 || request.getPageStart()>count){
+            page.setRecords(new ArrayList<>(0));
+            return BusinessPageResult.build(page, request);
+        }
+        List<TagResult> tagResults = tagMapper.queryPageDataList(request);
+        page.setRecords(tagResults);
         return BusinessPageResult.build(page, request);
     }
 

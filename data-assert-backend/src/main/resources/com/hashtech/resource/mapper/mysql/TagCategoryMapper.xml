@@ -6,7 +6,7 @@
         <id property="id" column="id" javaType="java.lang.Long" jdbcType="BIGINT"/>
         <result property="pid" column="pid" javaType="java.lang.Long" jdbcType="BIGINT"/>
         <result property="level" column="level" javaType="java.lang.Short" jdbcType="SMALLINT"/>
-        <result property="name" column="name" javaType="java.lang.String" jdbcType="VARCJAR"/>
+        <result property="name" column="name" javaType="java.lang.String" jdbcType="VARCHAR"/>
         <result property="describe" column="describe" javaType="java.lang.String" jdbcType="VARCHAR"/>
         <result property="delFlag" column="del_flag" javaType="java.lang.Byte" jdbcType="TINYINT"/>
         <result property="createTime" column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
@@ -35,5 +35,19 @@
                 )
             </if>
         </where>
+        ORDER BY tc.id DESC
     </select>
+
+    <update id="batchUpdateLevel" parameterType="java.util.Map">
+        UPDATE tag_category SET level =
+        CASE id
+        <foreach collection="param.entrySet()" item="value" index="key">
+            WHEN #{key} THEN #{value}
+        </foreach>
+        END
+        WHERE del_flag=0 AND  id IN
+        <foreach collection="param.entrySet()" item="value" index="key" open="(" close=")" separator=",">
+            #{key}
+        </foreach>
+    </update>
 </mapper>

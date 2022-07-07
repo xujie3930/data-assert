@@ -9,9 +9,12 @@ package com.hashtech.web.request;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 //@Data
 public class TagSaveRequest {
+
+    private Long categoryId = 1l;//默认分组
 
     @NotBlank(message = "70000005")
     @Length(max = 8, message = "70000000")
@@ -68,6 +71,14 @@ public class TagSaveRequest {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 }
 

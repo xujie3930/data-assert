@@ -9,4 +9,21 @@
         <result property="delFlag" column="del_flag" javaType="java.lang.Byte" jdbcType="TINYINT"/>
         <result property="createTime" column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
     </resultMap>
+
+    <select id="queryCount" resultType="java.lang.Integer" parameterType="com.hashtech.web.request.TagCategoryRelationRequest">
+        SELECT COUNT(1) FROM tag_category_relation
+        <where> 1=1 AND del_flag=0
+            <if test="null!=tagCategoryId"> AND tag_category_id=#{tagCategoryId} </if>
+            <if test="null!=tagId"> AND tag_id=#{tagId} </if>
+        </where>
+    </select>
+
+    <update id="deletes" parameterType="com.hashtech.web.request.TagCategoryRelationRequest">
+        UPDATE tag_category_relation SET del_flag=1
+        <where> 1=1 AND del_flag=0 AND
+          <trim prefixOverrides="AND">
+              <if test="null!=tagCategoryId"> AND tag_category_id=#{tagCategoryId} </if>
+          </trim>
+        </where>
+    </update>
 </mapper>

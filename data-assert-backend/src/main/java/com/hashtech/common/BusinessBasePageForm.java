@@ -3,6 +3,7 @@ package com.hashtech.common;
 public class BusinessBasePageForm {
     private int pageNum = 1;
     private int pageSize = 10;
+    private int pageStart = (pageNum-1)*pageSize;
     private String orderBy;
     private String order;
 
@@ -16,6 +17,7 @@ public class BusinessBasePageForm {
     public void setPageNum(int pageNum) {
         if (pageNum >= 1) {
             this.pageNum = pageNum;
+            this.pageStart = (this.pageNum-1)*this.pageSize;
         }
 
     }
@@ -27,6 +29,7 @@ public class BusinessBasePageForm {
     public void setPageSize(int pageSize) {
         if (pageSize >= 1) {
             this.pageSize = pageSize;
+            this.pageStart = (this.pageNum-1)*this.pageSize;
         }
 
     }
@@ -45,5 +48,13 @@ public class BusinessBasePageForm {
 
     public void setOrder(String order) {
         this.order = order;
+    }
+
+    public int getPageStart() {
+        return pageStart;
+    }
+
+    public void setPageStart(int pageStart) {
+        this.pageStart = pageStart;
     }
 }

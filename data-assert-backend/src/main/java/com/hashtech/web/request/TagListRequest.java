@@ -32,6 +32,16 @@ public class TagListRequest extends BusinessBasePageForm {
 
     //分类名称
     private String categoryName;
+    //分类名称
+    private Long categoryId;
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
 
     public String getCategoryName() {
         return categoryName;

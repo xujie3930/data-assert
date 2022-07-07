@@ -72,6 +72,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000044("60000044", "url不能为空"),
         RESOURCE_CODE_60000045("60000045", "请求方式不能为空"),
         RESOURCE_CODE_60000046("60000046", "支持格式不能为空"),
+        RESOURCE_CODE_60000047("60000047", "标签分类名称不可为空"),
         ;
 
         public final String code;

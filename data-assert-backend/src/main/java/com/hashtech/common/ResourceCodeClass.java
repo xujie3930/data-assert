@@ -14,6 +14,9 @@ public class ResourceCodeClass {
         RESOURCE_CODE_10000001("10000001", "请求参数错误"),
         RESOURCE_CODE_10000002("10000002", "接口返回异常"),
         RESOURCE_CODE_10000003("10000003", "系统繁忙，请稍后再试"),
+        RESOURCE_CODE_10000004("10000004", "新增失败"),
+        RESOURCE_CODE_10000005("10000005", "删除失败"),
+        RESOURCE_CODE_10000006("10000006", "修改失败"),
 
 
         RESOURCE_CODE_70000000("70000000", "标签代码最多为8位数字"),
