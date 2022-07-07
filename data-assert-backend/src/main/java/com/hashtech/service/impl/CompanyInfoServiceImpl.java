@@ -25,6 +25,7 @@ import com.hashtech.web.request.CompanySaveRequest;
 import com.hashtech.web.request.CompanyUpdateRequest;
 import com.hashtech.web.result.CompanyDetailResult;
 import com.hashtech.web.result.CompanyListResult;
+import com.hashtech.web.result.Structure;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -84,12 +85,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             updateById(companyInfoEntity);
         }
         if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
-            for (String industrialId : request.getIndustrialIds()) {
-                if (StringUtils.isBlank(industrialId) || "null".equals(industrialId)){
-                    continue;
-                }
-                saveIndustrialCompany(user, date, companyInfoId, industrialId);
-            }
+            saveOrUpdateIndustrialCompanyBatch(user, date, companyInfoId, request.getIndustrialIds());
         }
         return true;
     }
@@ -205,6 +201,10 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
                     updateCompanyTag(user, companyTag);
                 }
             }
+        }
+        //更新产业
+        if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
+            saveOrUpdateIndustrialCompanyBatch(user, new Date(), companyInfoEntity.getId(), request.getIndustrialIds());
         }
         ////更改企业
         companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
@@ -348,16 +348,25 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         tagService.updateById(tagEntity);
     }
 
-    private void saveIndustrialCompany(InternalUserInfoVO user, Date date, String companyInfoId, String industrialId) {
-        IndustrialCompanyEntity industrialCompanyEntity = new IndustrialCompanyEntity();
-        industrialCompanyEntity.setIndustrialId(industrialId);
-        industrialCompanyEntity.setCompanyInfoId(companyInfoId);
-        industrialCompanyEntity.setCreateTime(date);
-        industrialCompanyEntity.setCreateUserId(user.getUserId());
-        industrialCompanyEntity.setCreateBy(user.getUsername());
-        industrialCompanyEntity.setUpdateTime(date);
-        industrialCompanyEntity.setUpdateUserId(user.getUserId());
-        industrialCompanyEntity.setUpdateBy(user.getUsername());
-        industrialCompanyService.save(industrialCompanyEntity);
+    private void saveOrUpdateIndustrialCompanyBatch(InternalUserInfoVO user, Date date, String companyInfoId, List<String> industrialIds) {
+        List<IndustrialCompanyEntity> list = new ArrayList<>();
+        List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByCompanyId(companyInfoId);
+        for (String industrialId : industrialIds) {
+            IndustrialCompanyEntity industrialCompanyEntity = industrialCompanyList.stream().filter(i -> industrialId.contains(i.getIndustrialId())).findFirst().get();
+            if (Objects.isNull(industrialCompanyEntity)){
+                industrialCompanyEntity = new IndustrialCompanyEntity();
+                industrialCompanyEntity.setCreateTime(date);
+                industrialCompanyEntity.setCreateUserId(user.getUserId());
+                industrialCompanyEntity.setCreateBy(user.getUsername());
+            }
+            industrialCompanyEntity.setIndustrialId(industrialId);
+            industrialCompanyEntity.setCompanyInfoId(companyInfoId);
+            industrialCompanyEntity.setUpdateTime(date);
+            industrialCompanyEntity.setUpdateUserId(user.getUserId());
+            industrialCompanyEntity.setUpdateBy(user.getUsername());
+            list.add(industrialCompanyEntity);
+        }
+        industrialCompanyService.saveOrUpdateBatch(list);
     }
+
 }

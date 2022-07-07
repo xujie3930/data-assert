@@ -27,4 +27,14 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
     public List<IndustrialCompanyEntity> selectByIndustrialId(String id) {
         return industrialCompanyMapper.selectByIndustrialId(id);
     }
+
+    @Override
+    public IndustrialCompanyEntity selectByIndustrialAndCompanyId(String industrialId, String companyInfoId) {
+        return industrialCompanyMapper.selectByIndustrialAndCompanyId(industrialId, companyInfoId);
+    }
+
+    @Override
+    public List<IndustrialCompanyEntity> selectByCompanyId(String companyInfoId) {
+        return industrialCompanyMapper.selectByCompanyId(companyInfoId);
+    }
 }

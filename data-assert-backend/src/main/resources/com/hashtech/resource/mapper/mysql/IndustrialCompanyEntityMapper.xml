@@ -13,4 +13,32 @@
             AND del_flag = 0
         </where>
     </select>
+
+    <select id="selectByIndustrialAndCompanyId"
+            resultType="com.hashtech.entity.IndustrialCompanyEntity">
+        select *
+        from industrial_company_relation
+        <where>
+            <if test="industrialId != null and industrialId != '' ">
+                AND industrial_id = #{industrialId}
+            </if>
+            <if test="companyInfoId != null and companyInfoId != '' ">
+                AND company_info_id = #{companyInfoId}
+            </if>
+            AND del_flag = 0
+        </where>
+        limit 1
+    </select>
+
+    <select id="selectByCompanyId"
+            resultType="com.hashtech.entity.IndustrialCompanyEntity">
+        select *
+        from industrial_company_relation
+        <where>
+            <if test="companyInfoId != null and companyInfoId != '' ">
+                AND company_info_id = #{companyInfoId}
+            </if>
+            AND del_flag = 0
+        </where>
+    </select>
 </mapper>

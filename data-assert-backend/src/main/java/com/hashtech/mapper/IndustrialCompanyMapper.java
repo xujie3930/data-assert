@@ -17,4 +17,8 @@ import java.util.List;
 public interface IndustrialCompanyMapper extends BaseMapper<IndustrialCompanyEntity> {
 
     List<IndustrialCompanyEntity> selectByIndustrialId(@Param("industrialId") String id);
+
+    IndustrialCompanyEntity selectByIndustrialAndCompanyId(@Param("industrialId")String industrialId, @Param("companyInfoId")String companyInfoId);
+
+    List<IndustrialCompanyEntity> selectByCompanyId(@Param("companyInfoId")String companyInfoId);
 }

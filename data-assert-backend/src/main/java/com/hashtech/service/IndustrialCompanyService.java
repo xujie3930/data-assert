@@ -16,4 +16,8 @@ import java.util.List;
 public interface IndustrialCompanyService extends IService<IndustrialCompanyEntity> {
 
     List<IndustrialCompanyEntity> selectByIndustrialId(String id);
+
+    IndustrialCompanyEntity selectByIndustrialAndCompanyId(String industrialId, String companyInfoId);
+
+    List<IndustrialCompanyEntity> selectByCompanyId(String companyInfoId);
 }
