@@ -12,5 +12,5 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface UploadImportService {
 
-    Boolean uploadImport(String userId, MultipartFile file, String ids);
+    Boolean uploadImport(String userId, MultipartFile file, String ids, String industryIds);
 }

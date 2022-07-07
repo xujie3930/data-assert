@@ -34,13 +34,20 @@ public class UploadImportServiceImpl implements UploadImportService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @BusinessParamsValidate
-    public Boolean uploadImport(String userId, MultipartFile file, String ids) {
+    public Boolean uploadImport(String userId, MultipartFile file, String ids, String industryIds) {
         List<String> tadIdList = new ArrayList<>();
         if (StringUtils.isNotBlank(ids)){
             //根据前端传值做匹配
             ids = ids.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "").replace("null", "");
             String[] idsArr = ids.split(",");
             tadIdList = Arrays.asList(idsArr);
+        }
+        List<String> industryIdList = new ArrayList<>();
+        if (StringUtils.isNotBlank(industryIds)){
+            //根据前端传值做匹配
+            industryIds = industryIds.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "").replace("null", "");
+            String[] industryIdsArr = industryIds.split(",");
+            industryIdList = Arrays.asList(industryIdsArr);
         }
         List<CompanyInfoImportContent> importList = null;
         try {
@@ -49,7 +56,7 @@ public class UploadImportServiceImpl implements UploadImportService {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000020.getCode());
         }
         for (CompanyInfoImportContent content : importList) {
-            ((CompanyInfoServiceImpl)applicationContext.getBean("companyInfoServiceImpl")).saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), tadIdList, content.getDescribe()));
+            ((CompanyInfoServiceImpl)applicationContext.getBean("companyInfoServiceImpl")).saveDef(userId, new CompanySaveRequest(content.getUscc(), content.getCorpNm(), tadIdList, content.getDescribe(), industryIdList));
         }
         return true;
     }

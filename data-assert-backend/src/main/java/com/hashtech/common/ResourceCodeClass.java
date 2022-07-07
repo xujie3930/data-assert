@@ -42,6 +42,11 @@ public class ResourceCodeClass {
         RESOURCE_CODE_70000020("70000020", "上传失败，请使用下载的模板进行编辑！"),
         RESOURCE_CODE_70000021("70000021", "上传失败，请选择svg格式图片！"),
         RESOURCE_CODE_70000022("70000022", "已存在相同名称的图片！"),
+        RESOURCE_CODE_70000023("70000023", "产业库名称不能为空"),
+        RESOURCE_CODE_70000024("70000024", "产业库名称不多于50字"),
+        RESOURCE_CODE_70000025("70000025", "产业库描述不多于200字"),
+        RESOURCE_CODE_70000026("70000026", "该名称已存在，清重新输入！"),
+        RESOURCE_CODE_70000027("70000027", "产业库名称包含特殊字符，清重新输入！"),
         ;
 
         public final String code;

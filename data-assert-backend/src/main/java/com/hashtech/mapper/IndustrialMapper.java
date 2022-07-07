@@ -2,6 +2,7 @@ package com.hashtech.mapper;
 
 import com.hashtech.entity.IndustrialEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface IndustrialMapper extends BaseMapper<IndustrialEntity> {
 
+    Boolean hasExitName(@Param("name") String name, @Param("id") String id);
 }
