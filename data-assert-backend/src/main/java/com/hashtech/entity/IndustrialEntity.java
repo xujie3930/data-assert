@@ -1,10 +1,12 @@
 package com.hashtech.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,9 +25,13 @@ public class IndustrialEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String DEL_FLAG = "del_flag";
+    public static final String CREATE_TIME = "create_time";
+    public static final String NAME = "name";
     /**
      * 主键id
      */
+    @TableId(type = IdType.ID_WORKER_STR)
     private String id;
 
     /**
@@ -41,11 +47,13 @@ public class IndustrialEntity implements Serializable {
     /**
      * 描述
      */
+    @TableField("`desc`")
     private String desc;
 
     /**
      * 创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /**
@@ -61,6 +69,7 @@ public class IndustrialEntity implements Serializable {
     /**
      * 更新时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /**
@@ -76,6 +85,7 @@ public class IndustrialEntity implements Serializable {
     /**
      * 是否删除：0-否，1-删除
      */
+    @TableLogic
     private Integer delFlag;
 
     public static long getSerialVersionUID() {

@@ -24,6 +24,8 @@ public interface TagMapper extends BaseMapper<TagEntity> {
 
     TagEntity findById(@Param("id") String id);
 
+    List<TagEntity> selectByIds(@Param("ids") List<String> ids);
+
     Long selectCountByStateAndIds(@Param("state") Integer state, @Param("ids") String[] ids);
 
     List<TagEntity> getListWithoutPaging();
@@ -34,5 +36,6 @@ public interface TagMapper extends BaseMapper<TagEntity> {
 
 
     Integer queryPageDataCount(TagListRequest request);
+
     List<TagResult> queryPageDataList(TagListRequest request);
 }

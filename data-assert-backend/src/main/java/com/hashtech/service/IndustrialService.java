@@ -1,8 +1,13 @@
 package com.hashtech.service;
 
-import com.hashtech.entity.IndustrialEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.common.BusinessPageResult;
+import com.hashtech.entity.IndustrialEntity;
+import com.hashtech.web.request.IndustryListRequest;
 import com.hashtech.web.request.IndustrySaveRequest;
+import com.hashtech.web.request.IndustryUpdateRequest;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +20,14 @@ import com.hashtech.web.request.IndustrySaveRequest;
 public interface IndustrialService extends IService<IndustrialEntity> {
 
     String saveDef(String userId, IndustrySaveRequest request);
+
+    String updateDef(String userId, IndustryUpdateRequest request);
+
+    String delete(String userId, String id);
+
+    List<IndustrialEntity> likeByName(String name);
+
+    BusinessPageResult<IndustrialEntity> getList(IndustryListRequest request);
+
+    Boolean hasExistName(String name, String id);
 }

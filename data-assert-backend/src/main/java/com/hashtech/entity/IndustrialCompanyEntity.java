@@ -1,5 +1,8 @@
 package com.hashtech.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import java.io.Serializable;
@@ -26,6 +29,7 @@ public class IndustrialCompanyEntity implements Serializable {
     /**
      * 主键id
      */
+    @TableId(type = IdType.ID_WORKER_STR)
     private String id;
 
     /**
@@ -71,6 +75,7 @@ public class IndustrialCompanyEntity implements Serializable {
     /**
      * 是否删除:0-否，1-删除
      */
+    @TableLogic
     private Boolean delFlag;
 
     public IndustrialCompanyEntity() {

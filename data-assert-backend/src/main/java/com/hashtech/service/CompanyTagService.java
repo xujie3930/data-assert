@@ -2,7 +2,9 @@ package com.hashtech.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.entity.CompanyTagEntity;
+import com.hashtech.feign.vo.InternalUserInfoVO;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,4 +31,8 @@ public interface CompanyTagService extends IService<CompanyTagEntity> {
     void deleteCompanyTagByTagIds(String userId, List<String> ids);
 
     void deleteCompanyTagByCompanyId(String userId, List<String> companyIds);
+
+    void deleteCompanyTagBatch(InternalUserInfoVO user, Date date, String companyId, List<String> tagIds);
+
+    void saveOrUpdateBatchDef(InternalUserInfoVO user, Date date, String companyInfoId, List<String> tagIds);
 }

@@ -17,6 +17,4 @@ public interface CompanyInfoMapper extends BaseMapper<CompanyInfoEntity> {
     Boolean hasExistUscc(@Param("uscc") String uscc, @Param("id") String id);
 
     CompanyInfoEntity findById(@Param("id") String id);
-
-    void updateTagNumById(@Param("count") Long count, @Param("companyId") String companyId);
 }

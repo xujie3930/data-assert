@@ -8,16 +8,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.easyexcel.bean.CompanyInfoImportContent;
-import com.hashtech.entity.CompanyInfoEntity;
-import com.hashtech.entity.CompanyTagEntity;
-import com.hashtech.entity.IndustrialCompanyEntity;
-import com.hashtech.entity.TagEntity;
+import com.hashtech.entity.*;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.CompanyInfoMapper;
-import com.hashtech.service.CompanyInfoService;
-import com.hashtech.service.CompanyTagService;
-import com.hashtech.service.IndustrialCompanyService;
-import com.hashtech.service.TagService;
+import com.hashtech.service.*;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.excel.ExcelUtils;
 import com.hashtech.web.request.CompanyListRequest;
@@ -25,6 +19,7 @@ import com.hashtech.web.request.CompanySaveRequest;
 import com.hashtech.web.request.CompanyUpdateRequest;
 import com.hashtech.web.result.CompanyDetailResult;
 import com.hashtech.web.result.CompanyListResult;
+import com.hashtech.web.result.Structure;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +54,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     private OauthApiServiceImpl oauthApiService;
     @Autowired
     private IndustrialCompanyService industrialCompanyService;
+    @Autowired
+    private IndustrialService industrialService;
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
@@ -71,25 +68,13 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         Date date = new Date();
         CompanyInfoEntity companyInfoEntity = saveCompanyInfo(user, request, date);
         String companyInfoId = companyInfoEntity.getId();
-        Integer tagNum = 0;
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
-            for (String tagId : request.getTagIds()) {
-                if (StringUtils.isBlank(tagId) || "null".equals(tagId)){
-                    continue;
-                }
-                tagNum ++;
-                saveCompanyTag(user, date, companyInfoId, tagId);
-            }
-            companyInfoEntity.setTagNum(tagNum);
+            companyTagService.saveOrUpdateBatchDef(user, date, companyInfoId, request.getTagIds());
+            companyInfoEntity.setTagNum(request.getTagIds().size());
             updateById(companyInfoEntity);
         }
         if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
-            for (String industrialId : request.getIndustrialIds()) {
-                if (StringUtils.isBlank(industrialId) || "null".equals(industrialId)){
-                    continue;
-                }
-                saveIndustrialCompany(user, date, companyInfoId, industrialId);
-            }
+            industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, date, companyInfoId, request.getIndustrialIds());
         }
         return true;
     }
@@ -108,6 +93,18 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
             if (!CollectionUtils.isEmpty(companyTagList)) {
                 companyIdList = companyTagList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
+            }else {
+                return BusinessPageResult.build(Collections.emptyList(), request, 0);
+            }
+        }
+        if (StringUtils.isNotBlank(request.getIndustrialName())) {
+            List<IndustrialEntity> industrialList = industrialService.likeByName(request.getIndustrialName());
+            //获取所有产业id
+            List<String> industryIdList = industrialList.stream().map(IndustrialEntity::getId).collect(Collectors.toList());
+            List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByIndustrialIds(industryIdList);
+            if (!CollectionUtils.isEmpty(industrialCompanyList)) {
+                //取两个集合交集
+                companyIdList.retainAll(industrialCompanyList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList()));
             }else {
                 return BusinessPageResult.build(Collections.emptyList(), request, 0);
             }
@@ -188,23 +185,12 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         List<String> oldTagIds = oldCompanyTag.stream().map(old -> old.getTagId()).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
             oldTagIds.removeAll(request.getTagIds());
+            companyTagService.deleteCompanyTagBatch(user, new Date(), companyInfoEntity.getId(), oldTagIds);
+            companyTagService.saveOrUpdateBatchDef(user,new Date(), companyInfoEntity.getId(), request.getTagIds());
         }
-        for (String tagId : oldTagIds) {
-            deleteCompanyTag(user, new Date(), request.getId(), tagId);
-        }
-        //更新标签
-        if (!CollectionUtils.isEmpty(request.getTagIds())) {
-            for (String tagId : request.getTagIds()) {
-                if (StringUtils.isBlank(tagId)){
-                    continue;
-                }
-                CompanyTagEntity companyTag = companyTagService.findByTagIdAndCompanyId(tagId, request.getId());
-                if (Objects.isNull(companyTag)) {
-                    saveCompanyTag(user, new Date(), request.getId(), tagId);
-                } else {
-                    updateCompanyTag(user, companyTag);
-                }
-            }
+        //更新产业
+        if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
+            industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, new Date(), companyInfoEntity.getId(), request.getIndustrialIds());
         }
         ////更改企业
         companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
@@ -216,26 +202,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyInfoEntity.setUpdateBy(user.getUsername());
         updateById(companyInfoEntity);
         return true;
-    }
-
-    private void deleteCompanyTag(InternalUserInfoVO user, Date date, String companyInfoId, String tagId) {
-        CompanyTagEntity companyTagEntity = companyTagService.findByTagIdAndCompanyId(tagId, companyInfoId);
-        companyTagEntity.setUpdateTime(date);
-        companyTagEntity.setUpdateUserId(user.getUserId());
-        companyTagEntity.setUpdateBy(user.getUsername());
-        companyTagEntity.setDelFlag(DelFalgStateEnum.HAS_DELETE.getCode());
-        companyTagService.updateById(companyTagEntity);
-        //标签关联企业数量-1
-        TagEntity tagEntity = tagService.detailById(tagId);
-        tagEntity.setUsedTime(tagEntity.getUsedTime() - 1);
-        tagService.updateById(tagEntity);
-    }
-
-    private void updateCompanyTag(InternalUserInfoVO user, CompanyTagEntity companyTag) {
-        companyTag.setUpdateTime(new Date());
-        companyTag.setUpdateUserId(user.getUserId());
-        companyTag.setUpdateBy(user.getUsername());
-        companyTagService.updateById(companyTag);
     }
 
     @Override
@@ -258,11 +224,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
 
     @Override
-    public void updateTagNumById(Long count, String companyId) {
-        companyInfoMapper.updateTagNumById(count, companyId);
-    }
-
-    @Override
     public BusinessPageResult getRelateList(CompanyListRequest request) {
         List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
         if (CollectionUtils.isEmpty(companyTagList)) {
@@ -281,9 +242,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             if (CollectionUtils.isEmpty(tagIds)){
                 return;
             }
-            for (String tagId : tagIds) {
-                deleteCompanyTag(user, new Date(), companyId, tagId);
-            }
+            companyTagService.deleteCompanyTagBatch(user, new Date(), companyId,tagIds);
         }
     }
 
@@ -328,36 +287,5 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         if (!CharUtil.isUnifiedSocial(uscc)){
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000017.getCode());
         }
-    }
-
-    private void saveCompanyTag(InternalUserInfoVO user, Date date, String companyInfoId, String tagId) {
-        CompanyTagEntity companyTagEntity = new CompanyTagEntity();
-        companyTagEntity.setTagId(tagId);
-        companyTagEntity.setCompanyInfoId(companyInfoId);
-        companyTagEntity.setCreateTime(date);
-        companyTagEntity.setCreateUserId(user.getUserId());
-        companyTagEntity.setCreateBy(user.getUsername());
-        companyTagEntity.setUpdateTime(date);
-        companyTagEntity.setUpdateUserId(user.getUserId());
-        companyTagEntity.setUpdateBy(user.getUsername());
-        companyTagService.save(companyTagEntity);
-        TagEntity tagEntity = tagService.detailById(tagId);
-        tagEntity.setLastUsedTime(date);
-        //改标签使用次数+1
-        tagEntity.setUsedTime(tagEntity.getUsedTime() + 1);
-        tagService.updateById(tagEntity);
-    }
-
-    private void saveIndustrialCompany(InternalUserInfoVO user, Date date, String companyInfoId, String industrialId) {
-        IndustrialCompanyEntity industrialCompanyEntity = new IndustrialCompanyEntity();
-        industrialCompanyEntity.setIndustrialId(industrialId);
-        industrialCompanyEntity.setCompanyInfoId(companyInfoId);
-        industrialCompanyEntity.setCreateTime(date);
-        industrialCompanyEntity.setCreateUserId(user.getUserId());
-        industrialCompanyEntity.setCreateBy(user.getUsername());
-        industrialCompanyEntity.setUpdateTime(date);
-        industrialCompanyEntity.setUpdateUserId(user.getUserId());
-        industrialCompanyEntity.setUpdateBy(user.getUsername());
-        industrialCompanyService.save(industrialCompanyEntity);
     }
 }

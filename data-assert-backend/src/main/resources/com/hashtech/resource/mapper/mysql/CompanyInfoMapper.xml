@@ -25,10 +25,4 @@
         where id = #{id}
           and del_flag = 0
     </select>
-
-    <update id="updateTagNumById">
-        update company_info
-        set tag_num = #{count}
-        where id = #{companyId}
-    </update>
 </mapper>

@@ -30,6 +30,8 @@ public class BusinessBasePageForm {
         if (pageSize >= 1) {
             this.pageSize = pageSize;
             this.pageStart = (this.pageNum-1)*this.pageSize;
+        }else {
+            this.pageSize = -1;
         }
 
     }

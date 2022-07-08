@@ -238,6 +238,11 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     }
 
     @Override
+    public List<TagEntity> selectByIds(List<String> ids) {
+        return tagMapper.selectByIds(ids);
+    }
+
+    @Override
     public List<TagEntity> getListWithoutPaging() {
         return tagMapper.getListWithoutPaging();
     }
