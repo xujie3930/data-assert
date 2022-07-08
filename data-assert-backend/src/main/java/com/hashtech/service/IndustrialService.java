@@ -28,4 +28,6 @@ public interface IndustrialService extends IService<IndustrialEntity> {
     List<IndustrialEntity> likeByName(String name);
 
     BusinessPageResult<IndustrialEntity> getList(IndustryListRequest request);
+
+    Boolean hasExistName(String name, String id);
 }

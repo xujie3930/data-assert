@@ -132,10 +132,19 @@ public class IndustrialServiceImpl extends ServiceImpl<IndustrialMapper, Industr
         return BusinessPageResult.build(page, request);
     }
 
+    @Override
+    public Boolean hasExistName(String name, String id) {
+        boolean hasExistName = BooleanUtils.isTrue(industrialMapper.hasExitName(name, id));
+        return hasExistName;
+    }
+
     private Wrapper<IndustrialEntity> queryWrapper(IndustryListRequest request) {
         QueryWrapper<IndustrialEntity> wrapper = new QueryWrapper<>();
         wrapper.eq(IndustrialEntity.DEL_FLAG, DelFlagEnum.ENA_BLED.getCode());
         wrapper.orderByDesc(IndustrialEntity.CREATE_TIME);
+        if (StringUtils.isNotBlank(request.getIndustrialName())){
+            wrapper.like(IndustrialEntity.NAME, request.getIndustrialName());
+        }
         return wrapper;
     }
 

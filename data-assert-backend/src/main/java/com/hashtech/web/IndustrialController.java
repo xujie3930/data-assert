@@ -48,5 +48,10 @@ public class IndustrialController {
     BusinessResult<BusinessPageResult> list(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody IndustryListRequest request) {
         return BusinessResult.success(industrialService.getList(request));
     }
+
+    @GetMapping("/hasExistName")
+    public BusinessResult<Boolean> hasExistName(@RequestParam("name") String name) {
+        return BusinessResult.success(industrialService.hasExistName(name, null));
+    }
 }
 
