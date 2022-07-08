@@ -48,7 +48,30 @@ public class TagCategoryController {
         }
         //end
 
-
+        //处理分页字段，避免注入
+        //排序字段，updateTime:更新时间，createTime:新增时间，name:名称，createBy:创建人，describe:描述。默认updateTime
+        String tsortField = request.getSortField()==null?"updateTime":request.getSortField();
+        String sortField = "update_time";
+        switch (tsortField){
+            case "createTime":
+                sortField = "create_time";
+                break;
+            case "name":
+                sortField = "`name`";
+                break;
+            case "createBy":
+                sortField = "create_by";
+                break;
+            case "describe":
+                sortField = "`describe`";
+                break;
+            default:
+                sortField = "update_time";
+                break;
+        }
+        request.setSortField(sortField);
+        request.setSort("asc".equals(request.getSort())?request.getSort():"desc");
+        //处理结束
 
         return BusinessResult.success(tagCategoryService.queryPageList(request));
     }

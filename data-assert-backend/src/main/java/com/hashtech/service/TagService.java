@@ -28,7 +28,7 @@ public interface TagService extends IService<TagEntity> {
 
     Boolean updateDef(String userId, TagUpdateRequest request);
 
-    BusinessPageResult getList(TagListRequest request);
+    Object getList(TagListRequest request);
 
     Boolean enOrDisable(String userId, TagChangeStateRequest request);
 

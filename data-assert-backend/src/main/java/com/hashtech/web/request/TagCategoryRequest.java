@@ -15,6 +15,7 @@ public class TagCategoryRequest {
     @NotBlank(message = "60000047")
     @Length(max = 50, message = "70000002")
     private String name;//varchar(100) NOT NULL COMMENT '名称',
+    @Length(max = 1000, message = "70000002")
     private String describe;//varchar(1000) DEFAULT NULL COMMENT '描述',
     private Byte delFlag = DelFlagEnum.ENA_BLED.getCode().byteValue();//tinyint(1) DEFAULT '0' COMMENT '逻辑删除',
     private Date createTime;//datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',

@@ -30,7 +30,7 @@
             ORDER BY #{sortField}
             <if test="null!=sort"> #{sort} </if>
         </if>
-        <if test="null!=pageStart and null!=pageSize"> LIMIT #{pageStart},#{pageSize} </if>
+        <if test="null!=pageStart and pageStart>0 and null!=pageSize and pageSize>0"> LIMIT #{pageStart},#{pageSize} </if>
     </select>
 
     <select id="hasExistCode"

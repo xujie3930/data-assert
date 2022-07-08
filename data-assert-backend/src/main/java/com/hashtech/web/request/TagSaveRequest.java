@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 //@Data
 public class TagSaveRequest {
 
-    private Long categoryId = 1l;//默认分组
+    private Long categoryId = 0l;//默认分组
 
     @NotBlank(message = "70000005")
     @Length(max = 8, message = "70000000")

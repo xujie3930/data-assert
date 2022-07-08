@@ -54,7 +54,7 @@ public class TagController {
     }
 
     @PostMapping("/list")
-    BusinessResult<BusinessPageResult> getList(@RequestBody TagListRequest request) {
+    BusinessResult<Object> getList(@RequestBody TagListRequest request) {
         return BusinessResult.success(tagService.getList(request));
     }
 

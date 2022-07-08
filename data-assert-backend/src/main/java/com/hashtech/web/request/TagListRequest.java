@@ -9,7 +9,7 @@ import com.hashtech.common.BusinessBasePageForm;
  **/
 
 //@Data
-public class TagListRequest extends BusinessBasePageForm {
+public class TagListRequest extends BusinessBasePageForm{
 
     //标签名称
     private String name;
@@ -34,6 +34,10 @@ public class TagListRequest extends BusinessBasePageForm {
     private String categoryName;
     //分类名称
     private Long categoryId;
+
+    private int pageNum=1;
+    private int pageSize=10;
+    private int pageStart=(pageNum-1)*10;
 
     public Long getCategoryId() {
         return categoryId;
@@ -118,6 +122,34 @@ public class TagListRequest extends BusinessBasePageForm {
 
     public void setSortField(String sortField) {
         this.sortField = sortField;
+    }
+
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public int getPageStart() {
+        return pageStart;
+    }
+
+    public void setPageStart(Integer pageStart) {
+        this.pageStart = pageStart;
+    }
+
+    public void setPageStart() {
+        this.pageStart = (pageSize-1)*pageNum;
+    }
+
+    public int getPageSize() {
+        return pageSize;
     }
 }
 

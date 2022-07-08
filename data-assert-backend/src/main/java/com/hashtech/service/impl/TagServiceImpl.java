@@ -86,16 +86,17 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
         //TODO:后续统计企业的标签数量，有必要时候改为redis的sortsSets
         tagEntity.setUsedTime(0);
         if(save(tagEntity)){
-            //成功
-            //增加关联关系
-            TagCategoryRelationEntity relationEntity = new TagCategoryRelationEntity();
-            relationEntity.setCreateTime(new Date());
-            relationEntity.setDelFlag(DelFlagEnum.ENA_BLED.getCode().byteValue());
-            relationEntity.setTagId(tagEntity.getId());
-            relationEntity.setTagCategoryId(request.getCategoryId());
-            tagCategoryRelationService.save(relationEntity);
+            if(null!=request.getCategoryId() && request.getCategoryId().longValue()>0l){
+                //成功，增加关联关系
+                TagCategoryRelationEntity relationEntity = new TagCategoryRelationEntity();
+                relationEntity.setCreateTime(new Date());
+                relationEntity.setDelFlag(DelFlagEnum.ENA_BLED.getCode().byteValue());
+                relationEntity.setTagId(tagEntity.getId());
+                relationEntity.setTagCategoryId(request.getCategoryId());
+                tagCategoryRelationService.save(relationEntity);
+            }
             return true;
-        }else {
+        }else{
             return false;
         }
     }
@@ -134,28 +135,35 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     }
 
     @Override
-    public BusinessPageResult getList(TagListRequest request) {
-        /*Wrapper<TagEntity> wrapper = queryWrapper(request);
+    public Object getList(TagListRequest request) {
+        Wrapper<TagEntity> wrapper = queryWrapper(request);
         IPage<TagEntity> page = this.page(
                 new Query<TagEntity>().getPage(request),
                 wrapper
         );
-        return BusinessPageResult.build(page, request);*/
-
-
-
-
-        Integer count = tagMapper.queryPageDataCount(request);
-        IPage<TagResult> page = new Page<>();
-        page.setTotal(count);
-        page.setPages(request.getPageNum());
-        if(count==null || count.intValue()<=0 || request.getPageStart()>count){
-            page.setRecords(new ArrayList<>(0));
-            return BusinessPageResult.build(page, request);
-        }
-        List<TagResult> tagResults = tagMapper.queryPageDataList(request);
-        page.setRecords(tagResults);
         return BusinessPageResult.build(page, request);
+
+
+        /*Integer pageSize = request.getPageSize();
+        if(null==pageSize || pageSize<0){
+            //不分页
+            request.setPageSize(null);
+            request.setPageStart(null);
+            List<TagResult> tagResults = tagMapper.queryPageDataList(request);
+            return null==tagResults?new ArrayList<TagResult>(0):tagResults;
+        }else{
+            Integer count = tagMapper.queryPageDataCount(request);
+            IPage<TagResult> page = new Page<>();
+            page.setTotal(count);
+            page.setPages(request.getPageNum());
+            if(count==null || count.intValue()<=0 || request.getPageStart()>count){
+                page.setRecords(new ArrayList<>(0));
+                return BusinessPageResult.build(page, request);
+            }
+            List<TagResult> tagResults = tagMapper.queryPageDataList(request);
+            page.setRecords(tagResults);
+            return BusinessPageResult.build(page, request);
+        }*/
     }
 
     @Override
