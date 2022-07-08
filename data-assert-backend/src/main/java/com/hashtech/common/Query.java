@@ -107,6 +107,9 @@ public class Query<T> {
         if (StringUtils.isNotEmpty(pageRequest.getPageSize() + "")) {
             limit = Long.parseLong(pageRequest.getPageSize() + "");
         }
+        if (-1L == limit){
+            pageRequest.setPageSize(10);
+        }
 
         //分页对象
         Page<T> page = new Page<>(curPage, limit);

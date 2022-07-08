@@ -1,7 +1,11 @@
 package com.hashtech.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
+import com.hashtech.entity.CompanyInfoEntity;
 import com.hashtech.entity.IndustrialCompanyEntity;
 import com.hashtech.entity.IndustrialEntity;
 import com.hashtech.entity.ThemeResourceEntity;
@@ -13,12 +17,15 @@ import com.hashtech.service.IndustrialService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.service.OauthApiService;
 import com.hashtech.utils.CharUtil;
+import com.hashtech.web.request.IndustryListRequest;
 import com.hashtech.web.request.IndustrySaveRequest;
 import com.hashtech.web.request.IndustryUpdateRequest;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -61,11 +68,12 @@ public class IndustrialServiceImpl extends ServiceImpl<IndustrialMapper, Industr
     private IndustrialEntity getEntitySave(InternalUserInfoVO user, IndustrySaveRequest request) {
         IndustrialEntity entity = BeanCopyUtils.copyProperties(request, new IndustrialEntity());
         Date date = new Date();
-        entity.setCreateBy(user.getUsername());
         entity.setCreateUserId(user.getUserId());
+        entity.setCreateBy(user.getUsername());
         entity.setCreateTime(date);
-        entity.setUpdateTime(date);
+        entity.setUpdateUserId(user.getUserId());
         entity.setUpdateBy(user.getUsername());
+        entity.setUpdateTime(date);
         return entity;
     }
 
@@ -113,6 +121,24 @@ public class IndustrialServiceImpl extends ServiceImpl<IndustrialMapper, Industr
     public List<IndustrialEntity> likeByName(String name) {
         return industrialMapper.likeByName(name);
     }
+
+    @Override
+    public BusinessPageResult<IndustrialEntity> getList(IndustryListRequest request) {
+        Wrapper<IndustrialEntity> wrapper = queryWrapper(request);
+        IPage<IndustrialEntity> page = this.page(
+                new Query<IndustrialEntity>().getPage(request),
+                wrapper
+        );
+        return BusinessPageResult.build(page, request);
+    }
+
+    private Wrapper<IndustrialEntity> queryWrapper(IndustryListRequest request) {
+        QueryWrapper<IndustrialEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq(IndustrialEntity.DEL_FLAG, DelFlagEnum.ENA_BLED.getCode());
+        wrapper.orderByDesc(IndustrialEntity.CREATE_TIME);
+        return wrapper;
+    }
+
 
     /**
      * 检查重复名称

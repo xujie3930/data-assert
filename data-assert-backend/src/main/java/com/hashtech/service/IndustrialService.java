@@ -1,7 +1,9 @@
 package com.hashtech.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.common.BusinessPageResult;
 import com.hashtech.entity.IndustrialEntity;
+import com.hashtech.web.request.IndustryListRequest;
 import com.hashtech.web.request.IndustrySaveRequest;
 import com.hashtech.web.request.IndustryUpdateRequest;
 
@@ -24,4 +26,6 @@ public interface IndustrialService extends IService<IndustrialEntity> {
     String delete(String userId, String id);
 
     List<IndustrialEntity> likeByName(String name);
+
+    BusinessPageResult<IndustrialEntity> getList(IndustryListRequest request);
 }
