@@ -1,17 +1,17 @@
 package com.hashtech.service.impl;
 
+import com.hashtech.common.DelFlagEnum;
 import com.hashtech.entity.IndustrialCompanyEntity;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.IndustrialCompanyMapper;
 import com.hashtech.service.IndustrialCompanyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -51,13 +51,17 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
     public void saveOrUpdateIndustrialCompanyBatch(InternalUserInfoVO user, Date date, String companyInfoId, List<String> industrialIds) {
         List<IndustrialCompanyEntity> list = new ArrayList<>();
         List<IndustrialCompanyEntity> industrialCompanyList = selectByCompanyId(companyInfoId);
+        List<String> allIndustrialIds = industrialCompanyList.stream().map(IndustrialCompanyEntity::getIndustrialId).collect(Collectors.toList());
         for (String industrialId : industrialIds) {
-            IndustrialCompanyEntity industrialCompanyEntity = industrialCompanyList.stream().filter(i -> industrialId.equals(i.getIndustrialId())).findFirst().get();
-            if (Objects.isNull(industrialCompanyEntity)){
+            IndustrialCompanyEntity industrialCompanyEntity = null;
+            Optional<IndustrialCompanyEntity> optional = industrialCompanyList.stream().filter(i -> industrialId.equals(i.getIndustrialId())).findFirst();
+            if (!optional.isPresent()){
                 industrialCompanyEntity = new IndustrialCompanyEntity();
                 industrialCompanyEntity.setCreateTime(date);
                 industrialCompanyEntity.setCreateUserId(user.getUserId());
                 industrialCompanyEntity.setCreateBy(user.getUsername());
+            }else {
+                industrialCompanyEntity = optional.get();
             }
             industrialCompanyEntity.setIndustrialId(industrialId);
             industrialCompanyEntity.setCompanyInfoId(companyInfoId);
@@ -67,5 +71,20 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
             list.add(industrialCompanyEntity);
         }
         saveOrUpdateBatch(list);
+        allIndustrialIds.retainAll(industrialIds);
+        if (!CollectionUtils.isEmpty(allIndustrialIds)) {
+            List<IndustrialCompanyEntity> removeList = new ArrayList<>();
+            for (String removeIndustrialId : allIndustrialIds) {
+                IndustrialCompanyEntity removeEntity = industrialCompanyList.stream().filter(i -> removeIndustrialId.equals(i.getIndustrialId())).findFirst().get();
+                removeEntity.setUpdateTime(date);
+                removeEntity.setUpdateUserId(user.getUserId());
+                removeEntity.setUpdateBy(user.getUsername());
+                removeEntity.setDelFlag(DelFlagEnum.DIS_ABLED.getCode());
+                removeList.add(removeEntity);
+            }
+            saveOrUpdateBatch(removeList);
+            removeByIds(removeList.stream().map(i -> i.getId()).collect(Collectors.toList()));
+        }
+
     }
 }

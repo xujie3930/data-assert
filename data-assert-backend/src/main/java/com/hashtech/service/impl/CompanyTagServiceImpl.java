@@ -97,13 +97,20 @@ public class CompanyTagServiceImpl extends ServiceImpl<CompanyTagMapper, Company
         if (StringUtils.isEmpty(companyInfoId) || CollectionUtils.isEmpty(tagIds)) {
             return;
         }
+        // 删除旧纪录
+        List<CompanyTagEntity> oldCompanyTag = getListByCompanyId(companyInfoId);
+        List<String> oldTagIds = oldCompanyTag.stream().map(old -> old.getTagId()).collect(Collectors.toList());
+        oldTagIds.removeAll(tagIds);
+        deleteCompanyTagBatch(user, date, companyInfoId, oldTagIds);
+        // 新增或更新
         List<CompanyTagEntity> companyTagUpdateList= new ArrayList<>();
         List<TagEntity> tagUpdateList= new ArrayList<>();
         List<CompanyTagEntity> companyTagEntityList = getListByCompanyId(companyInfoId);
         List<TagEntity> tagEntitiesList = tagService.selectByIds(tagIds);
         for (TagEntity tagEntity : tagEntitiesList) {
-            CompanyTagEntity companyTagEntity = companyTagEntityList.stream().filter(i -> tagEntity.getId().equals(i.getTagId())).findFirst().get();
-            if (Objects.isNull(companyTagEntity)) {
+            CompanyTagEntity companyTagEntity;
+            Optional<CompanyTagEntity> optional = companyTagEntityList.stream().filter(i -> tagEntity.getId().equals(i.getTagId())).findFirst();
+            if (!optional.isPresent()) {
                 companyTagEntity = new CompanyTagEntity();
                 companyTagEntity.setCreateTime(date);
                 companyTagEntity.setCreateUserId(user.getUserId());
@@ -111,6 +118,8 @@ public class CompanyTagServiceImpl extends ServiceImpl<CompanyTagMapper, Company
                 companyTagEntity.setTagId(tagEntity.getId());
                 companyTagEntity.setCompanyInfoId(companyInfoId);
                 tagEntity.setUsedTime(tagEntity.getUsedTime() + 1);
+            }else {
+                companyTagEntity = optional.get();
             }
             companyTagEntity.setUpdateTime(date);
             companyTagEntity.setUpdateUserId(user.getUserId());
