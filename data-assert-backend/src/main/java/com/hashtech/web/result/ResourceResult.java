@@ -11,6 +11,11 @@ public class ResourceResult {
      * 资源分类名称
      */
     private String name;
+
+    /**
+     * 资源分类全名
+     */
+    private String fullName;
     /**
      * 新增资源分类时填写的信息回显
      */
@@ -46,7 +51,7 @@ public class ResourceResult {
     public ResourceResult() {
     }
 
-    public ResourceResult(String name, String descriptor, Integer tableCount, Integer columnsCount, Long dataSize, Double openRate, String picPath, String picUrl) {
+    public ResourceResult(String name, String descriptor, Integer tableCount, Integer columnsCount, Long dataSize, Double openRate, String picPath, String picUrl, String fullName) {
         this.name = name;
         this.descriptor = descriptor;
         this.tableCount = tableCount;
@@ -55,6 +60,7 @@ public class ResourceResult {
         this.openRate = openRate;
         this.picPath = picPath;
         this.picUrl = picUrl;
+        this.fullName = fullName;
     }
 
     public String getName() {
@@ -119,5 +125,13 @@ public class ResourceResult {
 
     public void setPicUrl(String picUrl) {
         this.picUrl = picUrl;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

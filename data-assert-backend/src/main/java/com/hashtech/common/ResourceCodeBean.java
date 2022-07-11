@@ -73,6 +73,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000045("60000045", "请求方式不能为空"),
         RESOURCE_CODE_60000046("60000046", "支持格式不能为空"),
         RESOURCE_CODE_60000047("60000047", "标签分类名称不可为空"),
+        RESOURCE_CODE_60000048("60000048", "系统全称最多为100字"),
         ;
 
         public final String code;

@@ -39,6 +39,10 @@ public class ThemeResourceEntity implements Serializable {
      * 主题或者资源分类名称
      */
     private String name;
+    /**
+     * 主题或者资源分类全称
+     */
+    private String fullName;
 
     /**
      * 主题或者资源分类描述
@@ -92,10 +96,11 @@ public class ThemeResourceEntity implements Serializable {
     public ThemeResourceEntity() {
     }
 
-    public ThemeResourceEntity(String id, String parentId, String name, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String picPath, String picUrl, String createUserId) {
+    public ThemeResourceEntity(String id, String parentId, String name, String fullName, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, String delFlag, String picPath, String picUrl, String createUserId) {
         this.id = id;
         this.parentId = parentId;
         this.name = name;
+        this.fullName = fullName;
         this.descriptor = descriptor;
         this.sort = sort;
         this.createTime = createTime;
@@ -134,6 +139,14 @@ public class ThemeResourceEntity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getDescriptor() {

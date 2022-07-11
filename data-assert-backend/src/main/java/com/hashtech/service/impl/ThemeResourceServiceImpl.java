@@ -265,6 +265,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             picUrl = picUrl.substring(pre.length());
         }
         entity.setPicUrl(picUrl);
+        entity.setFullName(request.getFullName());
         updateById(entity);
         return BusinessResult.success(entity.getId());
     }
@@ -426,6 +427,7 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
             picUrl = picUrl.substring(pre.length());
         }
         entity.setPicUrl(picUrl);
+        entity.setFullName(request.getFullName());
         return entity;
     }
 

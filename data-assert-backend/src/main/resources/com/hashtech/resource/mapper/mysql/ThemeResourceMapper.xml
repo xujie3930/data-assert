@@ -6,6 +6,7 @@
         id               	as  id,
       parent_id         as  parentId,
       name              as  name,
+      full_name          as fullName,
       descriptor        as  descriptor,
       sort              as  sort,
       create_time       as  createTime,

@@ -22,6 +22,11 @@ public class ResourceSaveRequest {
     @Length(max = 20, message = "60000012")
     private String name;
     /**
+     * 资源分类全称
+     */
+    @Length(max = 100, message = "60000048")
+    private String fullName;
+    /**
      * 资源分类描述
      */
     @Length(max = 200, message = "60000001")
@@ -40,12 +45,13 @@ public class ResourceSaveRequest {
     public ResourceSaveRequest() {
     }
 
-    public ResourceSaveRequest(String id, String name, String descriptor, String picPath, String picUrl) {
+    public ResourceSaveRequest(String id, String name, String descriptor, String picPath, String picUrl, String fullName) {
         this.id = id;
         this.name = name;
         this.descriptor = descriptor;
         this.picPath = picPath;
         this.picUrl = picUrl;
+        this.fullName = fullName;
     }
 
     public String getId() {
@@ -86,5 +92,13 @@ public class ResourceSaveRequest {
 
     public void setPicUrl(String picUrl) {
         this.picUrl = picUrl;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

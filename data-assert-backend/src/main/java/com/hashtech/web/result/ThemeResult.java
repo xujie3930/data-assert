@@ -38,6 +38,11 @@ public class ThemeResult implements Serializable {
     private String name;
 
     /**
+     * 主题或者资源分类全称
+     */
+    private String fullName;
+
+    /**
      * 主题或者资源分类描述
      */
     private String descriptor;
@@ -97,7 +102,7 @@ public class ThemeResult implements Serializable {
     public ThemeResult() {
     }
 
-    public ThemeResult(String id, String parentId, String name, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, List<ThemeResult> resourceList, Boolean hidden, String createUserId, String picPath, String picUrl) {
+    public ThemeResult(String id, String parentId, String name, String fullName, String descriptor, Integer sort, Date createTime, String createBy, Date updateTime, String updateBy, List<ThemeResult> resourceList, Boolean hidden, String createUserId, String picPath, String picUrl) {
         this.id = id;
         this.parentId = parentId;
         this.name = name;
@@ -112,6 +117,7 @@ public class ThemeResult implements Serializable {
         this.createUserId = createUserId;
         this.picPath = picPath;
         this.picUrl = picUrl;
+        this.fullName = fullName;
     }
 
     public String getId() {
@@ -224,5 +230,13 @@ public class ThemeResult implements Serializable {
 
     public void setPicUrl(String picUrl) {
         this.picUrl = picUrl;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

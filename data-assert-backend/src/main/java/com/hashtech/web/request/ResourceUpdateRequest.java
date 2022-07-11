@@ -25,6 +25,12 @@ public class ResourceUpdateRequest {
     private String descriptor;
 
     /**
+     * 资源分类全称
+     */
+    @Length(max = 100, message = "60000048")
+    private String fullName;
+
+    /**
      * 资源图标
      */
     private String picPath;
@@ -37,12 +43,13 @@ public class ResourceUpdateRequest {
     public ResourceUpdateRequest() {
     }
 
-    public ResourceUpdateRequest(String id, String name, String descriptor, String picPath, String picUrl) {
+    public ResourceUpdateRequest(String id, String name, String descriptor, String picPath, String picUrl, String fullName) {
         this.id = id;
         this.name = name;
         this.descriptor = descriptor;
         this.picPath = picPath;
         this.picUrl = picUrl;
+        this.fullName = fullName;
     }
 
     public String getId() {
@@ -59,6 +66,14 @@ public class ResourceUpdateRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getDescriptor() {
