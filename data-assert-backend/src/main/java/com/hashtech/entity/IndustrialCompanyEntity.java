@@ -76,12 +76,12 @@ public class IndustrialCompanyEntity implements Serializable {
      * 是否删除:0-否，1-删除
      */
     @TableLogic
-    private Boolean delFlag;
+    private Integer delFlag;
 
     public IndustrialCompanyEntity() {
     }
 
-    public IndustrialCompanyEntity(String id, String industrialId, String companyInfoId, Date createTime, String createUserId, String createBy, Date updateTime, String updateUserId, String updateBy, Boolean delFlag) {
+    public IndustrialCompanyEntity(String id, String industrialId, String companyInfoId, Date createTime, String createUserId, String createBy, Date updateTime, String updateUserId, String updateBy, Integer delFlag) {
         this.id = id;
         this.industrialId = industrialId;
         this.companyInfoId = companyInfoId;
@@ -166,11 +166,11 @@ public class IndustrialCompanyEntity implements Serializable {
         this.updateBy = updateBy;
     }
 
-    public Boolean getDelFlag() {
+    public Integer getDelFlag() {
         return delFlag;
     }
 
-    public void setDelFlag(Boolean delFlag) {
+    public void setDelFlag(Integer delFlag) {
         this.delFlag = delFlag;
     }
 }

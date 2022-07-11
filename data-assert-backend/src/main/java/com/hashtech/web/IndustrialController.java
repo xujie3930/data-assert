@@ -45,7 +45,7 @@ public class IndustrialController {
     }
 
     @PostMapping("/list")
-    BusinessResult<BusinessPageResult> list(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody IndustryListRequest request) {
+    BusinessResult<BusinessPageResult> list(@RequestBody IndustryListRequest request) {
         return BusinessResult.success(industrialService.getList(request));
     }
 

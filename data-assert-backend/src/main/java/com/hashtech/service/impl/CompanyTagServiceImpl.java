@@ -102,8 +102,9 @@ public class CompanyTagServiceImpl extends ServiceImpl<CompanyTagMapper, Company
         List<CompanyTagEntity> companyTagEntityList = getListByCompanyId(companyInfoId);
         List<TagEntity> tagEntitiesList = tagService.selectByIds(tagIds);
         for (TagEntity tagEntity : tagEntitiesList) {
-            CompanyTagEntity companyTagEntity = companyTagEntityList.stream().filter(i -> tagEntity.getId().equals(i.getTagId())).findFirst().get();
-            if (Objects.isNull(companyTagEntity)) {
+            CompanyTagEntity companyTagEntity = null;
+            Optional<CompanyTagEntity> optional = companyTagEntityList.stream().filter(i -> tagEntity.getId().equals(i.getTagId())).findFirst();
+            if (!optional.isPresent()) {
                 companyTagEntity = new CompanyTagEntity();
                 companyTagEntity.setCreateTime(date);
                 companyTagEntity.setCreateUserId(user.getUserId());
@@ -111,6 +112,8 @@ public class CompanyTagServiceImpl extends ServiceImpl<CompanyTagMapper, Company
                 companyTagEntity.setTagId(tagEntity.getId());
                 companyTagEntity.setCompanyInfoId(companyInfoId);
                 tagEntity.setUsedTime(tagEntity.getUsedTime() + 1);
+            }else {
+                companyTagEntity = optional.get();
             }
             companyTagEntity.setUpdateTime(date);
             companyTagEntity.setUpdateUserId(user.getUserId());

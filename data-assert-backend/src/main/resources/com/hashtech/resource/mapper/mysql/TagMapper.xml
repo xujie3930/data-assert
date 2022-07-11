@@ -76,7 +76,7 @@
         select *
         from tag
         <where>
-            <if test="ids != null and ids.length != 0">
+            <if test="ids != null">
                 and id in
                 <foreach collection="ids" item="i" open="(" close=")" separator=",">
                     #{i}
