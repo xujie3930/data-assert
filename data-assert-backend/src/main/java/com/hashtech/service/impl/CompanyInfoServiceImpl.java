@@ -181,11 +181,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         }
         checkUnifiedSocial(request.getUscc());
         //去除旧标签，同时更新企业标签数量和标签被企业使用数量
-        List<CompanyTagEntity> oldCompanyTag = companyTagService.getListByCompanyId(request.getId());
-        List<String> oldTagIds = oldCompanyTag.stream().map(old -> old.getTagId()).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(request.getTagIds())) {
-            oldTagIds.removeAll(request.getTagIds());
-            companyTagService.deleteCompanyTagBatch(user, new Date(), companyInfoEntity.getId(), oldTagIds);
             companyTagService.saveOrUpdateBatchDef(user,new Date(), companyInfoEntity.getId(), request.getTagIds());
         }
         //更新产业
@@ -242,7 +238,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             if (CollectionUtils.isEmpty(tagIds)){
                 return;
             }
-            companyTagService.deleteCompanyTagBatch(user, new Date(), companyId,tagIds);
+            companyTagService.deleteCompanyTagBatch(user, new Date(), companyId, tagIds);
         }
     }
 
