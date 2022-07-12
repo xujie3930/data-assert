@@ -291,8 +291,9 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @NotNull
     private CompanyInfoEntity saveCompanyInfo(InternalUserInfoVO user, CompanySaveRequest request, Date date) {
         //根据统一社会信用代码和企业名称确认是否需要新增
-        CompanyInfoEntity entity = companyInfoMapper.findByUsccAndCorpNm(request.getUscc(), request.getCorpNm());
+        CompanyInfoEntity entity = companyInfoMapper.findByUsccAndCorpNm(request.getUscc(), null);
         if (!Objects.isNull(entity)) {
+            updateCompanyInfo(user, request, date, entity);
             return entity;
         }
         //不存在，则新增
@@ -309,6 +310,14 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyInfoEntity.setUpdateBy(user.getUsername());
         save(companyInfoEntity);
         return companyInfoEntity;
+    }
+
+    private void updateCompanyInfo(InternalUserInfoVO user, CompanySaveRequest request, Date date, CompanyInfoEntity entity) {
+        BeanCopyUtils.copyProperties(request, entity);
+        entity.setUpdateTime(date);
+        entity.setUpdateUserId(user.getUserId());
+        entity.setUpdateBy(user.getUsername());
+        updateById(entity);
     }
 
     private void checkUnifiedSocial(String uscc) {

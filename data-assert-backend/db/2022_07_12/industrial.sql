@@ -38,5 +38,3 @@ CREATE TABLE `industrial` (
 -- Records of industrial
 -- ----------------------------
 INSERT INTO `industrial` VALUES ('0', '默认企业库', null, '默认产业库', '2022-07-07 19:22:50', '910626036754939904', 'admin', '2022-07-08 11:25:02', '910626036754939904', 'admin', '0');
-
-INSERT INTO `iframe`.`sys_resource` (`sys_resource_id`, `name`, `is_leaf`, `code`, `parent_id`, `status`, `url`, `type`, `layout`, `order_by`, `remark`, `create_time`, `creator_id`, `creator_name`, `creator_depart_id`, `creator_depart_name`, `update_time`, `updater_id`, `updater_name`, `updater_depart_id`, `updater_depart_name`, `need_auth`) VALUES ('925068623448375669', '标签管理', '1', 'L-217', '925050527715164160', '1', '/**/dataresource/tag/**', '1', '3', NULL, NULL, '2022-02-25 12:43:14', NULL, NULL, NULL, NULL, '2021-12-29 12:43:14', NULL, NULL, NULL, NULL, NULL);
