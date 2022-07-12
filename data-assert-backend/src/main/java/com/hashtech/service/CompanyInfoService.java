@@ -6,10 +6,12 @@ import com.hashtech.entity.CompanyInfoEntity;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
 import com.hashtech.web.request.CompanyUpdateRequest;
+import com.hashtech.web.request.IndustryListRequest;
 import com.hashtech.web.result.CompanyDetailResult;
 import com.hashtech.web.result.CompanyListResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,4 +37,6 @@ public interface CompanyInfoService extends IService<CompanyInfoEntity> {
     CompanyDetailResult detailById(String id);
 
     BusinessPageResult getRelateList(CompanyListRequest request);
+
+    List<String> getCompanyIdList(IndustryListRequest request);
 }

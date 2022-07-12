@@ -26,4 +26,6 @@ public interface IndustrialCompanyService extends IService<IndustrialCompanyEnti
     List<IndustrialCompanyEntity> selectByCompanyId(String companyInfoId);
 
     void saveOrUpdateIndustrialCompanyBatch(InternalUserInfoVO user, Date date, String companyInfoId, List<String> industrialIds);
+
+    List<IndustrialCompanyEntity> selectByCompanyIds(List<String> companyIdList);
 }

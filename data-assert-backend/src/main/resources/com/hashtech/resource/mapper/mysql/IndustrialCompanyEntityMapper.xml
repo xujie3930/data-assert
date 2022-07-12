@@ -56,4 +56,19 @@
             AND del_flag = 0
         </where>
     </select>
+
+    <select id="selectByCompanyIds"
+            resultType="com.hashtech.entity.IndustrialCompanyEntity">
+        select *
+        from industrial_company_relation
+        <where>
+            <if test="companyIdList != null">
+                and company_info_id in
+                <foreach collection="companyIdList" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            AND del_flag = 0
+        </where>
+    </select>
 </mapper>

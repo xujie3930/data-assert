@@ -75,6 +75,11 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
 
     }
 
+    @Override
+    public List<IndustrialCompanyEntity> selectByCompanyIds(List<String> companyIdList) {
+        return industrialCompanyMapper.selectByCompanyIds(companyIdList);
+    }
+
     private void addEntityToSaveList(InternalUserInfoVO user, Date date, String companyInfoId, List<IndustrialCompanyEntity> saveList, List<IndustrialCompanyEntity> industrialCompanyList, String industrialId) {
         IndustrialCompanyEntity industrialCompanyEntity;
         Optional<IndustrialCompanyEntity> optional = industrialCompanyList.stream().filter(i -> industrialId.equals(i.getIndustrialId())).findFirst();

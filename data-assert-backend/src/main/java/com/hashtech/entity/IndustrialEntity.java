@@ -28,6 +28,7 @@ public class IndustrialEntity implements Serializable {
     public static final String DEL_FLAG = "del_flag";
     public static final String CREATE_TIME = "create_time";
     public static final String NAME = "name";
+    public static final String ID = "id";
     /**
      * 主键id
      */

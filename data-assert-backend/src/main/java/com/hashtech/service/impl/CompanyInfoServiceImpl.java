@@ -17,6 +17,7 @@ import com.hashtech.utils.excel.ExcelUtils;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
 import com.hashtech.web.request.CompanyUpdateRequest;
+import com.hashtech.web.request.IndustryListRequest;
 import com.hashtech.web.result.CompanyDetailResult;
 import com.hashtech.web.result.CompanyListResult;
 import com.hashtech.web.result.Structure;
@@ -250,6 +251,11 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             return BusinessPageResult.build(Collections.emptyList(), request, 0);
         }
         return getList(request);
+    }
+
+    @Override
+    public List<String> getCompanyIdList(IndustryListRequest request) {
+        return companyInfoMapper.getCompanyIdList(request);
     }
 
     private void deleteCompanyTagByCompanyId(InternalUserInfoVO user, List<String> companyIds) {
