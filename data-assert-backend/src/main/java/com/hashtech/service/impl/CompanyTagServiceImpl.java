@@ -94,13 +94,15 @@ public class CompanyTagServiceImpl extends ServiceImpl<CompanyTagMapper, Company
 
     @Override
     public void saveOrUpdateBatchDef(InternalUserInfoVO user, Date date, String companyInfoId, List<String> tagIds) {
-        if (StringUtils.isEmpty(companyInfoId) || CollectionUtils.isEmpty(tagIds)) {
+        if (StringUtils.isEmpty(companyInfoId)) {
             return;
         }
         // 删除旧纪录
         List<CompanyTagEntity> oldCompanyTag = getListByCompanyId(companyInfoId);
         List<String> oldTagIds = oldCompanyTag.stream().map(old -> old.getTagId()).collect(Collectors.toList());
-        oldTagIds.removeAll(tagIds);
+        if (!CollectionUtils.isEmpty(tagIds)) {
+            oldTagIds.removeAll(tagIds);
+        }
         deleteCompanyTagBatch(user, date, companyInfoId, oldTagIds);
         // 新增或更新
         List<CompanyTagEntity> companyTagUpdateList= new ArrayList<>();

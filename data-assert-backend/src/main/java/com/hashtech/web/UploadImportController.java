@@ -23,7 +23,7 @@ public class UploadImportController {
     private UploadImportService uploadImportService;
 
     @PostMapping(value = {"/company/uploadImport", "uploadFile"})
-    public BusinessResult<Boolean> uploadImport(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestPart("file") MultipartFile file, @RequestParam(value = "ids", required = false) String ids, @RequestParam(value = "industryIds", required = false) String industryIds) {
-        return BusinessResult.success(uploadImportService.uploadImport(userId, file, ids, industryIds));
+    public BusinessResult<Boolean> uploadImport(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestPart("file") MultipartFile file, @RequestParam(value = "ids", required = false) String ids, @RequestParam(value = "industrialIds", required = false) String industrialIds) {
+        return BusinessResult.success(uploadImportService.uploadImport(userId, file, ids, industrialIds));
     }
 }

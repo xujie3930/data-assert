@@ -34,7 +34,7 @@ public class UploadImportServiceImpl implements UploadImportService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @BusinessParamsValidate
-    public Boolean uploadImport(String userId, MultipartFile file, String ids, String industryIds) {
+    public Boolean uploadImport(String userId, MultipartFile file, String ids, String industrialIds) {
         List<String> tadIdList = new ArrayList<>();
         if (StringUtils.isNotBlank(ids)){
             //根据前端传值做匹配
@@ -43,10 +43,10 @@ public class UploadImportServiceImpl implements UploadImportService {
             tadIdList = Arrays.asList(idsArr);
         }
         List<String> industryIdList = new ArrayList<>();
-        if (StringUtils.isNotBlank(industryIds)){
+        if (StringUtils.isNotBlank(industrialIds)){
             //根据前端传值做匹配
-            industryIds = industryIds.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "").replace("null", "");
-            String[] industryIdsArr = industryIds.split(",");
+            industrialIds = industrialIds.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "").replace("null", "");
+            String[] industryIdsArr = industrialIds.split(",");
             industryIdList = Arrays.asList(industryIdsArr);
         }
         List<CompanyInfoImportContent> importList = null;

@@ -62,20 +62,15 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @Transactional(rollbackFor = Exception.class)
     public Boolean saveDef(String userId, CompanySaveRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
-        if (hasExistUscc(request.getUscc(), null)) {
-            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
-        }
         Date date = new Date();
         CompanyInfoEntity companyInfoEntity = saveCompanyInfo(user, request, date);
         String companyInfoId = companyInfoEntity.getId();
-        if (!CollectionUtils.isEmpty(request.getTagIds())) {
-            companyTagService.saveOrUpdateBatchDef(user, date, companyInfoId, request.getTagIds());
-            companyInfoEntity.setTagNum(request.getTagIds().size());
-            updateById(companyInfoEntity);
-        }
-        if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
-            industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, date, companyInfoId, request.getIndustrialIds());
-        }
+        //保存企业-标签信息
+        companyTagService.saveOrUpdateBatchDef(user, date, companyInfoId, request.getTagIds());
+        companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
+        updateById(companyInfoEntity);
+        //保存产业-企业库信息
+        industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, date, companyInfoId, request.getIndustrialIds());
         return true;
     }
 
@@ -104,7 +99,24 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByIndustrialIds(industryIdList);
             if (!CollectionUtils.isEmpty(industrialCompanyList)) {
                 //取两个集合交集
-                companyIdList.retainAll(industrialCompanyList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList()));
+                List<String> collect = industrialCompanyList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(companyIdList)){
+                    collect.retainAll(companyIdList);
+                }
+                companyIdList = collect;
+            }else {
+                return BusinessPageResult.build(Collections.emptyList(), request, 0);
+            }
+        }
+        if (StringUtils.isNotBlank(request.getIndustrialId())) {
+            List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByIndustrialId(request.getIndustrialId());
+            if (!CollectionUtils.isEmpty(industrialCompanyList)) {
+                //取两个集合交集
+                List<String> collect = industrialCompanyList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(companyIdList)){
+                    collect.retainAll(companyIdList);
+                }
+                companyIdList = collect;
             }else {
                 return BusinessPageResult.build(Collections.emptyList(), request, 0);
             }
@@ -140,14 +152,24 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean deleteCompanyDef(String userId, String[] ids) {
-        if (ids.length <= 0) {
+    public Boolean deleteCompanyDef(String userId, Map<String, String[]> request) {
+        if (CollectionUtils.isEmpty(request)){
             return true;
         }
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         //变更资源表状态
-        deleteCompanyTagByCompanyId(user, Arrays.asList(ids));
-        deleteCompany(user, ids);
+//        deleteCompanyTagByCompanyId(user, Arrays.asList(ids));
+//        deleteCompany(user, ids);
+        //删除该产业下的企业
+        for (Map.Entry<String, String[]> entry : request.entrySet()) {
+            String industrialId = entry.getKey();
+            String[] companyIdList = entry.getValue();
+            Set<String> companyIdSet = new HashSet<>(Arrays.asList(companyIdList));
+            //该产业下的所有企业
+            List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByIndustrialId(industrialId);
+            industrialCompanyList = industrialCompanyList.stream().filter(i -> companyIdSet.contains(i.getCompanyInfoId())).collect(Collectors.toList());
+            industrialCompanyService.removeByIds(industrialCompanyList.stream().map(IndustrialCompanyEntity::getId).collect(Collectors.toList()));
+        }
         return true;
     }
 
@@ -181,13 +203,9 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         }
         checkUnifiedSocial(request.getUscc());
         //去除旧标签，同时更新企业标签数量和标签被企业使用数量
-        if (!CollectionUtils.isEmpty(request.getTagIds())) {
-            companyTagService.saveOrUpdateBatchDef(user,new Date(), companyInfoEntity.getId(), request.getTagIds());
-        }
-        //更新产业
-        if (!CollectionUtils.isEmpty(request.getIndustrialIds())) {
-            industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, new Date(), companyInfoEntity.getId(), request.getIndustrialIds());
-        }
+        companyTagService.saveOrUpdateBatchDef(user,new Date(), companyInfoEntity.getId(), request.getTagIds());
+        //更新产业-企业信息
+        industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, new Date(), companyInfoEntity.getId(), request.getIndustrialIds());
         ////更改企业
         companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
         companyInfoEntity.setUscc(request.getUscc());
@@ -214,6 +232,11 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
                 List<String> tagIdList = tagListByCompanyId.stream().map(o -> o.getId()).collect(Collectors.toList());
                 result.setTagMap(tagIdList);
             }
+        }
+        List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByCompanyId(id);
+        if (!CollectionUtils.isEmpty(industrialCompanyList)) {
+            List<String> industrialList = industrialCompanyList.stream().map(o -> o.getIndustrialId()).collect(Collectors.toList());
+            result.setIndustrialIds(industrialList);
         }
         return result;
     }
@@ -266,6 +289,15 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @NotNull
     private CompanyInfoEntity saveCompanyInfo(InternalUserInfoVO user, CompanySaveRequest request, Date date) {
+        //根据统一社会信用代码和企业名称确认是否需要新增
+        CompanyInfoEntity entity = companyInfoMapper.findByUsccAndCorpNm(request.getUscc(), request.getCorpNm());
+        if (!Objects.isNull(entity)) {
+            return entity;
+        }
+        //不存在，则新增
+        if (hasExistUscc(request.getUscc(), null)) {
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
+        }
         checkUnifiedSocial(request.getUscc());
         CompanyInfoEntity companyInfoEntity = BeanCopyUtils.copyProperties(request, new CompanyInfoEntity());
         companyInfoEntity.setCreateTime(date);
@@ -274,7 +306,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyInfoEntity.setUpdateTime(date);
         companyInfoEntity.setUpdateUserId(user.getUserId());
         companyInfoEntity.setUpdateBy(user.getUsername());
-        companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
         save(companyInfoEntity);
         return companyInfoEntity;
     }

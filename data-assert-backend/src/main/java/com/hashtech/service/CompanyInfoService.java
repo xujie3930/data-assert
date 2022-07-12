@@ -10,6 +10,8 @@ import com.hashtech.web.result.CompanyDetailResult;
 import com.hashtech.web.result.CompanyListResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 /**
  * <p>
  * 企业信息表 服务类
@@ -26,7 +28,7 @@ public interface CompanyInfoService extends IService<CompanyInfoEntity> {
 
     BusinessPageResult getList(CompanyListRequest request);
 
-    Boolean deleteCompanyDef(String userId, String[] ids);
+    Boolean deleteCompanyDef(String userId, Map<String, String[]> request);
 
     Boolean updateDef(String userId, CompanyUpdateRequest request);
 

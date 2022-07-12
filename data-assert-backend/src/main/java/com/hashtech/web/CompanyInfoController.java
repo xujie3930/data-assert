@@ -22,6 +22,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * <p>
@@ -57,8 +58,8 @@ public class CompanyInfoController {
     }
 
     @PostMapping("/delete")
-    BusinessResult<Boolean> deleteCompanyDef(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody String[] ids) {
-        return BusinessResult.success(companyInfoService.deleteCompanyDef(userId, ids));
+    BusinessResult<Boolean> deleteCompanyDef(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody Map<String, String[]> request) {
+        return BusinessResult.success(companyInfoService.deleteCompanyDef(userId, request));
     }
 
     @PostMapping("/update")

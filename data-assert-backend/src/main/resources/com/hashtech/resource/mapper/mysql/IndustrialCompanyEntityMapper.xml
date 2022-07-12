@@ -19,9 +19,9 @@
         select *
         from industrial_company_relation
         <where>
-            <if test="ids != null and ids.length != 0">
-                AND id in
-                <foreach collection="resourceIds" item="i" open="(" close=")" separator=",">
+            <if test="ids != null">
+                AND industrial_id in
+                <foreach collection="ids" item="i" open="(" close=")" separator=",">
                     #{i}
                 </foreach>
             </if>

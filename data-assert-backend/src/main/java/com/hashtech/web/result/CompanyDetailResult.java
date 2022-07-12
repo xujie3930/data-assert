@@ -31,6 +31,8 @@ public class CompanyDetailResult {
     //关联标签数量
     private Integer tagNum;
 
+    private List<String> industrialIds;
+
     //更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
@@ -42,12 +44,13 @@ public class CompanyDetailResult {
     public CompanyDetailResult() {
     }
 
-    public CompanyDetailResult(String id, String uscc, String corpNm, List<String> tagMap, Integer tagNum, Date updateTime, String updateBy, String describe) {
+    public CompanyDetailResult(String id, String uscc, String corpNm, List<String> tagMap, Integer tagNum, List<String> industrialIds, Date updateTime, String updateBy, String describe) {
         this.id = id;
         this.uscc = uscc;
         this.corpNm = corpNm;
         this.tagMap = tagMap;
         this.tagNum = tagNum;
+        this.industrialIds = industrialIds;
         this.updateTime = updateTime;
         this.updateBy = updateBy;
         this.describe = describe;
@@ -115,5 +118,13 @@ public class CompanyDetailResult {
 
     public void setDescribe(String describe) {
         this.describe = describe;
+    }
+
+    public List<String> getIndustrialIds() {
+        return industrialIds;
+    }
+
+    public void setIndustrialIds(List<String> industrialIds) {
+        this.industrialIds = industrialIds;
     }
 }

@@ -3,6 +3,7 @@ package com.hashtech.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.google.common.collect.ImmutableMap;
 import com.hashtech.common.*;
 import com.hashtech.config.validate.BusinessParamsValidate;
 import com.hashtech.entity.CompanyInfoEntity;
@@ -107,11 +108,11 @@ public class IndustrialServiceImpl extends ServiceImpl<IndustrialMapper, Industr
         List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByIndustrialId(id);
         //根据所有的companyId去company_info表删除
         Set<String> companyIdSet = industrialCompanyList.stream().map(IndustrialCompanyEntity::getCompanyInfoId).collect(Collectors.toSet());
-        Set<String> industrialCompanyIdSet = industrialCompanyList.stream().map(IndustrialCompanyEntity::getId).collect(Collectors.toSet());
         //删除该产业库下所有企业
-        companyInfoService.deleteCompanyDef(userId, companyIdSet.toArray(new String[companyIdSet.size()]));
-        //删除产业-标签关联表的企业信息
-        industrialCompanyService.removeByIds(industrialCompanyIdSet);
+        ImmutableMap<String, String[]> map = ImmutableMap.<String, String[]>builder()
+                .put(id, companyIdSet.toArray(new String[companyIdSet.size()]))
+                .build();
+        companyInfoService.deleteCompanyDef(userId, map);
         //删除产业信息
         removeById(id);
         return id;
