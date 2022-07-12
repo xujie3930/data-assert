@@ -28,6 +28,9 @@ public class CompanyListResult {
     //关联标签
     private List<Map<String, String>> tagMap;
 
+    //产业id
+    private String industrialId;
+
     //关联标签数量
     private Integer tagNum;
 
@@ -42,11 +45,12 @@ public class CompanyListResult {
     public CompanyListResult() {
     }
 
-    public CompanyListResult(String id, String uscc, String corpNm, List<Map<String, String>> tagMap, Integer tagNum, Date updateTime, String updateBy, String describe) {
+    public CompanyListResult(String id, String uscc, String corpNm, List<Map<String, String>> tagMap, String industrialId, Integer tagNum, Date updateTime, String updateBy, String describe) {
         this.id = id;
         this.uscc = uscc;
         this.corpNm = corpNm;
         this.tagMap = tagMap;
+        this.industrialId = industrialId;
         this.tagNum = tagNum;
         this.updateTime = updateTime;
         this.updateBy = updateBy;
@@ -115,5 +119,13 @@ public class CompanyListResult {
 
     public void setDescribe(String describe) {
         this.describe = describe;
+    }
+
+    public String getIndustrialId() {
+        return industrialId;
+    }
+
+    public void setIndustrialId(String industrialId) {
+        this.industrialId = industrialId;
     }
 }

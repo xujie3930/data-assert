@@ -49,28 +49,15 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
 
     @Override
     public void saveOrUpdateIndustrialCompanyBatch(InternalUserInfoVO user, Date date, String companyInfoId, List<String> industrialIds) {
-        List<IndustrialCompanyEntity> list = new ArrayList<>();
+        //更新现有产业
+        List<IndustrialCompanyEntity> saveList = new ArrayList<>();
         List<IndustrialCompanyEntity> industrialCompanyList = selectByCompanyId(companyInfoId);
         List<String> allIndustrialIds = industrialCompanyList.stream().map(IndustrialCompanyEntity::getIndustrialId).collect(Collectors.toList());
         for (String industrialId : industrialIds) {
-            IndustrialCompanyEntity industrialCompanyEntity = null;
-            Optional<IndustrialCompanyEntity> optional = industrialCompanyList.stream().filter(i -> industrialId.equals(i.getIndustrialId())).findFirst();
-            if (!optional.isPresent()){
-                industrialCompanyEntity = new IndustrialCompanyEntity();
-                industrialCompanyEntity.setCreateTime(date);
-                industrialCompanyEntity.setCreateUserId(user.getUserId());
-                industrialCompanyEntity.setCreateBy(user.getUsername());
-            }else {
-                industrialCompanyEntity = optional.get();
-            }
-            industrialCompanyEntity.setIndustrialId(industrialId);
-            industrialCompanyEntity.setCompanyInfoId(companyInfoId);
-            industrialCompanyEntity.setUpdateTime(date);
-            industrialCompanyEntity.setUpdateUserId(user.getUserId());
-            industrialCompanyEntity.setUpdateBy(user.getUsername());
-            list.add(industrialCompanyEntity);
+            addEntityToSaveList(user, date, companyInfoId, saveList, industrialCompanyList, industrialId);
         }
-        saveOrUpdateBatch(list);
+        saveOrUpdateBatch(saveList);
+        //删除原有产业
         allIndustrialIds.retainAll(industrialIds);
         if (!CollectionUtils.isEmpty(allIndustrialIds)) {
             List<IndustrialCompanyEntity> removeList = new ArrayList<>();
@@ -86,5 +73,24 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
             removeByIds(removeList.stream().map(i -> i.getId()).collect(Collectors.toList()));
         }
 
+    }
+
+    private void addEntityToSaveList(InternalUserInfoVO user, Date date, String companyInfoId, List<IndustrialCompanyEntity> saveList, List<IndustrialCompanyEntity> industrialCompanyList, String industrialId) {
+        IndustrialCompanyEntity industrialCompanyEntity;
+        Optional<IndustrialCompanyEntity> optional = industrialCompanyList.stream().filter(i -> industrialId.equals(i.getIndustrialId())).findFirst();
+        if (!optional.isPresent()){
+            industrialCompanyEntity = new IndustrialCompanyEntity();
+            industrialCompanyEntity.setCreateTime(date);
+            industrialCompanyEntity.setCreateUserId(user.getUserId());
+            industrialCompanyEntity.setCreateBy(user.getUsername());
+        }else {
+            industrialCompanyEntity = optional.get();
+        }
+        industrialCompanyEntity.setIndustrialId(industrialId);
+        industrialCompanyEntity.setCompanyInfoId(companyInfoId);
+        industrialCompanyEntity.setUpdateTime(date);
+        industrialCompanyEntity.setUpdateUserId(user.getUserId());
+        industrialCompanyEntity.setUpdateBy(user.getUsername());
+        saveList.add(industrialCompanyEntity);
     }
 }

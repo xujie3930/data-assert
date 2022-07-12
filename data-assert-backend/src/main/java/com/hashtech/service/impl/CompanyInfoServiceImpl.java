@@ -142,6 +142,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
                 }
                 companyListResult.setTagMap(list);
             }
+            companyListResult.setIndustrialId(request.getIndustrialId());
             companyListResults.add(companyListResult);
         }
         resultIPage.setRecords(companyListResults);
