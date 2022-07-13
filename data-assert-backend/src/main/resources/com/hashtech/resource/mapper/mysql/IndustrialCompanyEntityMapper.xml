@@ -107,6 +107,6 @@
             </if>
             AND ci.del_flag = 0 AND cg.del_flag = 0
         </where>
-        )
+        ) and del_flag = 0
     </select>
 </mapper>

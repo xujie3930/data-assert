@@ -141,7 +141,7 @@ public class IndustrialServiceImpl extends ServiceImpl<IndustrialMapper, Industr
 
     private Wrapper<IndustrialEntity> queryWrapper(IndustryListRequest request) {
         QueryWrapper<IndustrialEntity> wrapper = new QueryWrapper<>();
-        //先暂时这样判断，以后优化
+        //TODO:先暂时这样判断，以后优化
         if (StringUtils.isNotBlank(request.getUscc()) || StringUtils.isNotBlank(request.getCorpNm()) || StringUtils.isNotBlank(request.getTagId())){
             List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByRequest(request);
             if (!CollectionUtils.isEmpty(industrialCompanyList)){
