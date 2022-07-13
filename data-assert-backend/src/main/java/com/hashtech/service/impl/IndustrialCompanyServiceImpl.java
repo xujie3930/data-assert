@@ -7,6 +7,7 @@ import com.hashtech.mapper.IndustrialCompanyMapper;
 import com.hashtech.service.IndustrialCompanyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,10 +60,10 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
         }
         saveOrUpdateBatch(saveList);
         //删除原有产业
-        allIndustrialIds.retainAll(industrialIds);
-        if (!CollectionUtils.isEmpty(allIndustrialIds)) {
+        List<String> removeIds = ListUtils.subtract(allIndustrialIds, industrialIds);
+        if (!CollectionUtils.isEmpty(removeIds)) {
             List<IndustrialCompanyEntity> removeList = new ArrayList<>();
-            for (String removeIndustrialId : allIndustrialIds) {
+            for (String removeIndustrialId : removeIds) {
                 IndustrialCompanyEntity removeEntity = industrialCompanyList.stream().filter(i -> removeIndustrialId.equals(i.getIndustrialId())).findFirst().get();
                 removeEntity.setUpdateTime(date);
                 removeEntity.setUpdateUserId(user.getUserId());
