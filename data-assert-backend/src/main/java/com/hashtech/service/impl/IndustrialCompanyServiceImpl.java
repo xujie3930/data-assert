@@ -1,11 +1,14 @@
 package com.hashtech.service.impl;
 
+import com.hashtech.common.AppException;
 import com.hashtech.common.DelFlagEnum;
+import com.hashtech.common.ResourceCodeClass;
 import com.hashtech.entity.IndustrialCompanyEntity;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.IndustrialCompanyMapper;
 import com.hashtech.service.IndustrialCompanyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hashtech.web.request.IndustryListRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -51,10 +54,16 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
 
     @Override
     public void saveOrUpdateIndustrialCompanyBatch(InternalUserInfoVO user, Date date, String companyInfoId, List<String> industrialIds) {
-        //更新现有产业
-        List<IndustrialCompanyEntity> saveList = new ArrayList<>();
+        //判断现有产业id是否与传参完全一致
         List<IndustrialCompanyEntity> industrialCompanyList = selectByCompanyId(companyInfoId);
         List<String> allIndustrialIds = industrialCompanyList.stream().map(IndustrialCompanyEntity::getIndustrialId).collect(Collectors.toList());
+        allIndustrialIds.sort(Comparator.comparing(String::hashCode));
+        industrialIds.sort(Comparator.comparing(String::hashCode));
+        if (allIndustrialIds.toString().equals(industrialIds.toString())){
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
+        }
+        //更新现有产业
+        List<IndustrialCompanyEntity> saveList = new ArrayList<>();
         for (String industrialId : industrialIds) {
             addEntityToSaveList(user, date, companyInfoId, saveList, industrialCompanyList, industrialId);
         }
@@ -79,6 +88,9 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
 
     @Override
     public List<IndustrialCompanyEntity> selectByCompanyIds(List<String> companyIdList) {
+        if (CollectionUtils.isEmpty(companyIdList)){
+            return null;
+        }
         return industrialCompanyMapper.selectByCompanyIds(companyIdList);
     }
 
@@ -86,6 +98,11 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
     public Boolean hasExistByCompanyIdAndIndustrialIds(String id, List<String> industrialIds) {
         Boolean exist = industrialCompanyMapper.hasExistByCompanyIdAndIndustrialIds(id, industrialIds);
         return BooleanUtils.isTrue(exist);
+    }
+
+    @Override
+    public List<IndustrialCompanyEntity> selectByRequest(IndustryListRequest request) {
+        return industrialCompanyMapper.selectByRequest(request);
     }
 
     private void addEntityToSaveList(InternalUserInfoVO user, Date date, String companyInfoId, List<IndustrialCompanyEntity> saveList, List<IndustrialCompanyEntity> industrialCompanyList, String industrialId) {

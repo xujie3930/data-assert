@@ -296,10 +296,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         //根据统一社会信用代码和企业名称确认是否需要新增
         CompanyInfoEntity entity= companyInfoMapper.findByUsccAndCorpNm(request.getUscc(), null);
         if (!Objects.isNull(entity)) {
-            //判断该企业在选定的产业库下是否存在，不存在，则新增
-            if (industrialCompanyService.hasExistByCompanyIdAndIndustrialIds(entity.getId(), request.getIndustrialIds())) {
-                throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
-            }
             updateCompanyInfo(user, request, date, entity);
             return entity;
         }

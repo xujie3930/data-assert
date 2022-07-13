@@ -141,11 +141,15 @@ public class IndustrialServiceImpl extends ServiceImpl<IndustrialMapper, Industr
 
     private Wrapper<IndustrialEntity> queryWrapper(IndustryListRequest request) {
         QueryWrapper<IndustrialEntity> wrapper = new QueryWrapper<>();
+        //先暂时这样判断，以后优化
         if (StringUtils.isNotBlank(request.getUscc()) || StringUtils.isNotBlank(request.getCorpNm()) || StringUtils.isNotBlank(request.getTagId())){
-            List<String> companyIdList = companyInfoService.getCompanyIdList(request);
-            List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByCompanyIds(companyIdList);
-            List<String> industrialIds = industrialCompanyList.stream().map(IndustrialCompanyEntity::getIndustrialId).collect(Collectors.toList());
-            wrapper.in(IndustrialEntity.ID, industrialIds);
+            List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByRequest(request);
+            if (!CollectionUtils.isEmpty(industrialCompanyList)){
+                List<String> industrialIds = industrialCompanyList.stream().map(IndustrialCompanyEntity::getIndustrialId).collect(Collectors.toList());
+                wrapper.in(IndustrialEntity.ID, industrialIds);
+            }else {
+                wrapper.in(IndustrialEntity.ID, -1);
+            }
         }
         wrapper.eq(IndustrialEntity.DEL_FLAG, DelFlagEnum.ENA_BLED.getCode());
         wrapper.orderByDesc(IndustrialEntity.CREATE_TIME);

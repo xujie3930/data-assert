@@ -89,4 +89,24 @@
             AND del_flag = 0
         </where>
     </select>
+
+    <select id="selectByRequest"
+            resultType="com.hashtech.entity.IndustrialCompanyEntity">
+        select * from industrial_company_relation where company_info_id in
+        (SELECT ci.id FROM company_info ci
+        INNER JOIN company_tag cg ON ci.id=cg.company_info_id
+        <where>
+            <if test="null!=request.tagId and request.tagId != '' ">
+                AND cg.`tag_id` =#{request.tagId}
+            </if>
+            <if test="null!=request.uscc and request.uscc != '' ">
+                AND ci.`uscc` LIKE CONCAT('%',#{request.uscc},'%')
+            </if>
+            <if test="null!=request.corpNm and request.corpNm != '' ">
+                AND ci.`corp_nm` LIKE CONCAT('%',#{request.corpNm},'%')
+            </if>
+            AND ci.del_flag = 0 AND cg.del_flag = 0
+        </where>
+        )
+    </select>
 </mapper>

@@ -43,7 +43,7 @@ public class CompanyInfoController {
     @Value("${template.path}")
     private String filePath;
 
-    @GetMapping("/hasExistUscc")
+    @PostMapping("/hasExistUscc")
     public BusinessResult<Boolean> hasExistUscc(@RequestBody CompanyHasExistRequest request) {
         return BusinessResult.success(companyInfoService.hasExistUscc(request.getUscc(), request.getIndustrialIds()));
     }
