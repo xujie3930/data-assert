@@ -1,17 +1,23 @@
 package com.hashtech.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hashtech.common.AppException;
 import com.hashtech.common.DelFlagEnum;
+import com.hashtech.common.InterfaceTypeEnum;
 import com.hashtech.common.ResourceCodeClass;
+import com.hashtech.entity.CompanyInfoEntity;
 import com.hashtech.entity.IndustrialCompanyEntity;
+import com.hashtech.entity.IndustrialEntity;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.IndustrialCompanyMapper;
+import com.hashtech.service.CompanyInfoService;
 import com.hashtech.service.IndustrialCompanyService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hashtech.service.IndustrialService;
 import com.hashtech.web.request.IndustryListRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +37,10 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
 
     @Autowired
     private IndustrialCompanyMapper industrialCompanyMapper;
+    @Autowired
+    private IndustrialService industrialService;
+    @Autowired
+    private CompanyInfoService companyInfoService;
 
     @Override
     public List<IndustrialCompanyEntity> selectByIndustrialId(String id) {
@@ -53,14 +63,21 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
     }
 
     @Override
-    public void saveOrUpdateIndustrialCompanyBatch(InternalUserInfoVO user, Date date, String companyInfoId, List<String> industrialIds) {
-        //判断现有产业id是否与传参完全一致
+    public void saveOrUpdateIndustrialCompanyBatch(InternalUserInfoVO user, Date date, String companyInfoId, List<String> industrialIds, Integer interfaceType) {
         List<IndustrialCompanyEntity> industrialCompanyList = selectByCompanyId(companyInfoId);
         List<String> allIndustrialIds = industrialCompanyList.stream().map(IndustrialCompanyEntity::getIndustrialId).collect(Collectors.toList());
-        allIndustrialIds.sort(Comparator.comparing(String::hashCode));
-        industrialIds.sort(Comparator.comparing(String::hashCode));
-        if (allIndustrialIds.toString().equals(industrialIds.toString())){
-            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
+        //判断现有产业id是否与传参完全一致
+        if (InterfaceTypeEnum.SAVE.getCode().equals(interfaceType)){
+            allIndustrialIds.sort(Comparator.comparing(String::hashCode));
+            industrialIds.sort(Comparator.comparing(String::hashCode));
+            if (allIndustrialIds.toString().equals(industrialIds.toString())){
+                List<IndustrialEntity> industrialEntityList = industrialService.listByIds(industrialIds);
+                List<String> industryNameList = industrialEntityList.stream().map(IndustrialEntity::getName).collect(Collectors.toList());
+                CompanyInfoEntity companyInfoEntity = companyInfoService.getById(companyInfoId);
+                String industryName = StringUtils.join(industryNameList, ",");
+                String errMsg = industryName + "产业库下已存在 " + companyInfoEntity.getCorpNm() + " 企业信息";
+                throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode(), errMsg);
+            }
         }
         //更新现有产业
         List<IndustrialCompanyEntity> saveList = new ArrayList<>();

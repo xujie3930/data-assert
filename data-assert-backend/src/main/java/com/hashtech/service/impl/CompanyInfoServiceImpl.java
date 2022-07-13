@@ -68,7 +68,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
         updateById(companyInfoEntity);
         //保存产业-企业库信息
-        industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, date, companyInfoId, request.getIndustrialIds());
+        industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, date, companyInfoId, request.getIndustrialIds(),InterfaceTypeEnum.SAVE.getCode());
         return true;
     }
 
@@ -204,7 +204,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         //去除旧标签，同时更新企业标签数量和标签被企业使用数量
         companyTagService.saveOrUpdateBatchDef(user,new Date(), companyInfoEntity.getId(), request.getTagIds());
         //更新产业-企业信息
-        industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, new Date(), companyInfoEntity.getId(), request.getIndustrialIds());
+        industrialCompanyService.saveOrUpdateIndustrialCompanyBatch(user, new Date(), companyInfoEntity.getId(), request.getIndustrialIds(), InterfaceTypeEnum.UPDATE.getCode());
         ////更改企业
         companyInfoEntity.setTagNum(null == request.getTagIds()? 0 : request.getTagIds().size());
         companyInfoEntity.setUscc(request.getUscc());
