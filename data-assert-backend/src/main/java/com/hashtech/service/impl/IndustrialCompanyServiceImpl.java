@@ -70,7 +70,7 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
         if (InterfaceTypeEnum.SAVE.getCode().equals(interfaceType)){
             allIndustrialIds.sort(Comparator.comparing(String::hashCode));
             industrialIds.sort(Comparator.comparing(String::hashCode));
-            if (allIndustrialIds.toString().equals(industrialIds.toString())){
+            if (allIndustrialIds.toString().equals(industrialIds.toString()) || allIndustrialIds.containsAll(industrialIds)){
                 List<IndustrialEntity> industrialEntityList = industrialService.listByIds(industrialIds);
                 List<String> industryNameList = industrialEntityList.stream().map(IndustrialEntity::getName).collect(Collectors.toList());
                 CompanyInfoEntity companyInfoEntity = companyInfoService.getById(companyInfoId);
