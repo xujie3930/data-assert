@@ -140,11 +140,11 @@ public class IndustrialServiceImpl extends ServiceImpl<IndustrialMapper, Industr
     }
 
     private Wrapper<IndustrialEntity> queryWrapper(IndustryListRequest request) {
-        List<String> companyIdList = companyInfoService.getCompanyIdList(request);
-        List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByCompanyIds(companyIdList);
-        List<String> industrialIds = industrialCompanyList.stream().map(IndustrialCompanyEntity::getIndustrialId).collect(Collectors.toList());
         QueryWrapper<IndustrialEntity> wrapper = new QueryWrapper<>();
-        if (!CollectionUtils.isEmpty(industrialIds)){
+        if (StringUtils.isNotBlank(request.getUscc()) || StringUtils.isNotBlank(request.getCorpNm()) || StringUtils.isNotBlank(request.getTagId())){
+            List<String> companyIdList = companyInfoService.getCompanyIdList(request);
+            List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByCompanyIds(companyIdList);
+            List<String> industrialIds = industrialCompanyList.stream().map(IndustrialCompanyEntity::getIndustrialId).collect(Collectors.toList());
             wrapper.in(IndustrialEntity.ID, industrialIds);
         }
         wrapper.eq(IndustrialEntity.DEL_FLAG, DelFlagEnum.ENA_BLED.getCode());
