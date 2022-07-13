@@ -196,9 +196,6 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateDef(String userId, CompanyUpdateRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
-        if (industrialCompanyService.hasExistByCompanyIdAndIndustrialIds(request.getId(), request.getIndustrialIds())) {
-            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
-        }
         CompanyInfoEntity companyInfoEntity = companyInfoMapper.findById(request.getId());
         if (Objects.isNull(companyInfoEntity)) {
             return true;
