@@ -14,10 +14,7 @@ import com.hashtech.mapper.CompanyInfoMapper;
 import com.hashtech.service.*;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.excel.ExcelUtils;
-import com.hashtech.web.request.CompanyListRequest;
-import com.hashtech.web.request.CompanySaveRequest;
-import com.hashtech.web.request.CompanyUpdateRequest;
-import com.hashtech.web.request.IndustryListRequest;
+import com.hashtech.web.request.*;
 import com.hashtech.web.result.CompanyDetailResult;
 import com.hashtech.web.result.CompanyListResult;
 import com.hashtech.web.result.Structure;
@@ -77,9 +74,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
 
     @Override
-    public Boolean hasExistUscc(String uscc, String id) {
-        boolean hasExistUscc = BooleanUtils.isTrue(companyInfoMapper.hasExistUscc(uscc, id));
-        return hasExistUscc;
+    public Boolean hasExistUscc(String uscc, List<String> industrialIds) {
+        return industrialCompanyService.hasExistByCompanyIdAndIndustrialIds(uscc, industrialIds);
     }
 
     @Override
@@ -196,7 +192,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateDef(String userId, CompanyUpdateRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
-        if (hasExistUscc(request.getUscc(), request.getId())) {
+        if (hasExistUscc(request.getUscc(), request.getIndustrialIds())) {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
         }
         CompanyInfoEntity companyInfoEntity = companyInfoMapper.findById(request.getId());
@@ -297,15 +293,16 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @NotNull
     private CompanyInfoEntity saveCompanyInfo(InternalUserInfoVO user, CompanySaveRequest request, Date date) {
         //根据统一社会信用代码和企业名称确认是否需要新增
-        CompanyInfoEntity entity = companyInfoMapper.findByUsccAndCorpNm(request.getUscc(), null);
+        CompanyInfoEntity entity= companyInfoMapper.findByUsccAndCorpNm(request.getUscc(), null);
         if (!Objects.isNull(entity)) {
+            //判断该企业在选定的产业库下是否存在，不存在，则新增
+            if (hasExistUscc(request.getUscc(), request.getIndustrialIds())) {
+                throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
+            }
             updateCompanyInfo(user, request, date, entity);
             return entity;
         }
-        //不存在，则新增
-        if (hasExistUscc(request.getUscc(), null)) {
-            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
-        }
+
         checkUnifiedSocial(request.getUscc());
         CompanyInfoEntity companyInfoEntity = BeanCopyUtils.copyProperties(request, new CompanyInfoEntity());
         companyInfoEntity.setCreateTime(date);

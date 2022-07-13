@@ -7,6 +7,7 @@ import com.hashtech.mapper.IndustrialCompanyMapper;
 import com.hashtech.service.IndustrialCompanyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,6 +79,12 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
     @Override
     public List<IndustrialCompanyEntity> selectByCompanyIds(List<String> companyIdList) {
         return industrialCompanyMapper.selectByCompanyIds(companyIdList);
+    }
+
+    @Override
+    public Boolean hasExistByCompanyIdAndIndustrialIds(String id, List<String> industrialIds) {
+        Boolean exist = industrialCompanyMapper.hasExistByCompanyIdAndIndustrialIds(id, industrialIds);
+        return BooleanUtils.isTrue(exist);
     }
 
     private void addEntityToSaveList(InternalUserInfoVO user, Date date, String companyInfoId, List<IndustrialCompanyEntity> saveList, List<IndustrialCompanyEntity> industrialCompanyList, String industrialId) {

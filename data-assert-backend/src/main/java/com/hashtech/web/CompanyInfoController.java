@@ -7,6 +7,7 @@ import com.hashtech.common.BusinessPageResult;
 import com.hashtech.common.BusinessResult;
 import com.hashtech.common.ResourceCodeClass;
 import com.hashtech.service.CompanyInfoService;
+import com.hashtech.web.request.CompanyHasExistRequest;
 import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.CompanySaveRequest;
 import com.hashtech.web.request.CompanyUpdateRequest;
@@ -22,6 +23,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,8 +44,8 @@ public class CompanyInfoController {
     private String filePath;
 
     @GetMapping("/hasExistUscc")
-    public BusinessResult<Boolean> hasExistUscc(@RequestParam("uscc") String uscc) {
-        return BusinessResult.success(companyInfoService.hasExistUscc(uscc, null));
+    public BusinessResult<Boolean> hasExistUscc(@RequestBody CompanyHasExistRequest request) {
+        return BusinessResult.success(companyInfoService.hasExistUscc(request.getUscc(), request.getIndustrialIds()));
     }
 
     @PostMapping("/save")

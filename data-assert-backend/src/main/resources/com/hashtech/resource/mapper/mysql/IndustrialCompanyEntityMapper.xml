@@ -71,4 +71,22 @@
             AND del_flag = 0
         </where>
     </select>
+
+    <select id="hasExistByCompanyIdAndIndustrialIds"
+            resultType="java.lang.Boolean">
+        select 1
+        from industrial_company_relation
+        <where>
+            <if test="companyInfoId != null and companyInfoId != '' ">
+                AND company_info_id = #{companyInfoId}
+            </if>
+            <if test="industrialIds != null">
+                and industrial_id in
+                <foreach collection="industrialIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            AND del_flag = 0
+        </where>
+    </select>
 </mapper>

@@ -3,10 +3,7 @@ package com.hashtech.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hashtech.common.BusinessPageResult;
 import com.hashtech.entity.CompanyInfoEntity;
-import com.hashtech.web.request.CompanyListRequest;
-import com.hashtech.web.request.CompanySaveRequest;
-import com.hashtech.web.request.CompanyUpdateRequest;
-import com.hashtech.web.request.IndustryListRequest;
+import com.hashtech.web.request.*;
 import com.hashtech.web.result.CompanyDetailResult;
 import com.hashtech.web.result.CompanyListResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +23,7 @@ public interface CompanyInfoService extends IService<CompanyInfoEntity> {
 
     Boolean saveDef(String userId, CompanySaveRequest request);
 
-    Boolean hasExistUscc(String uscc, String id);
+    Boolean hasExistUscc(String uscc, List<String> industrialIds);
 
     BusinessPageResult getList(CompanyListRequest request);
 
