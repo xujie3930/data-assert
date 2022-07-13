@@ -75,7 +75,11 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @Override
     public Boolean hasExistUscc(String uscc, List<String> industrialIds) {
-        return industrialCompanyService.hasExistByCompanyIdAndIndustrialIds(uscc, industrialIds);
+        CompanyInfoEntity entity = companyInfoMapper.findByUsccAndCorpNm(uscc, null);
+        if (Objects.isNull(entity)){
+            return false;
+        }
+        return industrialCompanyService.hasExistByCompanyIdAndIndustrialIds(entity.getId(), industrialIds);
     }
 
     @Override
@@ -192,7 +196,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateDef(String userId, CompanyUpdateRequest request) {
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
-        if (hasExistUscc(request.getUscc(), request.getIndustrialIds())) {
+        if (industrialCompanyService.hasExistByCompanyIdAndIndustrialIds(request.getId(), request.getIndustrialIds())) {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
         }
         CompanyInfoEntity companyInfoEntity = companyInfoMapper.findById(request.getId());
@@ -296,7 +300,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         CompanyInfoEntity entity= companyInfoMapper.findByUsccAndCorpNm(request.getUscc(), null);
         if (!Objects.isNull(entity)) {
             //判断该企业在选定的产业库下是否存在，不存在，则新增
-            if (hasExistUscc(request.getUscc(), request.getIndustrialIds())) {
+            if (industrialCompanyService.hasExistByCompanyIdAndIndustrialIds(entity.getId(), request.getIndustrialIds())) {
                 throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
             }
             updateCompanyInfo(user, request, date, entity);
