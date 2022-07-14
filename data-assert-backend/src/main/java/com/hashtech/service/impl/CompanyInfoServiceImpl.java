@@ -169,10 +169,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         if (CollectionUtils.isEmpty(request)){
             return true;
         }
+        List<String> removeCompanyIds = new ArrayList<>();
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
-        //变更资源表状态
-//        deleteCompanyTagByCompanyId(user, Arrays.asList(ids));
-//        deleteCompany(user, ids);
         //删除该产业下的企业
         for (Map.Entry<String, String[]> entry : request.entrySet()) {
             String industrialId = entry.getKey();
@@ -182,6 +180,18 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByIndustrialId(industrialId);
             industrialCompanyList = industrialCompanyList.stream().filter(i -> companyIdSet.contains(i.getCompanyInfoId())).collect(Collectors.toList());
             industrialCompanyService.removeByIds(industrialCompanyList.stream().map(IndustrialCompanyEntity::getId).collect(Collectors.toList()));
+            for (String companyId : companyIdList) {
+                List<IndustrialCompanyEntity> industrialListByCompany = industrialCompanyService.selectByCompanyId(companyId);
+                if (CollectionUtils.isEmpty(industrialListByCompany)){
+                    removeCompanyIds.add(companyId);
+                }
+            }
+        }
+        //删除企业及其标签
+        if (!CollectionUtils.isEmpty(removeCompanyIds)){
+            String[] removeArr = removeCompanyIds.stream().toArray(String[]::new);
+            deleteCompanyTagByCompanyId(user, removeCompanyIds);
+            deleteCompany(user, removeArr);
         }
         return true;
     }
