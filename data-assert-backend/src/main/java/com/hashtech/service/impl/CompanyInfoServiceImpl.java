@@ -11,6 +11,7 @@ import com.hashtech.easyexcel.bean.CompanyInfoImportContent;
 import com.hashtech.entity.*;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.CompanyInfoMapper;
+import com.hashtech.mapper.IndustrialCompanyMapper;
 import com.hashtech.service.*;
 import com.hashtech.utils.CharUtil;
 import com.hashtech.utils.excel.ExcelUtils;
@@ -54,6 +55,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     private IndustrialCompanyService industrialCompanyService;
     @Autowired
     private IndustrialService industrialService;
+    @Autowired
+    private IndustrialCompanyMapper industrialCompanyMapper;
 
     @Override
     @BusinessParamsValidate(argsIndexs = {1})
@@ -73,13 +76,21 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     }
 
 
-    @Override
-    public Boolean hasExistUscc(String uscc, List<String> industrialIds, String companyInfoId) {
+    public void checkExistUscc(String uscc, List<String> industrialIds, String companyInfoId) {
         CompanyInfoEntity entity = companyInfoMapper.findByUsccAndCorpNm(uscc, null, companyInfoId);
         if (Objects.isNull(entity)){
-            return false;
+            return ;
         }
-        return industrialCompanyService.hasExistByCompanyIdAndIndustrialIds(entity.getId(), industrialIds);
+        List<String> industrialIdList = industrialCompanyMapper.hasExistByCompanyIdAndIndustrialIds(entity.getId(), industrialIds);
+        if (CollectionUtils.isEmpty(industrialIdList)){
+            return;
+        }
+        List<IndustrialEntity> industrialEntityList = industrialService.listByIds(industrialIds);
+        List<String> industryNameList = industrialEntityList.stream().map(IndustrialEntity::getName).collect(Collectors.toList());
+        CompanyInfoEntity companyInfoEntity = getById(entity.getId());
+        String industryName = StringUtils.join(industryNameList, ",");
+        String errMsg = industryName + "产业库下已存在 " + companyInfoEntity.getCorpNm() + " 企业信息";
+        throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode(), errMsg);
     }
 
     @Override
@@ -195,9 +206,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateDef(String userId, CompanyUpdateRequest request) {
-        if (hasExistUscc(request.getUscc(), request.getIndustrialIds(), request.getId())) {
-            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
-        }
+        checkExistUscc(request.getUscc(), request.getIndustrialIds(), request.getId());
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
         CompanyInfoEntity companyInfoEntity = companyInfoMapper.findById(request.getId());
         if (Objects.isNull(companyInfoEntity)) {

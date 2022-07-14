@@ -73,8 +73,8 @@
     </select>
 
     <select id="hasExistByCompanyIdAndIndustrialIds"
-            resultType="java.lang.Boolean">
-        select 1
+            resultType="java.lang.String">
+        select distinct industrial_id
         from industrial_company_relation
         <where>
             <if test="companyInfoId != null and companyInfoId != '' ">

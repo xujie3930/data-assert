@@ -27,7 +27,7 @@ public interface IndustrialCompanyMapper extends BaseMapper<IndustrialCompanyEnt
 
     List<IndustrialCompanyEntity> selectByCompanyIds(@Param("companyIdList") List<String> companyIdList);
 
-    Boolean hasExistByCompanyIdAndIndustrialIds(@Param("companyInfoId") String id, @Param("industrialIds") List<String> industrialIds);
+    List<String> hasExistByCompanyIdAndIndustrialIds(@Param("companyInfoId") String id, @Param("industrialIds") List<String> industrialIds);
 
     List<IndustrialCompanyEntity> selectByRequest(@Param("request") IndustryListRequest request);
 }

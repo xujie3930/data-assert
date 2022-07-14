@@ -113,8 +113,8 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
 
     @Override
     public Boolean hasExistByCompanyIdAndIndustrialIds(String id, List<String> industrialIds) {
-        Boolean exist = industrialCompanyMapper.hasExistByCompanyIdAndIndustrialIds(id, industrialIds);
-        return BooleanUtils.isTrue(exist);
+        List<String> industrialIdList = industrialCompanyMapper.hasExistByCompanyIdAndIndustrialIds(id, industrialIds);
+        return CollectionUtils.isNotEmpty(industrialIdList);
     }
 
     @Override

@@ -43,11 +43,6 @@ public class CompanyInfoController {
     @Value("${template.path}")
     private String filePath;
 
-    @PostMapping("/hasExistUscc")
-    public BusinessResult<Boolean> hasExistUscc(@RequestBody CompanyHasExistRequest request) {
-        return BusinessResult.success(companyInfoService.hasExistUscc(request.getUscc(), request.getIndustrialIds(), null));
-    }
-
     @PostMapping("/save")
     BusinessResult<Boolean> saveDef(@RequestHeader(value = "userId", defaultValue = "910626036754939904") String userId, @RequestBody CompanySaveRequest request) {
         return BusinessResult.success(companyInfoService.saveDef(userId, request));
