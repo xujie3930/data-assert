@@ -78,16 +78,16 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     public void checkExistUscc(String uscc, List<String> industrialIds, String companyInfoId) {
         CompanyInfoEntity entity = companyInfoMapper.findByUsccAndCorpNm(uscc, null, companyInfoId);
-        if (Objects.isNull(entity)){
-            return ;
+        if (!Objects.isNull(entity)){
+            throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000029.getCode());
         }
-        List<String> industrialIdList = industrialCompanyMapper.hasExistByCompanyIdAndIndustrialIds(entity.getId(), industrialIds);
+        List<String> industrialIdList = industrialCompanyMapper.hasExistByCompanyIdAndIndustrialIds(companyInfoId, industrialIds);
         if (CollectionUtils.isEmpty(industrialIdList)){
             return;
         }
-        List<IndustrialEntity> industrialEntityList = industrialService.listByIds(industrialIds);
+        List<IndustrialEntity> industrialEntityList = industrialService.listByIds(industrialIdList);
         List<String> industryNameList = industrialEntityList.stream().map(IndustrialEntity::getName).collect(Collectors.toList());
-        CompanyInfoEntity companyInfoEntity = getById(entity.getId());
+        CompanyInfoEntity companyInfoEntity = getById(companyInfoId);
         String industryName = StringUtils.join(industryNameList, ",");
         String errMsg = industryName + "产业库下已存在 " + companyInfoEntity.getCorpNm() + " 企业信息";
         throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode(), errMsg);
