@@ -105,8 +105,8 @@ public class CompanyTagServiceImpl extends ServiceImpl<CompanyTagMapper, Company
         }
         deleteCompanyTagBatch(user, date, companyInfoId, oldTagIds);
         // 新增或更新
-        List<CompanyTagEntity> companyTagUpdateList= new ArrayList<>();
-        List<TagEntity> tagUpdateList= new ArrayList<>();
+        List<CompanyTagEntity> companyTagUpdateList = new ArrayList<>();
+        List<TagEntity> tagUpdateList = new ArrayList<>();
         List<CompanyTagEntity> companyTagEntityList = getListByCompanyId(companyInfoId);
         if (CollectionUtils.isEmpty(tagIds)){
             return;
