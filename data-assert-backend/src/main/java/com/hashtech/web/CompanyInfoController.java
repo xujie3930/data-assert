@@ -45,7 +45,7 @@ public class CompanyInfoController {
 
     @PostMapping("/hasExistUscc")
     public BusinessResult<Boolean> hasExistUscc(@RequestBody CompanyHasExistRequest request) {
-        return BusinessResult.success(companyInfoService.hasExistUscc(request.getUscc(), request.getIndustrialIds()));
+        return BusinessResult.success(companyInfoService.hasExistUscc(request.getUscc(), request.getIndustrialIds(), null));
     }
 
     @PostMapping("/save")

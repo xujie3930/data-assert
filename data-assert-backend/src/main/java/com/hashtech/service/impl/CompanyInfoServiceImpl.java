@@ -74,8 +74,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
 
     @Override
-    public Boolean hasExistUscc(String uscc, List<String> industrialIds) {
-        CompanyInfoEntity entity = companyInfoMapper.findByUsccAndCorpNm(uscc, null);
+    public Boolean hasExistUscc(String uscc, List<String> industrialIds, String companyInfoId) {
+        CompanyInfoEntity entity = companyInfoMapper.findByUsccAndCorpNm(uscc, null, companyInfoId);
         if (Objects.isNull(entity)){
             return false;
         }
@@ -195,7 +195,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateDef(String userId, CompanyUpdateRequest request) {
-        if (hasExistUscc(request.getUscc(), request.getIndustrialIds())) {
+        if (hasExistUscc(request.getUscc(), request.getIndustrialIds(), request.getId())) {
             throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode());
         }
         InternalUserInfoVO user = oauthApiService.getUserById(userId);
@@ -297,7 +297,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     @NotNull
     private CompanyInfoEntity saveCompanyInfo(InternalUserInfoVO user, CompanySaveRequest request, Date date) {
         //根据统一社会信用代码和企业名称确认是否需要新增
-        CompanyInfoEntity entity= companyInfoMapper.findByUsccAndCorpNm(request.getUscc(), null);
+        CompanyInfoEntity entity= companyInfoMapper.findByUsccAndCorpNm(request.getUscc(), null, null);
         if (!Objects.isNull(entity)) {
             updateCompanyInfo(user, request, date, entity);
             return entity;

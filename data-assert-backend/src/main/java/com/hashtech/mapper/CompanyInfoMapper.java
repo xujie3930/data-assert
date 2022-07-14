@@ -21,7 +21,7 @@ public interface CompanyInfoMapper extends BaseMapper<CompanyInfoEntity> {
 
     CompanyInfoEntity findById(@Param("id") String id);
 
-    CompanyInfoEntity findByUsccAndCorpNm(@Param("uscc") String uscc, @Param("corpNm") String corpNm);
+    CompanyInfoEntity findByUsccAndCorpNm(@Param("uscc") String uscc, @Param("corpNm") String corpNm, @Param("companyInfoId") String companyInfoId);
 
     List<String> getCompanyIdList(@Param(value = "request") IndustryListRequest request);
 }

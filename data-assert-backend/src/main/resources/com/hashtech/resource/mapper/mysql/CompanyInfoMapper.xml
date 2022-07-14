@@ -37,6 +37,9 @@
             <if test="corpNm != null and corpNm != '' ">
                 AND corp_nm != #{corpNm}
             </if>
+            <if test="companyInfoId != null and companyInfoId != '' ">
+                AND id != #{companyInfoId}
+            </if>
             AND del_flag = 0
         </where>
         limit 1

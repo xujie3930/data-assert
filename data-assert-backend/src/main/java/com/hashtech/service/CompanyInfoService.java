@@ -23,7 +23,7 @@ public interface CompanyInfoService extends IService<CompanyInfoEntity> {
 
     Boolean saveDef(String userId, CompanySaveRequest request);
 
-    Boolean hasExistUscc(String uscc, List<String> industrialIds);
+    Boolean hasExistUscc(String uscc, List<String> industrialIds, String companyInfoId);
 
     BusinessPageResult getList(CompanyListRequest request);
 
