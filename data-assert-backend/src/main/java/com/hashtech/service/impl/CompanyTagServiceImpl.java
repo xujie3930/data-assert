@@ -108,6 +108,9 @@ public class CompanyTagServiceImpl extends ServiceImpl<CompanyTagMapper, Company
         List<CompanyTagEntity> companyTagUpdateList= new ArrayList<>();
         List<TagEntity> tagUpdateList= new ArrayList<>();
         List<CompanyTagEntity> companyTagEntityList = getListByCompanyId(companyInfoId);
+        if (CollectionUtils.isEmpty(tagIds)){
+            return;
+        }
         List<TagEntity> tagEntitiesList = tagService.selectByIds(tagIds);
         for (TagEntity tagEntity : tagEntitiesList) {
             CompanyTagEntity companyTagEntity;
