@@ -78,7 +78,7 @@
              </if>
             <if test="null!=request.tagId and request.tagId != ''">
                 AND ci.id IN (
-                SELECT industrial_id FROM company_tag ct
+                SELECT ct.company_info_id FROM company_tag ct
                 INNER JOIN company_info ci ON ct.company_info_id=ci.id
                 WHERE ct.tag_id = #{request.tagId} AND ct.del_flag = 0
                 )
