@@ -27,5 +27,7 @@ public interface CompanyInfoMapper extends BaseMapper<CompanyInfoEntity> {
 
     List<String> getCompanyIdList(@Param(value = "request") IndustryListRequest request);
 
-    List<String> selectByRequest(@Param(value = "request") CompanyListRequest request);
+    List<CompanyInfoEntity> selectByRequest(@Param(value = "request") CompanyListRequest request);
+
+    Long selectCountByRequest(@Param(value = "request") CompanyListRequest request);
 }

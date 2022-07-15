@@ -95,18 +95,8 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @Override
     public BusinessPageResult<CompanyListResult> getList(CompanyListRequest request) {
-        List<String> companyInfoEntityList = selectByRequest(request);
-        //TODO：先紧急修改，日后优化
-        if(CollectionUtils.isEmpty(companyInfoEntityList)){
-            companyInfoEntityList.add("-1");
-        }
-        Wrapper<CompanyInfoEntity> wrapper = queryWrapper(request, companyInfoEntityList);
-        IPage<CompanyInfoEntity> page = this.page(
-                new Query<CompanyInfoEntity>().getPage(request),
-                wrapper
-        );
-        IPage<CompanyListResult> resultIPage = new Page<>();
-        List<CompanyInfoEntity> records = page.getRecords();
+        List<CompanyInfoEntity> records = selectByRequest(request);
+        Long count = selectCountByRequest(request);
         List<CompanyListResult> companyListResults = new LinkedList<>();
         for (CompanyInfoEntity record : records) {
             CompanyListResult companyListResult = BeanCopyUtils.copyProperties(record, new CompanyListResult());
@@ -124,13 +114,14 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
             companyListResult.setIndustrialId(request.getIndustrialId());
             companyListResults.add(companyListResult);
         }
-        resultIPage.setRecords(companyListResults);
-        resultIPage.setPages(page.getPages());
-        resultIPage.setTotal(page.getTotal());
-        return BusinessPageResult.build(resultIPage, request);
+        return BusinessPageResult.build(companyListResults, request, count);
     }
 
-    private List<String> selectByRequest(CompanyListRequest request) {
+    private Long selectCountByRequest(CompanyListRequest request) {
+        return companyInfoMapper.selectCountByRequest(request);
+    }
+
+    private List<CompanyInfoEntity> selectByRequest(CompanyListRequest request) {
         return companyInfoMapper.selectByRequest(request);
     }
 
