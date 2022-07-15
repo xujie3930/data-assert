@@ -65,8 +65,8 @@
     </select>
 
     <select id="selectByRequest"
-            resultType="com.hashtech.entity.CompanyInfoEntity">
-        SELECT * FROM company_info ci
+            resultType="java.lang.String">
+        SELECT distinct ci.id FROM company_info ci
         <where> 1=1 AND ci.del_flag=0
             <if test="null!=request.industrialName and ''!=request.industrialName">
                 AND ci.id IN (

@@ -95,9 +95,10 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @Override
     public BusinessPageResult<CompanyListResult> getList(CompanyListRequest request) {
-        List<CompanyInfoEntity> companyInfoEntityList = selectByRequest(request);
-        Set<String> companySet = companyInfoEntityList.stream().map(CompanyInfoEntity::getId).collect(Collectors.toSet());
-        Wrapper<CompanyInfoEntity> wrapper = queryWrapper(request, new ArrayList<>(companySet));
+        List<String> companyInfoEntityList = selectByRequest(request);
+//        Set<String> companySet = companyInfoEntityList.stream().map(CompanyInfoEntity::getId).collect(Collectors.toSet());
+//        Wrapper<CompanyInfoEntity> wrapper = queryWrapper(request, new ArrayList<>(companySet));
+        Wrapper<CompanyInfoEntity> wrapper = queryWrapper(request, companyInfoEntityList);
         IPage<CompanyInfoEntity> page = this.page(
                 new Query<CompanyInfoEntity>().getPage(request),
                 wrapper
@@ -127,7 +128,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         return BusinessPageResult.build(resultIPage, request);
     }
 
-    private List<CompanyInfoEntity> selectByRequest(CompanyListRequest request) {
+    private List<String> selectByRequest(CompanyListRequest request) {
         return companyInfoMapper.selectByRequest(request);
     }
 
