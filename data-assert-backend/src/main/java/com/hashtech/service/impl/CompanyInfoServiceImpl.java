@@ -95,45 +95,9 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @Override
     public BusinessPageResult<CompanyListResult> getList(CompanyListRequest request) {
-        List<String> companyIdList = new ArrayList<>();
-        if (StringUtils.isNotBlank(request.getTagId())) {
-            List<CompanyTagEntity> companyTagList = companyTagService.getLitsByTagId(request.getTagId());
-            if (!CollectionUtils.isEmpty(companyTagList)) {
-                companyIdList = companyTagList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
-            }else {
-                return BusinessPageResult.build(Collections.emptyList(), request, 0);
-            }
-        }
-        if (StringUtils.isNotBlank(request.getIndustrialName())) {
-            List<IndustrialEntity> industrialList = industrialService.likeByName(request.getIndustrialName());
-            //获取所有产业id
-            List<String> industryIdList = industrialList.stream().map(IndustrialEntity::getId).collect(Collectors.toList());
-            List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByIndustrialIds(industryIdList);
-            if (!CollectionUtils.isEmpty(industrialCompanyList)) {
-                //取两个集合交集
-                List<String> collect = industrialCompanyList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
-                if (!CollectionUtils.isEmpty(companyIdList)){
-                    collect.retainAll(companyIdList);
-                }
-                companyIdList = collect;
-            }else {
-                return BusinessPageResult.build(Collections.emptyList(), request, 0);
-            }
-        }
-        if (StringUtils.isNotBlank(request.getIndustrialId())) {
-            List<IndustrialCompanyEntity> industrialCompanyList = industrialCompanyService.selectByIndustrialId(request.getIndustrialId());
-            if (!CollectionUtils.isEmpty(industrialCompanyList)) {
-                //取两个集合交集
-                List<String> collect = industrialCompanyList.stream().map(o -> o.getCompanyInfoId()).collect(Collectors.toList());
-                if (!CollectionUtils.isEmpty(companyIdList)){
-                    collect.retainAll(companyIdList);
-                }
-                companyIdList = collect;
-            }else {
-                return BusinessPageResult.build(Collections.emptyList(), request, 0);
-            }
-        }
-        Wrapper<CompanyInfoEntity> wrapper = queryWrapper(request, companyIdList);
+        List<CompanyInfoEntity> companyInfoEntityList = selectByRequest(request);
+        Set<String> companySet = companyInfoEntityList.stream().map(CompanyInfoEntity::getId).collect(Collectors.toSet());
+        Wrapper<CompanyInfoEntity> wrapper = queryWrapper(request, new ArrayList<>(companySet));
         IPage<CompanyInfoEntity> page = this.page(
                 new Query<CompanyInfoEntity>().getPage(request),
                 wrapper
@@ -161,6 +125,10 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
         resultIPage.setPages(page.getPages());
         resultIPage.setTotal(page.getTotal());
         return BusinessPageResult.build(resultIPage, request);
+    }
+
+    private List<CompanyInfoEntity> selectByRequest(CompanyListRequest request) {
+        return companyInfoMapper.selectByRequest(request);
     }
 
     @Override

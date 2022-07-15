@@ -2,8 +2,10 @@ package com.hashtech.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hashtech.entity.CompanyInfoEntity;
+import com.hashtech.web.request.CompanyListRequest;
 import com.hashtech.web.request.IndustryListRequest;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -24,4 +26,6 @@ public interface CompanyInfoMapper extends BaseMapper<CompanyInfoEntity> {
     CompanyInfoEntity findByUsccAndCorpNm(@Param("uscc") String uscc, @Param("corpNm") String corpNm, @Param("companyInfoId") String companyInfoId);
 
     List<String> getCompanyIdList(@Param(value = "request") IndustryListRequest request);
+
+    List<CompanyInfoEntity> selectByRequest(@Param(value = "request") CompanyListRequest request);
 }
