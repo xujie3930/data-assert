@@ -71,7 +71,7 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
             allIndustrialIds.sort(Comparator.comparing(String::hashCode));
             industrialIds.sort(Comparator.comparing(String::hashCode));
             if (allIndustrialIds.toString().equals(industrialIds.toString()) || allIndustrialIds.containsAll(industrialIds)){
-                List<IndustrialEntity> industrialEntityList = industrialService.listByIds(industrialIds);
+                Collection<IndustrialEntity> industrialEntityList = industrialService.listByIds(industrialIds);
                 List<String> industryNameList = industrialEntityList.stream().map(IndustrialEntity::getName).collect(Collectors.toList());
                 String industryName = StringUtils.join(industryNameList, "产业库、");
                 String errMsg = "在" + industryName + "产业库下企业信息已重复，请重新输入";
@@ -117,7 +117,7 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
     }
 
     @Override
-    public List<IndustrialCompanyEntity> selectByRequest(IndustryListRequest request) {
+    public List<IndustrialEntity> selectByRequest(IndustryListRequest request) {
         return industrialCompanyMapper.selectByRequest(request);
     }
 

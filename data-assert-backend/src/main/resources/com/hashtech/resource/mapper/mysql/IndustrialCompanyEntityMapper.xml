@@ -91,22 +91,33 @@
     </select>
 
     <select id="selectByRequest"
-            resultType="com.hashtech.entity.IndustrialCompanyEntity">
-        select * from industrial_company_relation where company_info_id in
-        (SELECT ci.id FROM company_info ci
-        left JOIN company_tag cg ON ci.id=cg.company_info_id
-        <where>
-            <if test="null!=request.tagId and request.tagId != '' ">
-                AND cg.`tag_id` =#{request.tagId} AND cg.del_flag = 0
+            resultType="com.hashtech.entity.IndustrialEntity">
+        SELECT * FROM industrial i
+        <where> 1=1 AND i.del_flag=0
+            <if test="null!=request.industrialName and ''!=request.industrialName"> AND i.`name` LIKE CONCAT('%',#{request.industrialName},'%') </if>
+            <if test="null!=request.tagId and request.tagId != ''">
+                AND i.id IN (
+                SELECT industrial_id FROM industrial_company_relation icr
+                INNER JOIN company_info ci ON icr.company_info_id=ci.id
+                INNER JOIN company_tag ct ON ct.company_info_id = ci.id
+                INNER JOIN company_tag ct ON ct.company_info_id = ci.id
+                WHERE cg.tag_id = #{request.tagId} AND cg.del_flag = 0
+                )
             </if>
             <if test="null!=request.uscc and request.uscc != '' ">
-                AND ci.`uscc` LIKE CONCAT('%',#{request.uscc},'%')
+                AND i.id IN (
+                SELECT industrial_id FROM industrial_company_relation icr
+                INNER JOIN company_info ci ON icr.company_info_id=ci.id
+                WHERE ci.`uscc` LIKE CONCAT('%',#{request.uscc},'%') AND ci.del_flag = 0
+                )
             </if>
             <if test="null!=request.corpNm and request.corpNm != '' ">
-                AND ci.`corp_nm` LIKE CONCAT('%',#{request.corpNm},'%')
+                AND i.id IN (
+                SELECT industrial_id FROM industrial_company_relation icr
+                INNER JOIN company_info ci ON icr.company_info_id=ci.id
+                WHERE ci.`corp_nm` LIKE CONCAT('%',#{request.corpNm},'%') AND ci.del_flag = 0
+                )
             </if>
-            AND ci.del_flag = 0
         </where>
-        ) and del_flag = 0
     </select>
 </mapper>

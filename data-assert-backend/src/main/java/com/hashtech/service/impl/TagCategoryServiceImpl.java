@@ -141,7 +141,7 @@ public class TagCategoryServiceImpl extends ServiceImpl<TagCategoryMapper, TagCa
         List<TagCategoryRelationEntity> relations = tagCategoryRelationService.list(wrapper);
         if(null!=relations && !relations.isEmpty()){
             Set<String> tagIds = relations.stream().map(TagCategoryRelationEntity::getTagId).collect(Collectors.toSet());
-            List<TagEntity> tags = tagService.listByIds(tagIds);
+            Collection<TagEntity> tags = tagService.listByIds(tagIds);
             if(null!=tags && !tags.isEmpty() && tags.stream().filter(e->(e.getState()+"").equals("1")).findAny().isPresent()){
                 //存在启用的TAG
                 ResourceCodeClass.ResourceCode rc10000005 = ResourceCodeClass.ResourceCode.RESOURCE_CODE_10000005;

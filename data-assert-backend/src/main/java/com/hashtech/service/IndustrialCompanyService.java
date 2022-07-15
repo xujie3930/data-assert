@@ -2,6 +2,7 @@ package com.hashtech.service;
 
 import com.hashtech.entity.IndustrialCompanyEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hashtech.entity.IndustrialEntity;
 import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.web.request.IndustryListRequest;
 
@@ -32,5 +33,5 @@ public interface IndustrialCompanyService extends IService<IndustrialCompanyEnti
 
     Boolean hasExistByCompanyIdAndIndustrialIds(String id, List<String> industrialIds);
 
-    List<IndustrialCompanyEntity> selectByRequest(IndustryListRequest request);
+    List<IndustrialEntity> selectByRequest(IndustryListRequest request);
 }

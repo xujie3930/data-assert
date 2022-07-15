@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author xujie
@@ -40,14 +42,14 @@ public class UploadImportServiceImpl implements UploadImportService {
             //根据前端传值做匹配
             ids = ids.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "").replace("null", "");
             String[] idsArr = ids.split(",");
-            tadIdList = Arrays.asList(idsArr);
+            tadIdList = Arrays.asList(idsArr).stream().filter(i -> StringUtils.isNotBlank(i)).collect(Collectors.toList());
         }
         List<String> industryIdList = new ArrayList<>();
         if (StringUtils.isNotBlank(industrialIds)){
             //根据前端传值做匹配
             industrialIds = industrialIds.replaceAll("\\[", "").replaceAll("]", "").replace("\"", "").replace("null", "");
             String[] industryIdsArr = industrialIds.split(",");
-            industryIdList = Arrays.asList(industryIdsArr);
+            industryIdList = Arrays.asList(industryIdsArr).stream().filter(i -> StringUtils.isNotBlank(i)).collect(Collectors.toList());
         }
         List<CompanyInfoImportContent> importList = null;
         try {

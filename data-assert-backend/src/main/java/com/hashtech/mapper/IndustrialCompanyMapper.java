@@ -2,6 +2,7 @@ package com.hashtech.mapper;
 
 import com.hashtech.entity.IndustrialCompanyEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.hashtech.entity.IndustrialEntity;
 import com.hashtech.web.request.IndustryListRequest;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,5 +30,5 @@ public interface IndustrialCompanyMapper extends BaseMapper<IndustrialCompanyEnt
 
     List<String> hasExistByCompanyIdAndIndustrialIds(@Param("companyInfoId") String id, @Param("industrialIds") List<String> industrialIds);
 
-    List<IndustrialCompanyEntity> selectByRequest(@Param("request") IndustryListRequest request);
+    List<IndustrialEntity> selectByRequest(@Param("request") IndustryListRequest request);
 }
