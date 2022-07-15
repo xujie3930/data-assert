@@ -73,7 +73,7 @@ public class IndustrialCompanyServiceImpl extends ServiceImpl<IndustrialCompanyM
             if (allIndustrialIds.toString().equals(industrialIds.toString()) || allIndustrialIds.containsAll(industrialIds)){
                 Collection<IndustrialEntity> industrialEntityList = industrialService.listByIds(industrialIds);
                 List<String> industryNameList = industrialEntityList.stream().map(IndustrialEntity::getName).collect(Collectors.toList());
-                String industryName = StringUtils.join(industryNameList, "产业库、");
+                String industryName = StringUtils.join(industryNameList, "、");
                 String errMsg = "在" + industryName + "产业库下企业信息已重复，请重新输入";
                 throw new AppException(ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000016.getCode(), errMsg);
             }
