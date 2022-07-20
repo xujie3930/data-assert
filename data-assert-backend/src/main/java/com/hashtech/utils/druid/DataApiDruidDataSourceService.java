@@ -108,7 +108,7 @@ public final class DataApiDruidDataSourceService {
         }
         source = map.get(url);
         source.setLastUseDate(new Date());
-        logger.warn("当前数据库连接池的量为：" + source.getDruidDataSource().getActiveConnections().size() + "---" + source.getDruidDataSource().getActiveCount() + "---" + source.getDruidDataSource().getCloseCount());
+        logger.debug("当前数据库连接池的量为：" + source.getDruidDataSource().getActiveConnections().size() + "---" + source.getDruidDataSource().getActiveCount() + "---" + source.getDruidDataSource().getCloseCount());
         return (DruidPooledConnection) source.getDruidDataSource().getPooledConnection();
     }
 
@@ -124,7 +124,7 @@ public final class DataApiDruidDataSourceService {
         }
         source = map.get(url);
         source.setLastUseDate(new Date());
-        logger.warn("当前数据库连接池的量为：" + source.getDruidDataSource().getActiveConnections().size() + "---" + source.getDruidDataSource().getActiveCount() + "---" + source.getDruidDataSource().getCloseCount());
+        logger.debug("当前数据库连接池的量为：" + source.getDruidDataSource().getActiveConnections().size() + "---" + source.getDruidDataSource().getActiveCount() + "---" + source.getDruidDataSource().getCloseCount());
         return (DruidPooledConnection) source.getDruidDataSource().getPooledConnection();
     }
 
