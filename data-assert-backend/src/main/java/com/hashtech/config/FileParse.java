@@ -1,10 +1,8 @@
 package com.hashtech.config;
 
 import com.hashtech.common.AppException;
-import io.minio.GetObjectArgs;
-import io.minio.GetObjectResponse;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
+import io.minio.http.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class FileParse {
@@ -101,4 +100,17 @@ public class FileParse {
 //            throw new AppException(JodpErrorConstant.DOWNLOAD_FILE_FAIL.code,JodpErrorConstant.DOWNLOAD_FILE_FAIL.message);
         }
     }
+
+    public String getPreviewFileUrl(String fileName) {
+        try {
+            return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                    .method(Method.GET).bucket(bucketName).object(fileName
+).expiry(2000,
+                            TimeUnit.MINUTES).build());
+        }catch (Exception e){
+            e.printStackTrace();
+            return "";
+        }
+    }
+
 }
