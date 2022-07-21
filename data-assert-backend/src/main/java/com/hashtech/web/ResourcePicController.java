@@ -42,6 +42,7 @@ public class ResourcePicController {
         return BusinessResult.success(list);
     }
 
+    @CrossOrigin
     @GetMapping("/iconDisplay")
     public void iconDisplay(HttpServletResponse response, @RequestParam("picUrl") String picUrl) {
         resourcePicService.iconDisplay(response, picUrl);
