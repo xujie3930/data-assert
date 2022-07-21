@@ -47,7 +47,7 @@ logging:
     com.hashtech: debug
 
 server:
-  host: 192.168.0.125
+  host: http://192.168.0.178:9201/dataresource
 
 feign:
   client:
