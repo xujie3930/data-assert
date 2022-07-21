@@ -6,6 +6,7 @@ import com.hashtech.entity.ResourcePicEntity;
 import com.hashtech.service.ResourcePicService;
 import com.hashtech.web.result.ResourcePicResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -23,25 +24,28 @@ import java.util.Map;
  * @author xujie
  * @since 2022-06-02
  */
-@RestController
+@Controller
 @RequestMapping("/resource/pic")
 public class ResourcePicController {
 
     @Autowired
     private ResourcePicService resourcePicService;
 
+    @ResponseBody
     @PostMapping("/upload")
     public BusinessResult<Map<String, String>> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws Exception {
         Map<String, String> map = resourcePicService.upload(request, file);
         return BusinessResult.success(map);
     }
 
+    @ResponseBody
     @GetMapping("/list")
     public BusinessResult<List<ResourcePicResult>> uploadFile() {
         List<ResourcePicResult> list = resourcePicService.getList();
         return BusinessResult.success(list);
     }
 
+    @ResponseBody
     @CrossOrigin
     @GetMapping("/iconDisplay")
     public void iconDisplay(HttpServletResponse response, @RequestParam("picUrl") String picUrl) {
