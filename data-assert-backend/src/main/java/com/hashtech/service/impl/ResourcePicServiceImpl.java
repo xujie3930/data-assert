@@ -43,7 +43,6 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
     @Value("${server.host}")
     private String host;
     private String CUSTOM  = "/resource/pic/iconDisplay?picUrl=";
-    private String HTTP_PRE  = "http://";
     @Override
     public Map<String, String> upload(HttpServletRequest request, MultipartFile file) throws Exception{
         String picPath = file.getOriginalFilename();
@@ -57,7 +56,7 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
         //按前端格式处理
         picPath = picPath.substring(0, picPath.lastIndexOf("."));
         map.put("picPath", picPath);
-        picUrl = new StringBuilder(HTTP_PRE).append(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
+        picUrl = new StringBuilder(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
         map.put("picUrl", picUrl);
         return map;
     }
@@ -88,8 +87,8 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
             resourcePicResult.setPicPath(picPath);
             resourcePicResult.setFormat(picType);
             //修改为minio的绝对路径
-            String minioUrl = fileParse.getPreviewFileUrl(item.getPicUrl());
-            resourcePicResult.setPicUrl(minioUrl);
+            String picUrl = new StringBuilder(host).append(port).append(CUSTOM).append(item.getPicUrl()).toString();
+            resourcePicResult.setPicUrl(picUrl);
             resourcePicResult.setId(item.getId());
             result.add(resourcePicResult);
         });

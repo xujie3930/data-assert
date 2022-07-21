@@ -41,4 +41,4 @@ logging:
     com.hashtech: info
 
 server:
-  host: 192.168.211.3
+  host: https://njnaopen.nanjingdata.cn/jbresource/dataresource

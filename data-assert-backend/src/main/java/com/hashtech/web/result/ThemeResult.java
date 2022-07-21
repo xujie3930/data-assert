@@ -95,7 +95,7 @@ public class ThemeResult implements Serializable {
     private String picPath;
 
     /**
-     * icron图标路径
+     * 图标路径
      */
     private String picUrl;
 
