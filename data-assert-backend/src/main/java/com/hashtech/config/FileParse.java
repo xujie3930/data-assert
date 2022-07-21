@@ -92,7 +92,8 @@ public class FileParse {
                 byte[] bytes = os.toByteArray();
                 FileCopyUtils.copy(bytes,outputStream);
                 res.setContentType("jpg=image/jpeg");
-                res.setHeader("Access-Control-Allow-Headers", "*");
+                res.setHeader("Access-Control-Allow-Origin", "*");
+                res.addHeader("Access-Control-Allow-Headers", "*");
                 outputStream.flush();
 
             }
