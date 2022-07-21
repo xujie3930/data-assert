@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.util.FileCopyUtils;
@@ -95,6 +96,19 @@ public class FileParse {
                 res.setHeader("Access-Control-Allow-Headers", "*");
                 res.setHeader("Access-Control-Allow-Origin", "*");
                 res.setHeader("Cache-Control","no-cache");
+                //跨域 Header
+                res.setHeader("Access-Control-Allow-Methods", "*");
+                res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-sso-token,token");
+                res.setHeader("Access-Control-Request-Headers", "Origin, X-Requested-With, content-Type, Accept, Authorization, x-sso-token,token");
+                //这里设置Credentials为true 也可以前端设置为false
+                res.setHeader("Access-Control-Allow-Credentials", "true");
+                // 浏览器是会先发一次options请求，如果请求通过，则继续发送正式的post请求
+                // 配置options的请求返回
+//                if (res.getMethod().equals("OPTIONS")) {
+//                    res.setStatus(HttpStatus.OK.value());
+//                    res.getWriter().write("OPTIONS returns OK");
+//
+//                }
                 outputStream.flush();
 
             }
