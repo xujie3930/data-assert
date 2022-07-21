@@ -56,8 +56,8 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
         //按前端格式处理
         picPath = picPath.substring(0, picPath.lastIndexOf("."));
         map.put("picPath", picPath);
-//        picUrl = new StringBuilder(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
-        picUrl = new StringBuilder(CUSTOM).append(picUrl).toString();
+        picUrl = new StringBuilder(host).append(CUSTOM).append(picUrl).toString();
+//        picUrl = new StringBuilder(CUSTOM).append(picUrl).toString();
         map.put("picUrl", picUrl);
         return map;
     }
