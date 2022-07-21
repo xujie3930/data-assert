@@ -87,7 +87,7 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
             resourcePicResult.setPicPath(picPath);
             resourcePicResult.setFormat(picType);
             //修改为minio的绝对路径
-            String picUrl = new StringBuilder(host).append(port).append(CUSTOM).append(item.getPicUrl()).toString();
+            String picUrl = new StringBuilder(host).append(":").append(port).append(CUSTOM).append(item.getPicUrl()).toString();
             resourcePicResult.setPicUrl(picUrl);
             resourcePicResult.setId(item.getId());
             result.add(resourcePicResult);
