@@ -1,8 +1,11 @@
 package com.hashtech.config;
 
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import javax.servlet.*;
 
+@Component
 public class Filter01 implements Filter {
     //初始化方法.程序启动的时候调用此方法
     @Override
