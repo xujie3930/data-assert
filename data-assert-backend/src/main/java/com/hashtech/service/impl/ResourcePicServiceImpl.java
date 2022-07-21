@@ -56,7 +56,8 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
         //按前端格式处理
         picPath = picPath.substring(0, picPath.lastIndexOf("."));
         map.put("picPath", picPath);
-        picUrl = new StringBuilder(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
+//        picUrl = new StringBuilder(host).append(":").append(port).append(CUSTOM).append(picUrl).toString();
+        picUrl = new StringBuilder(CUSTOM).append(picUrl).toString();
         map.put("picUrl", picUrl);
         return map;
     }
@@ -87,7 +88,7 @@ public class ResourcePicServiceImpl extends ServiceImpl<ResourcePicMapper, Resou
             resourcePicResult.setPicPath(picPath);
             resourcePicResult.setFormat(picType);
             //修改为minio的绝对路径
-            String picUrl = new StringBuilder(host).append(":").append(port).append(CUSTOM).append(item.getPicUrl()).toString();
+            String picUrl = new StringBuilder(CUSTOM).append(item.getPicUrl()).toString();
             resourcePicResult.setPicUrl(picUrl);
             resourcePicResult.setId(item.getId());
             result.add(resourcePicResult);
