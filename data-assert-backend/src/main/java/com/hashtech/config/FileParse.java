@@ -92,23 +92,6 @@ public class FileParse {
                 os.flush();
                 byte[] bytes = os.toByteArray();
                 FileCopyUtils.copy(bytes,outputStream);
-                res.setContentType("image/webp");
-                res.setHeader("Access-Control-Allow-Headers", "*");
-                res.setHeader("Access-Control-Allow-Origin", "*");
-                res.setHeader("Cache-Control","no-cache");
-                //跨域 Header
-                res.setHeader("Access-Control-Allow-Methods", "*");
-                res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-sso-token,token");
-                res.setHeader("Access-Control-Request-Headers", "Origin, X-Requested-With, content-Type, Accept, Authorization, x-sso-token,token");
-                //这里设置Credentials为true 也可以前端设置为false
-                res.setHeader("Access-Control-Allow-Credentials", "true");
-                // 浏览器是会先发一次options请求，如果请求通过，则继续发送正式的post请求
-                // 配置options的请求返回
-//                if (res.getMethod().equals("OPTIONS")) {
-//                    res.setStatus(HttpStatus.OK.value());
-//                    res.getWriter().write("OPTIONS returns OK");
-//
-//                }
                 outputStream.flush();
 
             }
