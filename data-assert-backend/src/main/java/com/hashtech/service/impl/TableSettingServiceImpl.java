@@ -82,7 +82,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
-        long a = System.currentTimeMillis();
         TableSettingResult result = new TableSettingResult();
         ResourceTableEntity resourceTableEntity = resourceTableService.getById(id);
         if (Objects.isNull(resourceTableEntity)) {
@@ -94,17 +93,11 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             String requestUrl = RandomUtils.getRandomExcludeNumber();
             result.setRequestUrl(requestUrl);
         }
-        LOGGER.info("TableSettingService getTableSetting time1:"+(System.currentTimeMillis()-a));
-        a = System.currentTimeMillis();
         TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(id);
         BeanCopyUtils.copyProperties(tableSettingEntity, result);
-        LOGGER.info("TableSettingService getTableSetting time2:"+(System.currentTimeMillis()-a));
-        a = System.currentTimeMillis();
         TableSettingServiceImpl tableSettingService = (TableSettingServiceImpl) AopContext.currentProxy();
         List<Structure> structureList = tableSettingService.getStructureList(new ResourceTableNameRequest(resourceTableEntity.getName(), resourceTableEntity.getDatasourceId()));
         result.setStructureList(structureList);
-        LOGGER.info("TableSettingService getTableSetting time3:"+(System.currentTimeMillis()-a));
-        a = System.currentTimeMillis();
         if (StringUtils.isEmpty(tableSettingEntity.getRespInfo()) || DEFAULT_RESP_INFO.equals(tableSettingEntity.getRespInfo())) {//所有字段
             result.setOutParamInfo(structureList);
         } else {
@@ -116,8 +109,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             //对勾选的返回参数进行设置
             handleRespParamInfo(tableSettingEntity.getRespInfo(), structureList);
         }
-        LOGGER.info("TableSettingService getTableSetting time4:"+(System.currentTimeMillis()-a));
-        a = System.currentTimeMillis();
         if (!StringUtils.isBlank(tableSettingEntity.getParamInfo())) {
             List<String> params = Arrays.asList(tableSettingEntity.getParamInfo().split(","));
             List<Structure> paramsInfo = structureList.stream()
@@ -127,8 +118,6 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             //对勾选的请求参数进行设置
             handleReqParamInfo(tableSettingEntity.getParamInfo(), structureList);
         }
-        LOGGER.info("TableSettingService getTableSetting time5:"+(System.currentTimeMillis()-a));
-        a = System.currentTimeMillis();
         //查询应用列表
         BusinessResult<List<AuthListResult>> auths = dataApiFeignClient.queryApiAuthListByPath(result.getRequestUrl());
         /*List<TableSettingAppsEntity> tableSettingApps = tableSettingAppsMapper.queryByTableSettingId(id);
@@ -162,15 +151,12 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
             authResult.setPeriodBegin(auth.getAuthPeriodBegin());
             authResult.setTokenType(auth.getAppTokenType());
         }
-        LOGGER.info("TableSettingService getTableSetting time6:"+(System.currentTimeMillis()-a));
-        a = System.currentTimeMillis();
         result.setAuthResult(authResult);
         result.setAppList(appList);
         result.setInterfaceName(tableSettingEntity.getInterfaceName());
         result.setUpdateTime(resourceTableEntity.getUpdateTime());
         result.setCreateTime(resourceTableEntity.getCreateTime());
         result.setRequestWay(RquestWayEnum.GET.getCode());
-        LOGGER.info("TableSettingService getTableSetting time7:"+(System.currentTimeMillis()-a));
         return BusinessResult.success(result);
     }
 
