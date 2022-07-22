@@ -25,7 +25,7 @@ CREATE TABLE `tag_category_relation` (
   PRIMARY KEY (`id`),
   KEY `tag_category_id_idx` (`tag_category_id`) USING BTREE,
   KEY `tag_id_idx` (`tag_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='标签和标签组多对多关联表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='标签和标签组多对多关联表';7
 
 
 INSERT INTO tag_category(id, pid, `level`, `name`, `describe`, del_flag, create_time, create_by, create_user_id, update_time, update_by, update_user_id) values (1,0, 1, '默认标签分类', '默认标签分类', 0, now(), 'admin', '0', now(), 'admin', '0');
