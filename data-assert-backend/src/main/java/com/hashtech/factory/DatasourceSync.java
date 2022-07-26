@@ -27,6 +27,7 @@ public interface DatasourceSync {
     static final int MAX_IMUM = 10000;
     static final String SPLIT_URL_FLAG = "?";
     static final String SQL_CHARACTER = "useSSL=false&useUnicode=true&characterEncoding=utf8";
+    String SCHEMA = "schema=";
 
     /**
      * 根据uri获取jdbc连接
@@ -59,7 +60,10 @@ public interface DatasourceSync {
      */
     static String getSchema(String uri) {
         //根据uri获取username
-        int index = uri.indexOf("schema=") + "schema=".length();
+        if (!uri.contains(SCHEMA)) {
+            return null;
+        }
+        int index = uri.indexOf(SCHEMA) + SCHEMA.length();
         String temp = uri.substring(index);
         if (!uri.substring(index).contains(SEPARATOR)) {
             return temp;

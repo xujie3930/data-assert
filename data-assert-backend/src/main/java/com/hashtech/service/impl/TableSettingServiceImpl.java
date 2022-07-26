@@ -42,6 +42,7 @@ import javax.annotation.Resource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -341,15 +342,16 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         String uri = datasource.getUri();
         try (Connection conn = DataApiDruidDataSourceService.getInstance()
                 .getOrCreateConnectionWithoutUsername(uri, datasource.getType())){
+            String schema = DatasourceSync.getSchema(uri);
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet tableResultSet = metaData.getTables(null, null, request.getTableName(),
+            ResultSet tableResultSet = metaData.getTables(null, schema, request.getTableName(),
                     new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
             while (tableResultSet.next()) {
                 String tableEnglishName = request.getTableName();
                 String tableChineseName = tableResultSet.getString("REMARKS");
                 baseInfo.setDescriptor(tableChineseName);
                 baseInfo.setName(tableEnglishName);
-                ResultSet columnResultSet = metaData.getColumns(null, "%", tableEnglishName, "%");
+                ResultSet columnResultSet = metaData.getColumns(null, schema, tableEnglishName, "%");
                 while (columnResultSet.next()) {
                     Structure structure = new Structure();
                     // 字段名称
