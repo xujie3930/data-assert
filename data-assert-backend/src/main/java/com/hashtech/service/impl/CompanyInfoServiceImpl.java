@@ -169,7 +169,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
                     //只有一个产业库，且匹配成功，则查询全部企业
                     request.setIndustrialName(null);
                 }
-            }else {
+            }else if(!org.springframework.util.StringUtils.isEmpty(industrialName)){
                 //多个
                 boolean run = false;
                 for(IndustrialEntity entity:list){
