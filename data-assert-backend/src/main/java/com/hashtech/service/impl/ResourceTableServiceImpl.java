@@ -193,6 +193,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     public BusinessResult<BaseInfo> getResourceTableBaseInfo(ResourceTableBaseInfoRequest request) {
+        String systemName = null;//来源系统名称
         ResourceTablePreposeRequest preposeRequest = BeanCopyUtils.copyProperties(request, new ResourceTablePreposeRequest());
         //接口详情
         if (!StringUtils.isBlank(request.getId())) {
@@ -206,12 +207,18 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             }
             preposeRequest.setDatasourceId(entity.getDatasourceId());
             preposeRequest.setTableName(entity.getName());
+            if(null!=entity.getThemeId()){
+                //查询系统全称
+                ThemeResourceEntity theme = themeResourceService.getById(entity.getThemeId());
+                systemName = (null==theme?null:theme.getFullName());
+            }
         } else {
             //添加外部表的前置接口
             preposeRequest.setDatasourceId(request.getDatasourceId());
             preposeRequest.setTableName(request.getTableName());
         }
         BaseInfo baseInfo = tableSettingService.getBaseInfo(preposeRequest);
+        baseInfo.setSystemName(systemName);
         //若是详情接口：1，更新表数据量2，返回详情信息
         if (!StringUtils.isBlank(request.getId())) {
             ResourceTableEntity oldEntity = getById(request.getId());
@@ -337,12 +344,37 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
 
     @Override
     @BusinessParamsValidate
-    public BusinessResult<List<ResourceTableEntity>> getList(ResourceTableListRequest request) {
+    public BusinessResult<List<com.hashtech.web.result.ResourceTableResult>> getList(ResourceTableListRequest request) {
         QueryWrapper<ResourceTableEntity> wrapper = new QueryWrapper<>();
         wrapper.eq(ResourceTableEntity.DEL_FLAG, DelFalgEnum.NOT_DELETE.getDesc());
         wrapper.eq(ResourceTableEntity.RESOURCE_ID, request.getId());
         List<ResourceTableEntity> list = list(wrapper);
-        return BusinessResult.success(list);
+        List<com.hashtech.web.result.ResourceTableResult> resultList = new ArrayList<>();
+        //增加来源系统名称
+        if(null!=list && !list.isEmpty()){
+            //Set<String> themeIds = list.stream().map(ResourceTableEntity::getThemeId).collect(Collectors.toSet());
+            Set<String> themeIds = new HashSet<>();
+            list.stream().forEach(bean->{
+                com.hashtech.web.result.ResourceTableResult result = new com.hashtech.web.result.ResourceTableResult();
+                BeanCopyUtils.copyProperties(bean, result);
+                resultList.add(result);
+                if(!org.springframework.util.StringUtils.isEmpty(bean.getThemeId())){
+                    themeIds.add(bean.getThemeId());
+                }
+            });
+            if(!themeIds.isEmpty()){
+                List<ThemeResourceEntity> themes = themeResourceService.listByIds(themeIds);
+                if(themes!=null && !themes.isEmpty()){
+                    Map<String, ThemeResourceEntity> themeMap = themes.stream().collect(Collectors.toMap(ThemeResourceEntity::getId, e -> e));
+                    resultList.stream().forEach(rt->{
+                        String themeId = rt.getThemeId();
+                        ThemeResourceEntity tr = (null==themeId?null:themeMap.get(themeId));
+                        rt.setSystemName(tr==null||(!"N".equals(tr.getDelFlag()))?null:tr.getFullName());
+                    });
+                }
+            }
+        }
+        return BusinessResult.success(resultList);
     }
 
     @Override

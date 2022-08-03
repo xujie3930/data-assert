@@ -6,7 +6,10 @@ import com.hashtech.web.request.TagListRequest;
 import com.hashtech.web.result.TagResult;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -31,6 +34,7 @@ public interface TagMapper extends BaseMapper<TagEntity> {
     List<TagEntity> getListWithoutPaging();
 
     List<TagEntity> getByCompanyId(@Param("companyId") String id);
+    List<Map<String, Object>> getByCompanyIds(@Param("list") Collection<String> ids);
 
     void updateUsedTimeById(@Param("count") Long count, @Param("tagId") String tagId);
 

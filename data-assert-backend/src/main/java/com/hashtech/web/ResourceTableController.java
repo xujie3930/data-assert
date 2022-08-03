@@ -100,7 +100,7 @@ public class ResourceTableController {
     }
 
     @PostMapping("/List")
-    BusinessResult<List<ResourceTableEntity>> getList(@RequestBody ResourceTableListRequest request) {
+    BusinessResult<List<com.hashtech.web.result.ResourceTableResult>> getList(@RequestBody ResourceTableListRequest request) {
         return resourceTableService.getList(request);
     }
 

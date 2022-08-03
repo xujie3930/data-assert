@@ -64,8 +64,7 @@
 
     </select>
 
-    <select id="selectByRequest"
-            resultType="com.hashtech.entity.CompanyInfoEntity">
+    <select id="selectByRequest" resultType="com.hashtech.entity.CompanyInfoEntity">
         SELECT  ci.* FROM company_info ci
         <where> 1=1 AND ci.del_flag=0
             <if test="null!=request.industrialName and ''!=request.industrialName">
@@ -79,14 +78,19 @@
             <if test="null!=request.tagId and request.tagId != ''">
                 AND ci.id IN (
                 SELECT ct.company_info_id FROM company_tag ct
-                INNER JOIN company_info ci ON ct.company_info_id=ci.id
                 WHERE ct.tag_id = #{request.tagId} AND ct.del_flag = 0
                 )
             </if>
-            <if test="null!=request.industrialId and request.industrialId != ''">
+            <if test="null!=request.industrialId and request.industrialId != '' and request.industrialId != '0'.toString()">
                 AND ci.id IN (
                 SELECT icr.company_info_id FROM industrial_company_relation icr
                 WHERE icr.industrial_id = #{request.industrialId} AND icr.del_flag = 0
+                )
+            </if>
+            <if test='null!=request.industrialId and request.industrialId != "" and request.industrialId == "0".toString()'>
+                AND ci.id NOT IN (
+                SELECT icr.company_info_id FROM industrial_company_relation icr
+                WHERE icr.industrial_id != '0' AND icr.del_flag = 0
                 )
             </if>
             <if test="null!=request.uscc and request.uscc != ''">
@@ -95,13 +99,12 @@
             <if test="null!=request.corpNm and request.corpNm != ''">
                 AND ci.corp_nm LIKE CONCAT('%',#{request.corpNm},'%')
             </if>
-            order by ci.update_time desc , ci.tag_num desc limit #{request.pageStart},#{request.pageSize}
+            order by ci.update_time desc limit #{request.pageStart},#{request.pageSize}
         </where>
     </select>
 
-    <select id="selectCountByRequest"
-            resultType="java.lang.Long">
-        SELECT  count(*) FROM company_info ci
+    <select id="selectCountByRequest" resultType="java.lang.Long">
+        SELECT  count(1) FROM company_info ci
         <where> 1=1 AND ci.del_flag=0
             <if test="null!=request.industrialName and ''!=request.industrialName">
                 AND ci.id IN (
@@ -114,14 +117,19 @@
             <if test="null!=request.tagId and request.tagId != ''">
                 AND ci.id IN (
                 SELECT ct.company_info_id FROM company_tag ct
-                INNER JOIN company_info ci ON ct.company_info_id=ci.id
                 WHERE ct.tag_id = #{request.tagId} AND ct.del_flag = 0
                 )
             </if>
-            <if test="null!=request.industrialId and request.industrialId != ''">
+            <if test="null!=request.industrialId and request.industrialId != '' and request.industrialId != '0'.toString()">
                 AND ci.id IN (
                 SELECT icr.company_info_id FROM industrial_company_relation icr
                 WHERE icr.industrial_id = #{request.industrialId} AND icr.del_flag = 0
+                )
+            </if>
+            <if test='null!=request.industrialId and request.industrialId != "" and request.industrialId == "0".toString()'>
+                AND ci.id NOT IN (
+                SELECT icr.company_info_id FROM industrial_company_relation icr
+                WHERE icr.industrial_id != '0' AND icr.del_flag = 0
                 )
             </if>
             <if test="null!=request.uscc and request.uscc != ''">
