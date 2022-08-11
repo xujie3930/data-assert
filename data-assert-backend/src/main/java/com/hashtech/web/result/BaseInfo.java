@@ -104,6 +104,14 @@ public class BaseInfo {
      * 数据源id
      */
     private String datasourceId;
+    
+    /**
+     * 来源系统名称
+     * @author  maoc
+     * @create  2022/8/3 10:39
+     * @desc
+     **/
+    private String systemName;
 
     public BaseInfo() {
     }
@@ -298,5 +306,13 @@ public class BaseInfo {
 
     public void setResourceName(String resourceName) {
         this.resourceName = resourceName;
+    }
+
+    public String getSystemName() {
+        return systemName;
+    }
+
+    public void setSystemName(String systemName) {
+        this.systemName = systemName;
     }
 }

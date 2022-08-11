@@ -253,6 +253,11 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements
     }
 
     @Override
+    public List<Map<String, Object>> getByCompanyIds(Collection<String> ids) {
+        return tagMapper.getByCompanyIds(ids);
+    }
+
+    @Override
     public TagRelateResult relate(CompanyListRequest request) {
         TagRelateResult result = new TagRelateResult();
         TagEntity tagEntity = findById(request.getTagId());

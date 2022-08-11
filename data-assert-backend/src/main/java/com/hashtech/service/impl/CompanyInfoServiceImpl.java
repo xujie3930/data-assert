@@ -95,12 +95,45 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
 
     @Override
     public BusinessPageResult<CompanyListResult> getList(CompanyListRequest request) {
-        List<CompanyInfoEntity> records = selectByRequest(request);
         Long count = selectCountByRequest(request);
+        if(null==count || count.longValue()<=0l){
+            return BusinessPageResult.build(new ArrayList<>(0), request, count);
+        }
+        List<CompanyInfoEntity> records = selectByRequest(request);
+        if(null==records || records.isEmpty()){
+            return BusinessPageResult.build(new ArrayList<>(0), request, count);
+        }
+        Set<String> ids = records.stream().map(CompanyInfoEntity::getId).collect(Collectors.toSet());
+        List<Map<String, Object>> tags = tagService.getByCompanyIds(ids);
+        Map<String, List<Map<String, Object>>> tagMap = new HashMap<>();
+        if(null!=tags && !tags.isEmpty()){
+            tags.stream().forEach(tag->{
+                String companyInfoId = (String) tag.remove("companyInfoId");
+                if(!org.springframework.util.StringUtils.isEmpty(companyInfoId)){
+                    List<Map<String, Object>> tagEntities = tagMap.get(companyInfoId);
+                    if(null==tagEntities){
+                        tagEntities = new ArrayList<>(5);
+                        tagMap.put(companyInfoId, tagEntities);
+                    }
+                    tagEntities.add(tag);
+                }
+            });
+        }
         List<CompanyListResult> companyListResults = new LinkedList<>();
         for (CompanyInfoEntity record : records) {
             CompanyListResult companyListResult = BeanCopyUtils.copyProperties(record, new CompanyListResult());
-            List<TagEntity> tagListByCompanyId = tagService.getByCompanyId(record.getId());
+            List<Map<String, Object>> tagListByCompanyId = tagMap.get(record.getId());
+            if (!CollectionUtils.isEmpty(tagListByCompanyId)) {
+                List<Map<String, String>> list = new LinkedList<>();
+                for (Map<String, Object> tagEntity : tagListByCompanyId) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("tagId", (String) tagEntity.get("id"));
+                    map.put("tagName", (String) tagEntity.get("name"));
+                    list.add(map);
+                }
+                companyListResult.setTagMap(list);
+            }
+            /*List<TagEntity> tagListByCompanyId = tagService.getByCompanyId(record.getId());
             if (!CollectionUtils.isEmpty(tagListByCompanyId)) {
                 List<Map<String, String>> list = new LinkedList<>();
                 for (TagEntity tagEntity : tagListByCompanyId) {
@@ -110,7 +143,7 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
                     list.add(map);
                 }
                 companyListResult.setTagMap(list);
-            }
+            }*/
             companyListResult.setIndustrialId(request.getIndustrialId());
             companyListResults.add(companyListResult);
         }
@@ -118,6 +151,38 @@ public class CompanyInfoServiceImpl extends ServiceImpl<CompanyInfoMapper, Compa
     }
 
     private Long selectCountByRequest(CompanyListRequest request) {
+        String industrialId = request.getIndustrialId();
+        if("0".equals(industrialId)){
+            QueryWrapper<IndustrialEntity> query = new QueryWrapper<>();
+            query.eq("del_flag", 0);
+            String industrialName = request.getIndustrialName();
+            List<IndustrialEntity> list = industrialService.list(query);
+            if(null==list || list.isEmpty() || list.size()<=1){
+                //小于等于1个时，只有默认分组，就不需要关联表
+                request.setIndustrialId(null);
+
+
+                if(!org.springframework.util.StringUtils.isEmpty(industrialName) && list.size()==1 && !org.springframework.util.StringUtils.isEmpty(list.get(0).getName()) && !list.get(0).getName().contains(industrialName)){
+                    //只有一个产业库时，直接在此匹配
+                    return 0l;
+                }else{
+                    //只有一个产业库，且匹配成功，则查询全部企业
+                    request.setIndustrialName(null);
+                }
+            }else {
+                //多个
+                boolean run = false;
+                for(IndustrialEntity entity:list){
+                    if(!org.springframework.util.StringUtils.isEmpty(entity.getName()) && entity.getName().contains(industrialName)){
+                        run=true;
+                        break;
+                    }
+                }
+                if(!run){
+                    return 0l;
+                }
+            }
+        }
         return companyInfoMapper.selectCountByRequest(request);
     }
 

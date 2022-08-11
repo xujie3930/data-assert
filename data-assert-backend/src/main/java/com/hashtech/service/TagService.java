@@ -6,7 +6,9 @@ import com.hashtech.entity.TagEntity;
 import com.hashtech.web.request.*;
 import com.hashtech.web.result.TagRelateResult;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -41,6 +43,7 @@ public interface TagService extends IService<TagEntity> {
     List<TagEntity> getListWithoutPaging();
 
     List<TagEntity> getByCompanyId(String id);
+    List<Map<String, Object>> getByCompanyIds(Collection<String> ids);
 
     TagRelateResult relate(CompanyListRequest request);
 

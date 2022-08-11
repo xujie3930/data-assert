@@ -137,6 +137,19 @@
         order by t.used_time desc
     </select>
 
+    <select id="getByCompanyIds" resultType="java.util.Map" parameterType="java.util.Collection">
+        select t.id as id, t.name as name, c.company_info_id as companyInfoId
+        from tag t INNER JOIN  company_tag c ON t.id = c.tag_id
+        where 1=1
+          and c.company_info_id in
+          <foreach collection="list" open="(" close=")" separator="," item="item">
+              #{item}
+          </foreach>
+          and t.del_flag = 0
+          and c.del_flag = 0
+        order by t.used_time desc
+    </select>
+
     <update id="updateUsedTimeById">
         update tag
         set used_time = #{count}

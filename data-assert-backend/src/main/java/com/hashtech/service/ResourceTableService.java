@@ -51,7 +51,7 @@ public interface ResourceTableService extends IService<ResourceTableEntity> {
     ResourceTableResult getByResourceTableId(String resourceTableId);
     String getChineseName(String name);
 
-    BusinessResult<List<ResourceTableEntity>> getList(ResourceTableListRequest request);
+    BusinessResult<List<com.hashtech.web.result.ResourceTableResult>> getList(ResourceTableListRequest request);
 
     BusinessResult<Boolean> updateResourceTableState(String userId, ResourceTableUpdateStateRequest request);
 
