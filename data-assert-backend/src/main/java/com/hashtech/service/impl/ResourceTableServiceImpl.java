@@ -235,6 +235,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             }
             setMasterData(baseInfo, oldEntity);
         }
+        Map<String, String> orgMap = oauthApiService.orgPage();
+        if (!CollectionUtils.isEmpty(orgMap)) {
+            baseInfo.setOrgName(orgMap.get(baseInfo.getOrgId()));
+        }
         return BusinessResult.success(baseInfo);
     }
 
@@ -374,10 +378,9 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
                     });
                 }
             }
-            List<SysOrgRespVO> sysOrgList = oauthApiService.orgPage();
-            if (!CollectionUtils.isEmpty(sysOrgList)){
-                Map<String, String> map = sysOrgList.stream().collect(Collectors.toMap(SysOrgRespVO::getId, SysOrgRespVO::getShortName));
-                resultList.stream().forEach(bean ->bean.setOrgName(map.get(bean.getOrgId())));
+            Map<String, String> orgMap = oauthApiService.orgPage();
+            if (!CollectionUtils.isEmpty(orgMap)){
+                resultList.stream().forEach(bean ->bean.setOrgName(orgMap.get(bean.getOrgId())));
             }
         }
         return BusinessResult.success(resultList);
