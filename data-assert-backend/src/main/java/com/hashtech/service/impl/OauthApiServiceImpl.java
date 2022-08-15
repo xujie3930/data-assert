@@ -57,7 +57,7 @@ public class OauthApiServiceImpl implements OauthApiService {
         CommonResult<CommonPage<SysOrgRespVO>> page = microOauth2ApiFeignClient.page(req, "0");
         if (page != null && page.getData() != null && CollectionUtils.isNotEmpty(page.getData().getList())){
             Map<String, String> map = page.getData().getList().stream().collect(Collectors.toMap(SysOrgRespVO::getId, SysOrgRespVO::getShortName));
-            redisTemplate.opsForValue().set(SYS_ORG_MAP, map, 1L, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(SYS_ORG_MAP, JSON.toJSONString(map), 1L, TimeUnit.MINUTES);
             return map;
         }
        return null;
