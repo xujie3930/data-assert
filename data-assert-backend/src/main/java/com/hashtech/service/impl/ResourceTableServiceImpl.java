@@ -14,6 +14,7 @@ import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.result.ResourceTableResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
+import com.hashtech.feign.vo.SysOrgRespVO;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
@@ -372,6 +373,11 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
                         rt.setSystemName(tr==null||(!"N".equals(tr.getDelFlag()))?null:tr.getFullName());
                     });
                 }
+            }
+            List<SysOrgRespVO> sysOrgList = oauthApiService.orgPage();
+            if (!CollectionUtils.isEmpty(sysOrgList)){
+                Map<String, String> map = sysOrgList.stream().collect(Collectors.toMap(SysOrgRespVO::getId, SysOrgRespVO::getShortName));
+                resultList.stream().forEach(bean ->bean.setOrgName(map.get(bean.getOrgId())));
             }
         }
         return BusinessResult.success(resultList);
