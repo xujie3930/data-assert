@@ -344,6 +344,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
                 new Query<ResourceTableEntity>().getPage(request),
                 wrapper
         );
+        Map<String, String> orgMap = oauthApiService.orgPage();
+        if (!CollectionUtils.isEmpty(orgMap)) {
+            page.getRecords().stream().forEach(bean ->bean.setOrgName(orgMap.get(bean.getOrgId())));
+        }
         return BusinessResult.success(BusinessPageResult.build(page, request));
     }
 
