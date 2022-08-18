@@ -1,6 +1,5 @@
 package com.hashtech.utils;
 
-import com.hashtech.common.AppException;
 import com.hashtech.common.ResourceCodeClass;
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,7 +8,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class ObjectUtils {
 
@@ -42,25 +40,23 @@ public class ObjectUtils {
      * @desc
      **/
     public static boolean isExcel(MultipartFile file){
-        ResourceCodeClass.ResourceCode rc10000000 = ResourceCodeClass.ResourceCode.RESOURCE_CODE_10000000;
         BufferedInputStream bis = null;
         try{
             bis = new BufferedInputStream(file.getInputStream());
             if(bis.available()==0){
-                throw new AppException(rc10000000.getCode(), rc10000000.getMessage()+"不支持导入空文件");
+                return false;
             }
+            //OLE2:xls//OOXML:xlsx
             FileMagic fileMagic = FileMagic.valueOf(bis);
-            if(FileMagic.OLE2 == fileMagic || FileMagic.OOXML== fileMagic){
-                //OLE2:xls//OOXML:xlsx
-                return true;
-            }
+            return (FileMagic.OLE2 == fileMagic || FileMagic.OOXML== fileMagic);
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         } finally {
             if(null!=bis){
                 try {bis.close();} catch (IOException e) {}
             }
         }
-        throw new AppException(rc10000000.getCode(), rc10000000.getMessage()+"文件类型错误，仅支持xls和xlsx");
+        //throw new AppException(rc10000000.getCode(), rc10000000.getMessage()+"文件类型错误，仅支持xls和xlsx");
     }
 }
