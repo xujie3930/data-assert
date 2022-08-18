@@ -37,7 +37,7 @@ public class ResourcePicController {
     @ResponseBody
     @PostMapping("/upload")
     public BusinessResult<Map<String, String>> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws Exception {
-        if((!StringUtils.checkFileType(file, "png", "jpg", "jpeg", "bmp")) || (!ObjectUtils.isImg(file))){
+        if((!StringUtils.checkFileType(file, "png", "jpg", "jpeg", "bmp")) || file.getSize()>2097152l ||(!ObjectUtils.isImg(file))){
             ResourceCodeClass.ResourceCode rc70000030 = ResourceCodeClass.ResourceCode.RESOURCE_CODE_70000030;
             return BusinessResult.fail(rc70000030.getCode(), rc70000030.getMessage());
         }
