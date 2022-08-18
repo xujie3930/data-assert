@@ -14,6 +14,7 @@ import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.result.DatasourceDetailResult;
 import com.hashtech.feign.result.ResourceTableResult;
 import com.hashtech.feign.vo.InternalUserInfoVO;
+import com.hashtech.feign.vo.SysOrgRespVO;
 import com.hashtech.mapper.DataSourceMapper;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingMapper;
@@ -234,6 +235,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             }
             setMasterData(baseInfo, oldEntity);
         }
+        Map<String, String> orgMap = oauthApiService.orgPage();
+        if (!CollectionUtils.isEmpty(orgMap)) {
+            baseInfo.setOrgName(orgMap.get(baseInfo.getOrgId()));
+        }
         return BusinessResult.success(baseInfo);
     }
 
@@ -339,6 +344,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
                 new Query<ResourceTableEntity>().getPage(request),
                 wrapper
         );
+        Map<String, String> orgMap = oauthApiService.orgPage();
+        if (!CollectionUtils.isEmpty(orgMap)) {
+            page.getRecords().stream().forEach(bean ->bean.setOrgName(orgMap.get(bean.getOrgId())));
+        }
         return BusinessResult.success(BusinessPageResult.build(page, request));
     }
 
@@ -372,6 +381,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
                         rt.setSystemName(tr==null||(!"N".equals(tr.getDelFlag()))?null:tr.getFullName());
                     });
                 }
+            }
+            Map<String, String> orgMap = oauthApiService.orgPage();
+            if (!CollectionUtils.isEmpty(orgMap)){
+                resultList.stream().forEach(bean ->bean.setOrgName(orgMap.get(bean.getOrgId())));
             }
         }
         return BusinessResult.success(resultList);

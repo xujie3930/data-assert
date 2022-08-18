@@ -258,7 +258,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         entity.setUpdateTime(new Date());
         entity.setUpdateBy(user.getUsername());
         String picUrl = request.getPicUrl();
-        String pre = new StringBuilder(host).append(":").append(port).append(CUSTOM).toString();
+//        String pre = new StringBuilder(host).append(":").append(port).append(CUSTOM).toString();
+        String pre = new StringBuilder(host).append(CUSTOM).toString();
         //picUrl去除pre
         if (picUrl.startsWith(pre)) {
             picUrl = picUrl.substring(pre.length());
@@ -420,7 +421,8 @@ public class ThemeResourceServiceImpl extends ServiceImpl<ThemeResourceMapper, T
         Integer maxSort = themeResourceMapper.getMaxSortByParentId(request.getId());
         entity.setSort(maxSort + 1);
         String picUrl = request.getPicUrl();
-        String pre = new StringBuilder(host).append(":").append(port).append(CUSTOM).toString();
+//        String pre = new StringBuilder(host).append(":").append(port).append(CUSTOM).toString();
+        String pre = new StringBuilder(host).append(CUSTOM).toString();
         //picUrl去除pre
         if (picUrl.startsWith(pre)) {
             picUrl = picUrl.substring(pre.length());
