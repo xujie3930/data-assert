@@ -49,6 +49,7 @@ public class ResourceCodeClass {
         RESOURCE_CODE_70000027("70000027", "产业库名称包含特殊字符，请重新输入！"),
         RESOURCE_CODE_70000028("70000028", "产业库不存在，请重新输入！"),
         RESOURCE_CODE_70000029("70000029", "企业信用代码重复，请重新输入！"),
+        RESOURCE_CODE_70000030("70000029", "上传的分类图标只支持png、jpg/jpeg、bmp格式!"),
         ;
 
         public final String code;
