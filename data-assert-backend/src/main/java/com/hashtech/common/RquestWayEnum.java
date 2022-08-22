@@ -7,8 +7,8 @@ package com.hashtech.common;
 //@AllArgsConstructor
 //@Getter
 public enum RquestWayEnum {
-    POST(0, "post请求"),
-    GET(1, "get请求"),
+    POST(0, "POST"),
+    GET(1, "GET"),
     ;
     private Integer code;
     private String desc;
