@@ -35,7 +35,7 @@ public class TableSettingResult implements Serializable {
     /**
      * 请求方式：0-POST,1-GET
      */
-    private Integer requestWay = 1;
+    private Integer requestWay = 0;
 
     /**
      * 请求实例说明
