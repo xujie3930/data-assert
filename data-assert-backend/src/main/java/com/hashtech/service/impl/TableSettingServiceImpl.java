@@ -157,7 +157,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         result.setInterfaceName(tableSettingEntity.getInterfaceName());
         result.setUpdateTime(resourceTableEntity.getUpdateTime());
         result.setCreateTime(resourceTableEntity.getCreateTime());
-        result.setRequestWay(tableSettingEntity.getRequestWay()==null? RquestWayEnum.POST.getCode() : tableSettingEntity.getRequestWay());
+        result.setRequestWay(tableSettingEntity.getRequestWay());
         return BusinessResult.success(result);
     }
 
