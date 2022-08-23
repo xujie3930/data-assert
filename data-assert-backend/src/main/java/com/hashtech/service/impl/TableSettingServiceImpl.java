@@ -205,7 +205,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
 
         //更新资源表设置
         TableSettingEntity entity = tableSettingMapper.getByResourceTableId(request.getId());
-        entity.setRequestWay(request.getRequestWay());
+        if (entity.getRequestWay() == null) {
+            entity.setRequestWay(request.getRequestWay());
+        }
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
         entity.setRespInfo(StringUtils.join(request.getRespInfo(), ","));
         entity.setInterfaceName(request.getInterfaceName());
