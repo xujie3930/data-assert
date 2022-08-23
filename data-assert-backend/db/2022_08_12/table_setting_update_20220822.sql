@@ -1,0 +1,1 @@
+ALTER TABLE  table_setting ALTER COLUMN request_way SET DEFAULT null;
