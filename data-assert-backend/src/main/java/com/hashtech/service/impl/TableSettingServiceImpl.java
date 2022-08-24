@@ -208,6 +208,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         if (entity.getRequestWay() == null) {
             entity.setRequestWay(request.getRequestWay());
         }
+        if (!request.getRequestWay().equals(entity.getRequestWay())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000049.getCode());
+        }
         entity.setParamInfo(StringUtils.join(request.getParamInfo(), ","));
         entity.setRespInfo(StringUtils.join(request.getRespInfo(), ","));
         entity.setInterfaceName(request.getInterfaceName());
