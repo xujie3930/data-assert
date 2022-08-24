@@ -264,7 +264,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         dataApiRequest.setType(1);
         dataApiRequest.setName(request.getInterfaceName());
         //0-POST,1-GET
-        dataApiRequest.setRequestType(RquestWayEnum.find(request.getRequestWay()).getDesc());
+        dataApiRequest.setRequestType(RquestWayEnum.find(entity.getRequestWay()).getDesc());
         dataApiRequest.setResponseType("JSON");
         dataApiRequest.setPath(resourceTableEntity.getRequestUrl());
         dataApiRequest.setDesc(entity.getExplainInfo());
