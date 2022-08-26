@@ -159,7 +159,7 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
             tableSettingService.updateById(tableSettingEntity);
             //通知开放平台，实时更新数据
-            serveFeignClient.asyncSourceDirInfo(request.getId());
+//            serveFeignClient.asyncSourceDirInfo(request.getId());
             return BusinessResult.success(true);
         }
         //更换表，则同时更新更新表信息和表设置
