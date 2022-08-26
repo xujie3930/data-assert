@@ -9,6 +9,7 @@ import com.hashtech.factory.DatasourceFactory;
 import com.hashtech.factory.DatasourceSync;
 import com.hashtech.feign.DataApiFeignClient;
 import com.hashtech.feign.DatasourceFeignClient;
+import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.request.*;
 import com.hashtech.feign.result.*;
 import com.hashtech.feign.vo.InternalUserInfoVO;
@@ -80,6 +81,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private DataApiFeignClient dataApiFeignClient;
     @Resource
     private TableSettingAppsMapper tableSettingAppsMapper;
+    @Resource
+    private ServeFeignClient serveFeignClient;
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -253,6 +256,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //数据服务获取接口地址
         entity.setExplainInfo(desc);
         tableSettingMapper.updateById(entity);
+        serveFeignClient.asyncSourceDirInfo(request.getId());
         return BusinessResult.success(true);
     }
 

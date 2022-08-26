@@ -137,6 +137,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         checkHasExitResourceTable(request.getName(), request.getDatasourceId(), resourceTableEntity.getId());
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), request.getId()));
+        //通知开放平台，实时更新数据
+        serveFeignClient.asyncSourceDirInfo(request.getId());
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName()) && resourceTableEntity.getDatasourceId().equals(request.getDatasourceId())) {
             ResourceTableEntity entity = getById(request.getId());
@@ -319,6 +321,12 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         //批量删除数据服务对应API信息
         dataApiFeignClient.deleteByPath(userId, apiPathList);
         removeByIds(idList);
+        //异步接口，和开放平台沟通后，调用多次
+        if (ids.length > 0){
+            for (int i = 0; i < ids.length; i++) {
+                serveFeignClient.asyncSourceDirInfo(ids[i]);
+            }
+        }
         return BusinessResult.success(true);
     }
 
