@@ -21,4 +21,12 @@ public interface ServeFeignClient {
 
     @GetMapping("/backend/source/directory/getOpenTopicAndClassifyIds")
     BusinessResult<Map<String, List<String>>> getOpenTopicAndClassifyIds();
+
+    /**
+     * 通知开放平台，实时更新数据
+     * @param sourceDirectoryId
+     * @return
+     */
+    @GetMapping("/backend/source/directory/asyncSourceDirInfo/{sourceDirectoryId}")
+    BusinessResult<Boolean> asyncSourceDirInfo(@PathVariable("sourceDirectoryId") String sourceDirectoryId);
 }
