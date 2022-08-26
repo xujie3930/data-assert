@@ -2,8 +2,11 @@ package com.hashtech.aop;
 
 import com.alibaba.fastjson.JSON;
 import com.hashtech.common.BusinessResult;
+import com.hashtech.feign.ServeFeignClient;
 import com.hashtech.feign.result.AppAuthResult;
+import com.hashtech.service.ServeService;
 import com.hashtech.service.TableSettingService;
+import com.hashtech.service.impl.ServeServiceImpl;
 import com.hashtech.web.request.ResourceTableUpdateRequest;
 import com.hashtech.web.request.TableSettingUpdateRequest;
 import com.hashtech.web.result.Structure;
@@ -15,9 +18,11 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +36,12 @@ public class ResourceTableAop {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private TableSettingService tableSettingService;
+    @Resource
+    private ServeFeignClient serveFeignClient;
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Resource
+    private ServeService serveService;
 
     @Pointcut("execution(* com.hashtech.service.ResourceTableService.updateResourceTable(..))")
     public void updateResourceTablePointcut() {
@@ -92,7 +103,9 @@ public class ResourceTableAop {
         if(null==tableSettingUpdateResult || null==tableSettingUpdateResult.getData() || !tableSettingUpdateResult.getData().booleanValue()){
             logger.error("updateResourceTableAfter error, updateTableSetting is false; userId:{}, updateRequest:{}", userId, JSON.toJSONString(updateRequest));
         }
-
-
+        //通知开放平台，实时更新数据
+        serveFeignClient.asyncSourceDirInfo(request.getId());
+//        ((ServeServiceImpl)applicationContext.getBean("ServeServiceImpl")).asyncSourceDirInfo(request.getId());
+//        serveService.asyncSourceDirInfo(request.getId());
     }
 }

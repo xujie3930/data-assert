@@ -158,8 +158,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(entity.getId());
             tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
             tableSettingService.updateById(tableSettingEntity);
-            //通知开放平台，实时更新数据
-//            serveFeignClient.asyncSourceDirInfo(request.getId());
             return BusinessResult.success(true);
         }
         //更换表，则同时更新更新表信息和表设置
@@ -168,8 +166,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         updateById(entityUpdate);
         TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(entityUpdate, request);
         tableSettingService.updateById(tableSettingUpdateEntity);
-        //通知开放平台，实时更新数据
-        serveFeignClient.asyncSourceDirInfo(request.getId());
         return BusinessResult.success(true);
     }
 
