@@ -137,8 +137,6 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         }
         checkHasExitResourceTable(request.getName(), request.getDatasourceId(), resourceTableEntity.getId());
         checkHasExitSerialNum(new HasExitSerialNumRequest(request.getSerialNum(), request.getId()));
-        //通知开放平台，实时更新数据
-        serveFeignClient.asyncSourceDirInfo(request.getId());
         //不更换表，只更新表信息
         if (resourceTableEntity.getName().equals(request.getName()) && resourceTableEntity.getDatasourceId().equals(request.getDatasourceId())) {
             ResourceTableEntity entity = getById(request.getId());
@@ -160,6 +158,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
             TableSettingEntity tableSettingEntity = tableSettingMapper.getByResourceTableId(entity.getId());
             tableSettingEntity.setDesensitizeFields(StringUtils.join(request.getDesensitizeFields(), ","));
             tableSettingService.updateById(tableSettingEntity);
+            //通知开放平台，实时更新数据
+            serveFeignClient.asyncSourceDirInfo(request.getId());
             return BusinessResult.success(true);
         }
         //更换表，则同时更新更新表信息和表设置
@@ -167,7 +167,10 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         ResourceTableEntity entityUpdate = getResourceTableEntityUpdate(userId, request, baseInfo);
         updateById(entityUpdate);
         TableSettingEntity tableSettingUpdateEntity = getTableSettingUpdateEntity(entityUpdate, request);
-        return BusinessResult.success(tableSettingService.updateById(tableSettingUpdateEntity));
+        tableSettingService.updateById(tableSettingUpdateEntity);
+        //通知开放平台，实时更新数据
+        serveFeignClient.asyncSourceDirInfo(request.getId());
+        return BusinessResult.success(true);
     }
 
     private void updateMasterData(ResourceTableUpdateRequest request, ResourceTableEntity entity) {
