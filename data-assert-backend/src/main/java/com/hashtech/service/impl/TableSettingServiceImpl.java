@@ -200,7 +200,9 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         if (Objects.isNull(resourceTableEntity)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.getCode());
         }
-        checkExistInterfaceName(new ExistInterfaceNamelRequest(request.getInterfaceName(), request.getId()));
+        if (StringUtils.isNotBlank(request.getInterfaceName())){
+            checkExistInterfaceName(new ExistInterfaceNamelRequest(request.getInterfaceName(), request.getId()));
+        }
         resourceTableEntity.setUpdateTime(new Date());
         resourceTableEntity.setUpdateBy(user.getUsername());
         resourceTableEntity.setRequestUrl(request.getRequestUrl());
