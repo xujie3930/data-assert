@@ -88,6 +88,7 @@ public class ResourceTableAop {
         }
         updateRequest.setRespInfo(respInfos);
         updateRequest.setParamInfo(paramInfos);
+        updateRequest.setInterfaceName("null");
         BusinessResult<Boolean> tableSettingUpdateResult = tableSettingService.updateTableSetting(userId, updateRequest);
         if(null==tableSettingUpdateResult || null==tableSettingUpdateResult.getData() || !tableSettingUpdateResult.getData().booleanValue()){
             logger.error("updateResourceTableAfter error, updateTableSetting is false; userId:{}, updateRequest:{}", userId, JSON.toJSONString(updateRequest));
