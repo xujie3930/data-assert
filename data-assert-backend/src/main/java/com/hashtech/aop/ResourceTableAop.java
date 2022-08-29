@@ -104,7 +104,8 @@ public class ResourceTableAop {
             logger.error("updateResourceTableAfter error, updateTableSetting is false; userId:{}, updateRequest:{}", userId, JSON.toJSONString(updateRequest));
         }
         //通知开放平台，实时更新数据
-        serveFeignClient.asyncSourceDirInfo(request.getId());
+//        serveFeignClient.asyncSourceDirInfo(request.getId());
+        serveService.asyncSourceDirInfo(request.getId());
 //        ((ServeServiceImpl)applicationContext.getBean("ServeServiceImpl")).asyncSourceDirInfo(request.getId());
 //        serveService.asyncSourceDirInfo(request.getId());
     }

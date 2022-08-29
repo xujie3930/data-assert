@@ -72,6 +72,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
     @Resource
     private ServeFeignClient serveFeignClient;
     @Resource
+    private ServeService serveService;
+    @Resource
     private MasterDataService masterDataService;
     @Autowired
     private DataApiFeignClient dataApiFeignClient;
@@ -323,7 +325,8 @@ public class ResourceTableServiceImpl extends ServiceImpl<ResourceTableMapper, R
         //异步接口，和开放平台沟通后，调用多次
         if (ids.length > 0){
             for (int i = 0; i < ids.length; i++) {
-                serveFeignClient.asyncSourceDirInfo(ids[i]);
+//                serveFeignClient.asyncSourceDirInfo(ids[i]);
+                serveService.asyncSourceDirInfo(ids[i]);
             }
         }
         return BusinessResult.success(true);

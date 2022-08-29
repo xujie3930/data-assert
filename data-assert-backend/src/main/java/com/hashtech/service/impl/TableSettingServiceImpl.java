@@ -16,10 +16,7 @@ import com.hashtech.feign.vo.InternalUserInfoVO;
 import com.hashtech.mapper.ResourceTableMapper;
 import com.hashtech.mapper.TableSettingAppsMapper;
 import com.hashtech.mapper.TableSettingMapper;
-import com.hashtech.service.OauthApiService;
-import com.hashtech.service.ResourceTableService;
-import com.hashtech.service.RomoteDataSourceService;
-import com.hashtech.service.TableSettingService;
+import com.hashtech.service.*;
 import com.hashtech.service.bo.TableFieldsBO;
 import com.hashtech.utils.AddressUtils;
 import com.hashtech.utils.RandomUtils;
@@ -83,6 +80,8 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
     private TableSettingAppsMapper tableSettingAppsMapper;
     @Resource
     private ServeFeignClient serveFeignClient;
+    @Resource
+    private ServeService serveService;
 
     @Override
     public BusinessResult<TableSettingResult> getTableSetting(String id) {
@@ -256,7 +255,7 @@ public class TableSettingServiceImpl extends ServiceImpl<TableSettingMapper, Tab
         //数据服务获取接口地址
         entity.setExplainInfo(desc);
         tableSettingMapper.updateById(entity);
-        serveFeignClient.asyncSourceDirInfo(request.getId());
+        serveService.asyncSourceDirInfo(request.getId());
         return BusinessResult.success(true);
     }
 
